@@ -1,0 +1,4 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {incomingDateMarker,incomingISO} from '../lib/incoming-dates.ts';
+test('date markers move between columns and use both date orders',()=>{assert.equal(incomingDateMarker({F277:'1405/07/29 چهارشنبه'}),'1405/07/29');assert.equal(incomingDateMarker({G546:'5 شنبه 14/08/1405'}),'1405/08/14');assert.equal(incomingDateMarker({G548:'شنبه۱۶/۰۸/۱۴۰۵'}),'1405/08/16');assert.equal(incomingDateMarker({G518:'دوشنبه1405/08/11'}),'1405/08/11');assert.equal(incomingDateMarker({B:'مشتری',G:'تا1405/08/18 پیگیری شود'}),null);assert.equal(incomingDateMarker({A:'1',G:'تا1405/08/18 پیگیری شود'}),null)});
+test('source calendar dates convert without inventing contact times',()=>{assert.equal(incomingISO('1405/08/18'),'2026-11-09');assert.equal(incomingISO('1405/08/16'),'2026-11-07');assert.equal(incomingISO('1405/07/26'),'2026-10-18')});
