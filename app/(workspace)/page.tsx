@@ -1,5 +1,6 @@
-import Link from 'next/link';
 import {workspaceUser} from '../../lib/workspace-user';
-import {workspaceNavigation} from '../../lib/navigation';
+import {readHomeData} from '../../lib/home-data';
+import {dailyMessage} from '../../lib/home-policy';
+import PersonalHome from '../../components/workspace/personal-home';
 export const dynamic='force-dynamic';
-export default async function Home(){const u=await workspaceUser();const groups=workspaceNavigation(u);return <main><div className="page-heading"><div><div className="eyebrow">SYNAPSE / ONE WORKSPACE</div><h1>خانه سامانه</h1><p>مسیر کار خود را انتخاب کنید؛ منوی سمت راست در همه بخش‌ها یکسان است.</p></div></div><section className="home-intro"><div><span className="pill">سامانه یکپارچه پژوهشکده</span><h2>کار مشخص، مسیر روشن</h2><p>درخواست‌ها و تماس‌ها در «عملیات و مشتریان»، وظایف شخصی در «کار و برنامه‌ریزی من» و اجرای خدمات در «اجرای پژوهش» قرار دارند.</p></div><img src="/brand/synapse-horizontal.jpeg" alt="SYNAPSE"/></section><div className="home-groups">{groups.map((g,i)=><section className="panel home-group" key={g.id}><div className="section-title"><h2>{g.label}</h2><span>{String(i+1).padStart(2,'0')}</span></div><p className="hint">{['ثبت درخواست، تماس، فاکتور مشتری و نتیجه','برنامه روزانه، برد وظایف و کارهای ارجاع‌شده','سفارش آزمایشگاه، پروژه و مکاتبات داخلی','منابع مدیریتی و تنظیم دسترسی کارکنان'][i]}</p><div>{g.items.map(item=>item.enabled?<Link key={item.href} href={item.href} prefetch={false}>{item.label}<span>↗</span></Link>:<span className="home-locked" key={item.href}>{item.label}<small>دسترسی مدیریت</small></span>)}</div></section>)}</div></main>}
+export default async function Home(){const u=await workspaceUser();return <PersonalHome u={u} d={await readHomeData(u)} message={dailyMessage()}/>}
