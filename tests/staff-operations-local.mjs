@@ -45,3 +45,15 @@ assert.equal((await request('/api/operations?direction=outbound&channel=telegram
 assert.equal((await request('/api/operations',{action:'create',direction:'visit',channel:'manual',visitPurpose:'invalid',subtype:'ثبت سفارش',title:'invalid',sourceBody:'x'},cookies.saman)).status,400);
 const phoneOnly=(await request('/operations?source=incoming',null,cookies.saman)).data.html;assert.ok(!phoneOnly.includes('communication-channels'));
 console.log('Passed: inbound, outbound and visits stay separate; manual channel history is filtered; phone view hides other channels.');
+const labBody={area:'بیوشیمی',client:'مشتری آزمایشی آزمایشگاه',service:'MDA',quantity:12,assignee:'staff:saman',due:'2026-11-10',status:'received',notes:'نمونه سرم',result_url:'',reference:'LAB-TEST-FIN'};
+const labCreated=await request('/api/lab-operations',{action:'create',...labBody,price:12000000,paid:4000000,cost:5000000,vendor_paid:1000000},'',manager);assert.equal(labCreated.status,200);const labId=labCreated.data.id;
+let employeeLab=(await request('/api/lab-operations',null,cookies.saman)).data.jobs.find(r=>r.id===labId);assert.ok(employeeLab);for(const key of ['price','paid','cost','vendor_paid'])assert.equal(key in employeeLab,false);assert.equal((await request('/api/lab-operations?finance=1',null,cookies.saman)).status,403);
+assert.equal((await request('/api/lab-operations',{action:'update',...employeeLab,price:1},cookies.saman)).status,403);
+assert.equal((await request('/api/lab-operations',{action:'update',...employeeLab,status:'doing',notes:'شروع آزمون'},cookies.saman)).status,200);
+assert.equal((await request('/api/lab-operations',{action:'update',...employeeLab,status:'ready'},cookies.saman)).status,409);
+const managerLab=(await request('/api/lab-operations?finance=1',null,'',manager)).data.jobs.find(r=>r.id===labId);assert.equal(managerLab.status,'doing');assert.equal(managerLab.price-managerLab.paid,8000000);assert.equal(managerLab.cost-managerLab.vendor_paid,4000000);
+assert.equal((await request('/api/lab-operations',{action:'update',...managerLab,paid:13000000},'',manager)).status,400);
+assert.equal((await request('/api/lab-operations',{action:'update',...managerLab,status:'ready',result_url:'https://example.test/result'},'',manager)).status,200);
+for(const path of ['/work/lab','/manage/finance'])assert.equal((await request(path,null,'',manager)).status,200);
+assert.ok((await request('/work/lab',null,cookies.saman)).data.html.includes('آزمایشگاه‌ها و اجرای سفارش'));assert.ok(!(await request('/work/lab',null,cookies.saman)).data.html.includes('12000000'));
+console.log('Passed: laboratory order lifecycle, linked financial balances, hidden employee amounts, write protection and concurrent-update handling.');

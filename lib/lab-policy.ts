@@ -1,0 +1,5 @@
+export const labAreas=['مطالعات حیوانی','بافت‌شناسی و پاتولوژی','مولکولی و پروتئینی','تکنیک‌های سلولی','بیوشیمی','میکروب‌شناسی','سایر خدمات تخصصی'];
+export const labStatuses:Record<string,string>={received:'ثبت و پذیرش',doing:'در حال اجرا',ready:'نتیجه آماده',delivered:'تحویل‌شده',paused:'متوقف'};
+export function validLabJob(b:any){return labAreas.includes(b.area)&&typeof b.client==='string'&&b.client.trim().length>0&&b.client.length<=180&&typeof b.service==='string'&&b.service.trim().length>0&&b.service.length<=240&&Number.isInteger(b.quantity)&&b.quantity>0&&b.quantity<=100000&&typeof b.notes==='string'&&b.notes.length<=12000&&typeof b.assignee==='string'&&!!labStatuses[b.status]&&(!b.due||/^\d{4}-\d{2}-\d{2}$/.test(b.due))&&(!b.result_url||/^https:\/\//.test(b.result_url))}
+export function validLabMoney(b:any){return ['price','paid','cost','vendor_paid'].every(k=>Number.isSafeInteger(b[k])&&b[k]>=0&&b[k]<=1000000000000)&&b.paid<=b.price&&b.vendor_paid<=b.cost}
+export function publicLabJob(r:any,manager:boolean){if(manager)return r;const {price,paid,cost,vendor_paid,...rest}=r;return rest}

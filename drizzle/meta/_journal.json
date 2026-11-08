@@ -36,6 +36,13 @@
       "when": 1794169000000,
       "tag": "0004_communications",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1794177000000,
+      "tag": "0005_laboratory_jobs",
+      "breakpoints": true
     }
   ]
 }
