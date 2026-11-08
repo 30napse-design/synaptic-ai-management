@@ -27,6 +27,6 @@ export async function readOperationsData(u:any,p:URLSearchParams){
  const rr=await db().batch(statements);const item=selected?(rr[5].results[0] as any):null;const allowedItem=item&&canSeeOps(u,item)?item:null;const events=allowedItem?(await db().prepare('SELECT * FROM staff_events WHERE record_id=? ORDER BY created_at ASC LIMIT 200').bind(selected).all()).results:[];
  const map=(r:any)=>{const x=opsRow(r);return {...x,isTicket:isTicket(x)}};
  const total=Number((rr[1].results[0] as any).total);const counts=Object.fromEntries(operationCategories.map(c=>[c.id,Number((rr[2].results.find((r:any)=>r.category===c.id) as any)?.total||0)]));
- const coverage=(await db().prepare("SELECT MAX(call_date) AS lastCallDate,MAX(source_at) AS lastSourceAt,COUNT(*) AS count FROM ops_items WHERE "+permitted+" AND source_type='incoming'").bind(...scopeArgs).first());
+ const coverage=(await db().prepare("SELECT MAX(call_date) AS lastCallDate,MAX(source_at) AS lastSourceAt,COUNT(*) AS count FROM ops_items WHERE "+permitted+" AND source_type='incoming' AND source_key LIKE 'calls:incoming:%'").bind(...scopeArgs).first());
  return {coverage,user:u,items:rr[0].results.filter(r=>canSeeOps(u,r)).map(map),total,offset,nextOffset:offset+50<total?offset+50:null,counts,followups:rr[3].results[0],categories:operationCategories.map(c=>({...c,allowed:u.manager||hasAccess(u,c.scope),items:c.items.filter(s=>u.manager||!privateSubtypes.includes(s))})),selected:allowedItem?map(allowedItem):null,events,members:await intakeMembers(),sync:rr[4].results};
 }
