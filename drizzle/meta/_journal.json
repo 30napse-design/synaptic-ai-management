@@ -15,6 +15,13 @@
       "when": 1794145942608,
       "tag": "0001_curved_ultimo",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1794149257491,
+      "tag": "0002_lying_marvex",
+      "breakpoints": true
     }
   ]
 }

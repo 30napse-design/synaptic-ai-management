@@ -1,4 +1,5 @@
 export const CENTRAL_EMAIL='synapticsite@gmail.com';
+export const AVAILABLE_PERMISSIONS=['people','projects','lab','mail','operations','calls','billing_ops','results_ops'];
 export const DEFAULT_PERMISSIONS=['people','projects','lab','mail'];
 export const COOKIE_NAME='__Host-synapse_staff';
 export const SESSION_SECONDS=8*60*60;
