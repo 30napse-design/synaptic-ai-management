@@ -1,0 +1,8 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {passwordValid,hasAccess,DEFAULT_PERMISSIONS} from '../lib/auth-policy.ts';
+import {visible} from '../lib/staff-policy.ts';
+import {entryPage} from '../lib/entry.ts';
+test('all four authorized employee modules are enabled; management modules remain blocked',()=>{const u={email:'staff:test',manager:false,permissions:DEFAULT_PERMISSIONS};for(const key of DEFAULT_PERMISSIONS)assert.equal(hasAccess(u,key),true);for(const key of ['finance','management','tariffs','chats'])assert.equal(hasAccess(u,key),false);const html=entryPage({...u,name:'دکتر آزمایش'});for(const url of ['/staff','/work/projects','/work/lab','/work/mail'])assert.ok(html.includes('href="'+url+'"'));assert.equal((html.match(/class="card locked" disabled/g)||[]).length,2);assert.ok(!html.includes('docs.google.com'))});
+test('scope revocation blocks module records even if previously assigned',()=>assert.equal(visible({kind:'project',assignee:'staff:test'},{email:'staff:test',permissions:['people'],manager:false}),false));
+test('shared operations visible inside granted module only',()=>{assert.equal(visible({kind:'correspondence',assignee:'staff:other'},{email:'staff:test',permissions:['mail'],manager:false}),true);assert.equal(visible({kind:'invoice',assignee:'staff:other'},{email:'staff:test',permissions:['mail'],manager:false}),false)});
+test('weak passwords rejected',()=>{for(const password of ['12345678','longlowercasepassword','Aa1234567','A'.repeat(129)])assert.equal(passwordValid(password),false);assert.equal(passwordValid('Strong-Employee-9x!'),true)});

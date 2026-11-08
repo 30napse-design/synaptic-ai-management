@@ -8,6 +8,13 @@
       "when": 1794144036564,
       "tag": "0000_warm_ricochet",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1794145942608,
+      "tag": "0001_curved_ultimo",
+      "breakpoints": true
     }
   ]
 }

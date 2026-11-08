@@ -1,0 +1,6 @@
+import {db,eventStmt} from './staff-server';
+import {passwordHash,randomToken} from './staff-auth';
+import {DEFAULT_PERMISSIONS,usernameValid} from './auth-policy';
+export function generatedPassword(){return 'Sn!'+randomToken().slice(0,20)+'A7'}
+export async function prepareAccount(username:string,name:string,password:string,permissions=DEFAULT_PERMISSIONS){if(!usernameValid(username)||!name.trim()||name.length>100)throw Error('نام یا نام کاربری معتبر نیست');const memberId='staff:'+username,salt=randomToken(),hash=await passwordHash(password,salt),now=new Date().toISOString();return [db().prepare('INSERT INTO staff_members(email,name,role,active) VALUES(?,?,?,1)').bind(memberId,name,'employee'),db().prepare('INSERT INTO staff_accounts(username,member_id,password_hash,salt,must_change,permissions,updated_at) VALUES(?,?,?,?,1,?,?)').bind(username,memberId,hash,salt,JSON.stringify(permissions),now)]}
+export async function createAccount(username:string,name:string,actor:string){const password=generatedPassword();const stmts=await prepareAccount(username,name,password);await db().batch([...stmts,await eventStmt('auth',actor,'account-create',JSON.stringify({username,name,permissions:DEFAULT_PERMISSIONS}))]);return {username,name,password}}
