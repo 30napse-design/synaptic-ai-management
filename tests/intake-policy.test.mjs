@@ -1,0 +1,5 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {isTicket,intakeFields,validIntake} from '../lib/intake-policy.ts';
+test('messages become tickets while phone and visits stay outside the ticket queue',()=>{for(const channel of ['gmail','website','whatsapp','telegram','bale','rubika','instagram','linkedin'])assert.equal(isTicket({channel,direction:'inbound'}),true);assert.equal(isTicket({channel:'phone',isTicket:true}),false);assert.equal(isTicket({channel:'gmail',direction:'visit',isTicket:true}),false);assert.equal(isTicket({sourceType:'gmail'}),true);assert.equal(isTicket({channel:'manual',isTicket:true}),true);assert.equal(isTicket({channel:'manual'}),false)});
+test('classification and intake values are explicit and bounded',()=>{assert.equal(validIntake(intakeFields({requestType:'academic',clientKind:'university',organization:'دانشگاه',intakeState:'incomplete',ticketKind:'documents'})),true);for(const bad of [{requestType:'invented'},{intakeState:'invented'},{organization:'x'.repeat(241)}])assert.equal(validIntake(intakeFields(bad)),false)});

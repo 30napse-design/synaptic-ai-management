@@ -76,3 +76,30 @@ assert.ok(!(await request('/api/operations?followup=unassigned',null,cookies.sam
 console.log('Passed: scientific/contract records persist, financial and management scopes enforced, six desks render, follow-up filters operate before pagination.');
 
 assert.equal((await request('/work/desks',null,'',manager)).status,307);assert.equal((await request('/work/finance',null,cookies.saman)).data.html.includes('دسترسی به این بخش مجاز نیست'),true);const financePage=(await request('/work/finance',null,'',manager)).data.html;for(const target of ['/work/contracts','/manage/finance','/staff?view=invoices'])assert.ok(financePage.includes(target));console.log('Passed: old six-desk page redirects, finance destinations render, unauthorized finance blocked.');
+
+// Intake metadata, message queue, handoff and due filters share the original source record.
+const intakeBase={action:'create',subtype:'مشاوره پیش از سفارش',title:'تیکت پذیرش دانشگاهی',sourceBody:'نیازمند بررسی پروپوزال',clientName:'مشتری پذیرش',email:'intake@example.test',phone:'09124445566',assignee:'staff:saman',direction:'inbound',channel:'manual',isTicket:true,requestType:'academic',clientKind:'university',organization:'دانشگاه آزمایشی',representative:'نماینده آزمون',intakeState:'incomplete',intakeNotes:'پروپوزال تکمیل شود',ticketKind:'documents',due:new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Dubai',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date())};
+const intake=await request('/api/operations',intakeBase,cookies.saman);assert.equal(intake.status,200);
+let intakeDetail=(await request('/api/operations?id='+intake.data.id,null,cookies.saman)).data.selected;
+assert.equal(intakeDetail.requestType,'academic');assert.equal(intakeDetail.organization,'دانشگاه آزمایشی');assert.equal(intakeDetail.intakeState,'incomplete');
+for(const filter of ['view=tickets','followup=today','requestType=academic&intakeState=incomplete&assignee=staff%3Asaman'])assert.ok((await request('/api/operations?'+filter,null,cookies.saman)).data.items.some(r=>r.id===intake.data.id));
+const ticketCall=await request('/api/operations',{...intakeBase,title:'تماس تلفنی بدون تیکت',channel:'phone',isTicket:true},cookies.saman);assert.equal(ticketCall.status,200);
+const ticketVisit=await request('/api/operations',{...intakeBase,title:'مراجعه بدون تیکت',direction:'visit',channel:'manual',visitPurpose:'امور علمی و مشاوره',subtype:'امور علمی و مشاوره'},cookies.saman);assert.equal(ticketVisit.status,200);
+let queue=(await request('/api/operations?view=tickets',null,cookies.saman)).data;assert.ok(!queue.items.some(r=>[ticketCall.data.id,ticketVisit.data.id].includes(r.id)));assert.ok(queue.items.some(r=>r.id===intake.data.id));
+const handoff=await request('/api/operations',{...intakeDetail,action:'update',status:'doing',priority:'high',assignee:'staff:eslami',resolution:'ارجاع به مسئول فنی برای مشاوره'},cookies.saman);assert.equal(handoff.status,200);
+assert.equal((await request('/api/operations',{...intakeDetail,action:'update',status:'waiting',priority:'normal'},cookies.saman)).status,403);
+intakeDetail=(await request('/api/operations?id='+intake.data.id,null,cookies.eslami)).data.selected;assert.equal(intakeDetail.assignee,'staff:eslami');assert.equal(intakeDetail.requestType,'academic');
+assert.equal((await request('/api/operations',{...intakeDetail,action:'update',status:'waiting',priority:'normal',resolution:'درخواست مدارک از مشتری'},cookies.eslami)).status,200);
+const handoffEvents=(await request('/api/operations?id='+intake.data.id,null,cookies.eslami)).data.events;assert.ok(handoffEvents.some(e=>e.body.includes('staff:saman')&&e.body.includes('staff:eslami')));
+const history=(await request('/api/operations?view=history&contact=intake%40example.test',null,cookies.saman)).data;assert.ok(history.items.some(r=>r.id===intake.data.id));assert.ok(history.items.some(r=>r.id===ticketVisit.data.id));
+const privateBilling=(await request('/api/operations?id='+item.id,null,'',manager)).data.selected;
+assert.equal((await request('/api/operations',{...privateBilling,action:'update',status:'doing',priority:'normal',assignee:'staff:saman'},'',manager)).status,400);
+const msg={sourceKey:'gmail:synapticsite:intake-preservation',category:'customers',subtype:'ثبت سفارش',title:'پیام ورودی آزمون',sourceBody:'متن اولیه',sourceType:'gmail',clientName:'مشتری پیام'};
+assert.equal((await request('/api/ops/import',{items:[msg]},'',{'x-synapse-ops':'local-ops'})).status,200);
+let importedMsg=(await request('/api/operations?view=tickets&q='+encodeURIComponent(msg.title),null,'',manager)).data.items[0];assert.ok(importedMsg);assert.equal(importedMsg.isTicket,true);
+assert.equal((await request('/api/operations',{...importedMsg,action:'update',status:'doing',priority:'normal',assignee:'staff:saman',requestType:'pharma',intakeNotes:'پیگیری دستی ثبت شد',resolution:'در حال پاسخ'},'',manager)).status,200);
+assert.equal((await request('/api/ops/import',{items:[{...msg,sourceBody:'متن تازه منبع'}]},'',{'x-synapse-ops':'local-ops'})).status,200);
+importedMsg=(await request('/api/operations?id='+importedMsg.id,null,cookies.saman)).data.selected;assert.equal(importedMsg.requestType,'pharma');assert.equal(importedMsg.intakeNotes,'پیگیری دستی ثبت شد');assert.equal(importedMsg.resolution,'در حال پاسخ');
+const ticketPage=await request('/operations?view=tickets',null,cookies.saman);assert.equal(ticketPage.status,200);assert.ok(ticketPage.data.html.includes('تیکت و پشتیبانی'));assert.ok(!ticketPage.data.html.includes('href="/operations?followup='));
+const intakeShortcut=await request('/operations?new=ticket',null,cookies.saman);assert.ok(intakeShortcut.data.html.includes('ثبت تیکت پیام'));assert.ok(intakeShortcut.data.html.includes('aria-modal="true"'));
+console.log('Passed: intake classification, same-record message tickets, phone/visit exclusions, current-owner referral with scope checks, exact-contact history, due filters, and metadata preservation on reimport.');
