@@ -1,5 +1,7 @@
+import {visitPurposes} from './communication-policy.ts';
 import {hasAccess} from './auth-policy.ts';
 export const operationCategories=[
+ {id:'visits',title:'مراجعات حضوری',number:'07',scope:'operations',items:visitPurposes},
  {id:'customers',title:'مشتریان و سفارش‌ها',number:'01',scope:'operations',items:['ثبت سفارش','درخواست اصلاح فاکتور','مشاوره پیش از سفارش','تحویل نمونه']},
  {id:'billing',title:'فاکتورها و پرداخت‌های مشتریان',number:'02',scope:'billing_ops',items:['فاکتورهای ارسال‌شده','پیش‌نویس فاکتور — ارسال‌نشده','واریزی‌های مشتریان','اعلام واریز یا فیش — منتظر تأیید بانک','صورتحساب و مانده پرداخت','مغایرت پرداخت و پیگیری مانده','لغو سفارش و استرداد وجه']},
  {id:'results',title:'نتایج و خدمات علمی',number:'03',scope:'results_ops',items:['نتایج ارسال‌شده','مشاوره و رفع اشکال نتایج','درخواست رفع اشکال و اطلاعات تکمیلی']},
