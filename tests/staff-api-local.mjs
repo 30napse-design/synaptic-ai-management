@@ -5,6 +5,11 @@ const owner='ekramiihamid@gmail.com',worker='qa-worker@sites.test',other='qa-oth
 async function req(email,payload){const res=await fetch(base+'/api/staff',{method:payload?'POST':'GET',headers:{'oai-authenticated-user-id':'local-test-'+email,'oai-authenticated-user-email':email,'Content-Type':'application/json','Origin':base},...(payload?{body:JSON.stringify(payload)}:{})});return {status:res.status,data:await res.json()}}
 assert.equal((await req('stranger@sites.test')).status,403);
 for(const [email,role] of [[worker,'employee'],[other,'employee'],[reviewer,'reviewer']])assert.equal((await req(owner,{action:'member',email,name:'فرد آزمایشی',role})).status,200);
+const wh={'oai-authenticated-user-id':'local-test-'+worker,'oai-authenticated-user-email':worker};
+const entry=await fetch(base+'/',{headers:wh});assert.equal(entry.status,200);const html=await entry.text();assert.ok(html.includes('خانه سامانه'));assert.equal((html.match(/class="card locked" disabled/g)||[]).length,5);assert.ok(html.includes('href="/staff"'));assert.ok(!html.includes('docs.google.com'));assert.ok(!html.includes('tariffs-data.js'));
+for(const asset of ['app.js','tariffs-data.js'])assert.equal((await fetch(base+'/api/command/'+asset,{headers:wh})).status,403);
+for(const asset of ['style.css','entry.js'])assert.equal((await fetch(base+'/api/command/'+asset,{headers:wh})).status,200);
+const managerEntry=await fetch(base+'/',{headers:{'oai-authenticated-user-id':'local-test-'+owner,'oai-authenticated-user-email':owner}});assert.equal(managerEntry.status,200);assert.ok((await managerEntry.text()).includes('/api/command/app.js'));
 const create=await req(owner,{action:'create',kind:'invoice',title:'فاکتور آزمایشی محیط محلی',body:'صرفاً برای آزمون',assignee:worker,reviewer,due:'2026-11-10',priority:'high',ref:'LOCAL-QA',sourceUrl:'https://example.org/document',amount:'1000'});assert.equal(create.status,200);
 const id=create.data.id;
 let record=(await req(worker)).data.records.find(r=>r.id===id);assert.ok(record);
@@ -25,4 +30,4 @@ assert.equal((await req(owner,{action:'edit',...record,title:'فاکتور اص�
 const final=(await req(owner)).data;record=final.records.find(r=>r.id===id);assert.equal(record.status,'todo');assert.equal(record.result,'');assert.deepEqual(record.checks,[]);assert.ok(final.events.some(e=>e.record_id===id&&e.action==='approve'));
 assert.equal((await req(owner,{action:'deactivate',email:worker})).status,200);assert.equal((await req(worker)).status,403);
 const legacy=await fetch(base+'/api/command/tariffs-data.js',{headers:{'oai-authenticated-user-id':'local-test-'+other,'oai-authenticated-user-email':other}});assert.equal(legacy.status,403);
-console.log('Passed: membership, record isolation, invoice checks, reviewer approval, stale revision, edit reset, audit, deactivation, manager assets. Local only.');
+console.log('Passed: membership, record isolation, invoice checks, reviewer approval, stale revision, edit reset, audit, deactivation, manager assets. Shared entrance and protected assets verified. Local only.');

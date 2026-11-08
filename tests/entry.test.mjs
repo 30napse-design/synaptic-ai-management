@@ -1,0 +1,5 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {entryPage,entrySections,escapeHtml} from '../lib/entry.ts';
+test('employee entrance shows six units and only opens employee workspace',()=>{const html=entryPage({name:'مریم رضایی',email:'maryam@example.com'});assert.equal(entrySections.length,6);for(const s of entrySections)assert.ok(html.includes(s.name));assert.ok(html.includes('href="/staff"'));assert.equal((html.match(/class="card locked" disabled/g)||[]).length,5);assert.ok(!html.includes('docs.google.com'));assert.ok(!html.includes('mail.google.com'));assert.ok(!html.includes('tariffs-data.js'));assert.ok(!html.includes('/api/command/app.js'));assert.ok(!html.includes('از اینجا شروع کن'));assert.ok(html.includes('مریم رضایی'));});
+test('employee identity is escaped in shared entrance',()=>{const html=entryPage({name:'<img src=x onerror=alert(1)>',email:'staff@example.com'});assert.ok(!html.includes('<img src=x'));assert.equal(escapeHtml('<script>'),'&lt;script&gt;')});
