@@ -1,0 +1,3 @@
+import { getChatGPTUser } from '../../../chatgpt-auth';
+import { legacy } from '../../../../lib/legacy';
+export async function GET(_:Request,{params}:{params:Promise<{asset:string}>}){const u=await getChatGPTUser();if(u?.email.toLowerCase()!=='ekramiihamid@gmail.com')return new Response('Forbidden',{status:403});const {asset}=await params;if(!['app.js','style.css','tariffs-data.js'].includes(asset))return new Response('Not found',{status:404});return new Response(legacy[asset as keyof typeof legacy],{headers:{'Content-Type':asset.endsWith('.css')?'text/css; charset=utf-8':'application/javascript; charset=utf-8','Cache-Control':'no-store'}})}

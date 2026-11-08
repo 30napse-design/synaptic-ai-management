@@ -1,0 +1,8 @@
+export const OWNER='ekramiihamid@gmail.com';
+export const KINDS=['task','plan','invoice','reseller','decision'];
+export const STATUSES=['todo','doing','blocked','review','done'];
+export function visible(r:any,u:any){return u.manager||r.assignee===u.email||r.reviewer===u.email}
+export function canReview(r:any,u:any){return u.manager||(u.role==='reviewer'&&r.reviewer===u.email&&r.assignee!==u.email)}
+export function validUrl(s:string){if(!s)return true;try{return new URL(s).protocol==='https:'}catch{return false}}
+export function validateRecord(b:any){return KINDS.includes(b.kind)&&typeof b.title==='string'&&b.title.trim().length>0&&b.title.length<=180&&typeof b.body==='string'&&b.body.length<=12000&&typeof b.assignee==='string'&&typeof b.reviewer==='string'&&['normal','high','urgent'].includes(b.priority)&&(!b.due||/^\d{4}-\d{2}-\d{2}$/.test(b.due))&&validUrl(b.sourceUrl||'')&&validUrl(b.evidenceUrl||'')&&(!b.amount||/^\d{1,16}$/.test(b.amount))}
+export function transitionError(r:any,u:any,status:string,result:string,checks:string[]){if(!STATUSES.includes(status))return 'وضعیت معتبر نیست';if(status==='done'&&!canReview(r,u))return 'بستن کار فقط با تأییدکننده مجاز است';if(status==='done'&&r.status!=='review')return 'ابتدا برای تأیید ارسال شود';if((status==='review'||status==='done')&&!result.trim())return 'خروجی یا نتیجه بررسی را ثبت کن';if((status==='review'||status==='done')&&r.kind==='invoice'&&['identity','items','amount','terms'].some(x=>!checks.includes(x)))return 'چهار مورد بررسی فاکتور باید تکمیل شود';return null}

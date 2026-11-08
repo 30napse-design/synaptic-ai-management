@@ -1,0 +1,17 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {visible,canReview,transitionError,validateRecord} from '../lib/staff-policy.ts';
+const manager={email:'manager@test.com',manager:true,role:'manager'};
+const employee={email:'employee@test.com',manager:false,role:'employee'};
+const reviewer={email:'reviewer@test.com',manager:false,role:'reviewer'};
+const r={kind:'invoice',assignee:employee.email,reviewer:reviewer.email,status:'review'};
+test('employee cannot read another employee record',()=>assert.equal(visible({...r,assignee:'other@test.com'},employee),false));
+test('assigned employee and reviewer can read record',()=>{assert.equal(visible(r,employee),true);assert.equal(visible(r,reviewer),true)});
+test('employee cannot close their own invoice',()=>assert.ok(transitionError(r,employee,'done','بررسی شد',['identity','items','amount','terms'])));
+test('reviewer cannot self approve',()=>assert.equal(canReview({...r,assignee:reviewer.email},reviewer),false));
+test('manager can approve fully checked invoice',()=>assert.equal(transitionError(r,manager,'done','بررسی شد',['identity','items','amount','terms']),null));
+test('incomplete invoice cannot be submitted',()=>assert.ok(transitionError(r,employee,'review','بررسی شد',['identity'])));
+test('empty deliverable cannot be submitted',()=>assert.ok(transitionError({...r,kind:'task'},employee,'review','',[])));
+test('closing bypassing review is blocked',()=>assert.ok(transitionError({...r,status:'doing'},manager,'done','ok',['identity','items','amount','terms'])));
+test('unsafe document links rejected',()=>assert.equal(validateRecord({kind:'task',title:'کار',body:'',assignee:'x',reviewer:'y',priority:'normal',sourceUrl:'javascript:alert(1)'}),false));
+test('https source accepted',()=>assert.equal(validateRecord({kind:'task',title:'کار',body:'',assignee:'x',reviewer:'y',priority:'normal',sourceUrl:'https://docs.google.com/document/d/example'}),true));
