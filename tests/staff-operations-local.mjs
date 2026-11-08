@@ -57,3 +57,20 @@ assert.equal((await request('/api/lab-operations',{action:'update',...managerLab
 for(const path of ['/work/lab','/manage/finance'])assert.equal((await request(path,null,'',manager)).status,200);
 assert.ok((await request('/work/lab',null,cookies.saman)).data.html.includes('آزمایشگاه‌ها و اجرای سفارش'));assert.ok(!(await request('/work/lab',null,cookies.saman)).data.html.includes('12000000'));
 console.log('Passed: laboratory order lifecycle, linked financial balances, hidden employee amounts, write protection and concurrent-update handling.');
+
+// Shared desk additions must persist in the existing work system and honor scopes.
+const scientificBody={kind:'scientific',title:'طراحی مطالعه آزمایشی',body:'هدف و روش و خروجی',assignee:'staff:saman',reviewer:'ekramiihamid@gmail.com',priority:'normal',due:'2026-11-01',sourceUrl:'',ref:'SCI-LOCAL'};
+const scientific=await request('/api/staff',{action:'create',...scientificBody},cookies.saman);assert.equal(scientific.status,200);
+assert.ok((await request('/api/staff',null,cookies.saman)).data.records.some(r=>r.id===scientific.data.id));
+const contractBody={...scientificBody,kind:'contract',title:'توافق اجرای سفارش',assignee:'ekramiihamid@gmail.com',ref:'CONTRACT-LOCAL'};
+assert.equal((await request('/api/staff',{action:'create',...contractBody},cookies.saman)).status,403);
+const contract=await request('/api/staff',{action:'create',...contractBody},'',manager);assert.equal(contract.status,200);
+assert.ok(!(await request('/api/staff',null,cookies.saman)).data.records.some(r=>r.id===contract.data.id));
+for(const path of ['/work/desks','/work/science','/work/contracts','/work/leadership']){const page=await request(path,null,'',manager);assert.equal(page.status,200);assert.ok(page.data.html.includes('کار و برنامه‌ریزی من'))}
+assert.ok((await request('/work/contracts',null,cookies.saman)).data.html.includes('دسترسی به این بخش مجاز نیست'));
+assert.ok((await request('/work/leadership',null,cookies.saman)).data.html.includes('این بخش مخصوص مدیریت است'));
+const followup=await request('/api/operations',{action:'create',sourceType:'manual',subtype:'ثبت سفارش',title:'پیگیری عقب‌افتاده آزمایشی',sourceBody:'آزمون فیلتر موعد',clientName:'مشتری آزمون',assignee:'staff:saman',due:'2026-11-01'},cookies.saman);assert.equal(followup.status,200);
+assert.ok((await request('/api/operations?followup=overdue',null,cookies.saman)).data.items.some(r=>r.id===followup.data.id));
+assert.ok(!(await request('/api/operations?followup=today',null,cookies.saman)).data.items.some(r=>r.id===followup.data.id));
+assert.ok(!(await request('/api/operations?followup=unassigned',null,cookies.saman)).data.items.some(r=>r.id===followup.data.id));
+console.log('Passed: scientific/contract records persist, financial and management scopes enforced, six desks render, follow-up filters operate before pagination.');

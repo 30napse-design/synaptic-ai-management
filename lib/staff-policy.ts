@@ -1,6 +1,6 @@
 import {kindModules,hasAccess} from './auth-policy.ts';
 export const OWNER='ekramiihamid@gmail.com';
-export const KINDS=['task','plan','invoice','reseller','decision','project','order','correspondence','development'];
+export const KINDS=['task','plan','invoice','reseller','decision','project','order','correspondence','development','scientific','contract'];
 export const STATUSES=['todo','doing','blocked','review','done'];
 export function visible(r:any,u:any){if(kindModules[r.kind]&&!hasAccess(u,kindModules[r.kind]))return false;return u.manager||r.assignee===u.email||r.reviewer===u.email||!!kindModules[r.kind]&&hasAccess(u,kindModules[r.kind])}
 export function canReview(r:any,u:any){return u.manager||(u.role==='reviewer'&&r.reviewer===u.email&&r.assignee!==u.email)}
