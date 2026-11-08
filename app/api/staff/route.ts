@@ -1,15 +1,9 @@
+import {readStaffData} from '../../../lib/staff-data';
 import {hasAccess,kindModules,moduleKinds} from '../../../lib/auth-policy';
 import {db,identity,json,mutationAllowed,eventStmt,row} from '../../../lib/staff-server';
 import {OWNER,visible,canReview,validateRecord,transitionError} from '../../../lib/staff-policy';
 export const dynamic='force-dynamic';
-export async function GET(){try{const u=await identity();if(!u)return json({error:'ابتدا وارد حساب سازمانی شوید.'},403);
-const scoped=Object.entries(moduleKinds).filter(([section])=>hasAccess(u,section)).map(([,kind])=>kind);const marks=scoped.map(()=>'?').join(',');
-const clause='assignee=? OR reviewer=?'+(scoped.length?' OR kind IN ('+marks+')':'');const args=[u.email,u.email,...scoped];
-const rr=await db().prepare(u.manager?'SELECT * FROM staff_records ORDER BY updated_at DESC LIMIT 1000':'SELECT * FROM staff_records WHERE '+clause+' ORDER BY updated_at DESC LIMIT 1000').bind(...(u.manager?[]:args)).all();
-const mm=await db().prepare('SELECT email,name,role,active FROM staff_members ORDER BY name').all();
-const eventClause='r.assignee=? OR r.reviewer=?'+(scoped.length?' OR r.kind IN ('+marks+')':'');
-const ee=await db().prepare(u.manager?'SELECT * FROM staff_events ORDER BY created_at DESC LIMIT 2000':'SELECT e.* FROM staff_events e JOIN staff_records r ON r.id=e.record_id WHERE '+eventClause+' ORDER BY e.created_at DESC LIMIT 1000').bind(...(u.manager?[]:args)).all();
-const authorized=rr.results.map(row).filter((r:any)=>visible(r,u));const ids=new Set(authorized.map((r:any)=>r.id));return json({user:u,records:authorized,members:[{email:OWNER,name:'حمید اکرامی',role:'manager',active:1},...mm.results.filter((m:any)=>u.manager||m.active)],events:u.manager?ee.results:ee.results.filter((e:any)=>ids.has(e.record_id))})}catch(e){console.error(e);return json({error:'دریافت اطلاعات ممکن نشد. دوباره تلاش کن.'},500)}}
+export async function GET(){try{const u=await identity();if(!u)return json({error:'ابتدا وارد حساب سازمانی شوید.'},403);return json(await readStaffData(u))}catch(e){console.error(e);return json({error:'دریافت اطلاعات ممکن نشد. دوباره تلاش کن.'},500)}}
 export async function POST(req:Request){try{if(!mutationAllowed(req))return json({error:'درخواست نامعتبر است'},403);const u=await identity();if(!u)return json({error:'دسترسی ندارید'},403);if(Number(req.headers.get('content-length')||0)>50000)return json({error:'حجم درخواست زیاد است'},413);const b:any=await req.json();
 if(b.action==='member'){if(!u.manager)return json({error:'فقط مدیر'},403);const email=String(b.email||'').trim().toLowerCase(),name=String(b.name||'').trim();if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)||!name||name.length>100||email===OWNER||!['employee','reviewer'].includes(b.role))return json({error:'نام، ایمیل و نقش معتبر وارد کن'},400);await db().batch([db().prepare('INSERT INTO staff_members (email,name,role,active) VALUES(?,?,?,1) ON CONFLICT(email) DO UPDATE SET name=excluded.name,role=excluded.role,active=1').bind(email,name,b.role),await eventStmt('members',u.email,'member',JSON.stringify({email,name,role:b.role}))]);return json({ok:true})}
 if(b.action==='deactivate'){if(!u.manager||b.email===OWNER)return json({error:'دسترسی ندارید'},403);await db().batch([db().prepare('UPDATE staff_members SET active=0 WHERE email=?').bind(String(b.email)),await eventStmt('members',u.email,'deactivate',String(b.email))]);return json({ok:true})}
