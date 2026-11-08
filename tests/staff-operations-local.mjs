@@ -55,7 +55,7 @@ const managerLab=(await request('/api/lab-operations?finance=1',null,'',manager)
 assert.equal((await request('/api/lab-operations',{action:'update',...managerLab,paid:13000000},'',manager)).status,400);
 assert.equal((await request('/api/lab-operations',{action:'update',...managerLab,status:'ready',result_url:'https://example.test/result'},'',manager)).status,200);
 for(const path of ['/work/lab','/manage/finance'])assert.equal((await request(path,null,'',manager)).status,200);
-assert.ok((await request('/work/lab',null,cookies.saman)).data.html.includes('آزمایشگاه‌ها و اجرای سفارش'));assert.ok(!(await request('/work/lab',null,cookies.saman)).data.html.includes('12000000'));
+assert.ok((await request('/work/lab',null,cookies.saman)).data.html.includes('آزمایشگاه‌ها و مجریان'));assert.ok(!(await request('/work/lab',null,cookies.saman)).data.html.includes('12000000'));
 console.log('Passed: laboratory order lifecycle, linked financial balances, hidden employee amounts, write protection and concurrent-update handling.');
 
 // Shared desk additions must persist in the existing work system and honor scopes.
@@ -66,7 +66,7 @@ const contractBody={...scientificBody,kind:'contract',title:'توافق اجرا
 assert.equal((await request('/api/staff',{action:'create',...contractBody},cookies.saman)).status,403);
 const contract=await request('/api/staff',{action:'create',...contractBody},'',manager);assert.equal(contract.status,200);
 assert.ok(!(await request('/api/staff',null,cookies.saman)).data.records.some(r=>r.id===contract.data.id));
-for(const path of ['/work/desks','/work/science','/work/contracts','/work/leadership']){const page=await request(path,null,'',manager);assert.equal(page.status,200);assert.ok(page.data.html.includes('کار و برنامه‌ریزی من'))}
+for(const path of ['/work/finance','/work/science','/work/contracts','/work/leadership']){const page=await request(path,null,'',manager);assert.equal(page.status,200);assert.ok(page.data.html.includes('کار و برنامه‌ریزی من'))}
 assert.ok((await request('/work/contracts',null,cookies.saman)).data.html.includes('دسترسی به این بخش مجاز نیست'));
 assert.ok((await request('/work/leadership',null,cookies.saman)).data.html.includes('این بخش مخصوص مدیریت است'));
 const followup=await request('/api/operations',{action:'create',sourceType:'manual',subtype:'ثبت سفارش',title:'پیگیری عقب‌افتاده آزمایشی',sourceBody:'آزمون فیلتر موعد',clientName:'مشتری آزمون',assignee:'staff:saman',due:'2026-11-01'},cookies.saman);assert.equal(followup.status,200);
@@ -74,3 +74,5 @@ assert.ok((await request('/api/operations?followup=overdue',null,cookies.saman))
 assert.ok(!(await request('/api/operations?followup=today',null,cookies.saman)).data.items.some(r=>r.id===followup.data.id));
 assert.ok(!(await request('/api/operations?followup=unassigned',null,cookies.saman)).data.items.some(r=>r.id===followup.data.id));
 console.log('Passed: scientific/contract records persist, financial and management scopes enforced, six desks render, follow-up filters operate before pagination.');
+
+assert.equal((await request('/work/desks',null,'',manager)).status,307);assert.equal((await request('/work/finance',null,cookies.saman)).data.html.includes('دسترسی به این بخش مجاز نیست'),true);const financePage=(await request('/work/finance',null,'',manager)).data.html;for(const target of ['/work/contracts','/manage/finance','/staff?view=invoices'])assert.ok(financePage.includes(target));console.log('Passed: old six-desk page redirects, finance destinations render, unauthorized finance blocked.');
