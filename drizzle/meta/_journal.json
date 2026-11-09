@@ -50,6 +50,20 @@
       "when": 1794177000001,
       "tag": "0006_aromatic_captain_cross",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1794186068183,
+      "tag": "0007_boring_tomorrow_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1794187039395,
+      "tag": "0008_fat_sabra",
+      "breakpoints": true
     }
   ]
 }
