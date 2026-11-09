@@ -3,7 +3,7 @@ export const canFinance=(u:any)=>!!u&&!u.laboratory&&(u.manager||hasAccess(u,'fi
 export const canApproveFinance=(u:any)=>canFinance(u)&&(u.manager||hasAccess(u,'finance_approve'));
 export const documentKinds:Record<string,string>={quote:'پیش‌فاکتور و برآورد',invoice:'فاکتور داخلی',contract:'قرارداد'};
 export const documentStatuses:Record<string,string>={draft:'پیش‌نویس',review:'منتظر تأیید',approved:'تأیید داخلی',sent:'ارسال ثبت‌شده',accepted:'تأیید مشتری ثبت‌شده',issued:'صادرشده داخلی',cancelled:'لغوشده'};
-export const transactionKinds:Record<string,string>={receipt:'دریافت مشتری',payment:'پرداخت مجری',expense:'هزینه / تنخواه',refund:'استرداد وجه مشتری'};
+export const transactionKinds:Record<string,string>={receipt:'دریافت مشتری',payment:'پرداخت مجری',expense:'هزینه مستقیم حساب',refund:'استرداد وجه مشتری'};
 export const transactionStatuses:Record<string,string>={reported:'ثبت‌شده / منتظر تطبیق',verified:'تأییدشده مالی',void:'ابطال ثبت'};
 export const financeAccounts:Record<string,string>={bank:'بانک / وجوه',receivable:'دریافتنی مشتریان',deposit:'پیش‌دریافت مشتریان',payable:'پرداختنی مجریان',revenue:'درآمد خدمات',expense:'هزینه‌ها',vat:'مالیات و عوارض ثبت‌شده'};
 export const defaults={minimum_order:0,minimum_margin_bps:0,default_tax_bps:0};
