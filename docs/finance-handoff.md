@@ -24,3 +24,6 @@ Financial navigation is consolidated in one group. Legacy financial requests, in
 - Historical Sheets/Drive data are preserved as sources, not automatically imported or treated as bank-confirmed transactions.
 - T02 final scientific approval and management KPIs remain for those modules' review.
 - All financial input starts empty until real documents are entered; operational messages remain in their existing queue.
+
+## Scientific connection completed
+Financial quantity/repeat review tasks can now be opened as a linked T02 scientific case. Approval of its exact protocol version by the named technical reviewer completes that same source task; a subsequent case amendment reopens it. Full study/report cases remain on the staff board until final report approval. No financial prices or margin fields are copied to the scientific/laboratory data projection.

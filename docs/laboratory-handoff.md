@@ -18,7 +18,7 @@ Membership makes an account portal-only even if broad old staff permissions rema
 
 ## Deliberately deferred to the relevant review stage
 - Finance connection completed: issued invoice line → scoped work order; approved statement → payable; verified payments → settled portal statement. Bank CSV / documented manual verification supported. Legacy manual settlement is retained and is not proof of a transfer. No automatic bank execution.
-- Scientific/T02: final scientific approval, revision requests from the reviewer and release authorization to the client. Current topic-based discussion and named scientific contact do not replace that approval.
+- Scientific/T02 connection completed: linked order results enter the named scientific case, QC feedback returns only to the originating laboratory, and the institute approves an exact report/data/protocol version. Changed data makes previous final approval stale. Client release/sending remains manual. Laboratory technical sign-off remains separate.
 - T04 staff board: automatic creation of reminders/tasks from sample delays, inquiries and laboratory messages. Existing work-order dashboard shows pending/overdue orders; no scheduled automation is implied.
 - Leadership/T05: final KPI and risk definitions after management review.
 - External communications: email/WhatsApp notifications and shipping integrations. Current discussions stay inside the order.
