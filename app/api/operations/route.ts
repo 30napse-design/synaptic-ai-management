@@ -1,3 +1,4 @@
+import {canDeleteData,deletionAction} from '../../../lib/deletion-policy';
 import {validCommunication} from '../../../lib/communication-policy';
 import {readOperationsData} from '../../../lib/operations-data';
 import {db,identity,json,mutationAllowed,eventStmt} from '../../../lib/staff-server';
@@ -11,7 +12,7 @@ export async function POST(req:Request){
  if(!mutationAllowed(req))return json({error:'درخواست نامعتبر'},403);
  const u=await identity();if(!u)return json({error:'ابتدا وارد شوید'},401);
  if(Number(req.headers.get('content-length')||0)>50000)return json({error:'حجم درخواست زیاد است'},413);
- const b:any=await req.json();
+ const b:any=await req.json();if(deletionAction(b.action)&&!canDeleteData(u))return json({error:'حذف فقط برای مالک اصلی سامانه مجاز است.'},403);
  if(b.action==='create'){
   const c=categoryFor(b.subtype),direction=String(b.direction||'inbound'),channel=String(b.channel||(b.sourceType==='incoming'?'phone':'manual')),visitPurpose=String(b.visitPurpose||'');
   if(!validCommunication(direction,channel,visitPurpose))return json({error:'روش ارتباط یا موضوع مراجعه معتبر نیست'},400);
