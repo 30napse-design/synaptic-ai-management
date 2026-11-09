@@ -66,7 +66,7 @@ const contractBody={...scientificBody,kind:'contract',title:'توافق اجرا
 assert.equal((await request('/api/staff',{action:'create',...contractBody},cookies.saman)).status,403);
 const contract=await request('/api/staff',{action:'create',...contractBody},'',manager);assert.equal(contract.status,200);
 assert.ok(!(await request('/api/staff',null,cookies.saman)).data.records.some(r=>r.id===contract.data.id));
-for(const path of ['/work/finance','/work/science','/work/contracts','/work/leadership']){const page=await request(path,null,'',manager);assert.equal(page.status,200);assert.ok(page.data.html.includes('کار و برنامه‌ریزی من'))}
+for(const path of ['/finance/dashboard','/work/science','/work/contracts','/work/leadership']){const page=await request(path,null,'',manager);assert.equal(page.status,200);assert.ok(page.data.html.includes('کار و برنامه‌ریزی من'))}
 assert.ok((await request('/work/contracts',null,cookies.saman)).data.html.includes('دسترسی به این بخش مجاز نیست'));
 assert.ok((await request('/work/leadership',null,cookies.saman)).data.html.includes('این بخش مخصوص مدیریت است'));
 const followup=await request('/api/operations',{action:'create',sourceType:'manual',subtype:'ثبت سفارش',title:'پیگیری عقب‌افتاده آزمایشی',sourceBody:'آزمون فیلتر موعد',clientName:'مشتری آزمون',assignee:'staff:saman',due:'2026-11-01'},cookies.saman);assert.equal(followup.status,200);
@@ -75,7 +75,7 @@ assert.ok(!(await request('/api/operations?followup=today',null,cookies.saman)).
 assert.ok(!(await request('/api/operations?followup=unassigned',null,cookies.saman)).data.items.some(r=>r.id===followup.data.id));
 console.log('Passed: scientific/contract records persist, financial and management scopes enforced, six desks render, follow-up filters operate before pagination.');
 
-assert.equal((await request('/work/desks',null,'',manager)).status,307);assert.equal((await request('/work/finance',null,cookies.saman)).data.html.includes('دسترسی به این بخش مجاز نیست'),true);const financePage=(await request('/work/finance',null,'',manager)).data.html;for(const target of ['/work/contracts','/manage/finance','/staff?view=invoices'])assert.ok(financePage.includes(target));console.log('Passed: old six-desk page redirects, finance destinations render, unauthorized finance blocked.');
+assert.equal((await request('/work/desks',null,'',manager)).status,307);assert.equal((await request('/work/finance',null,'',manager)).status,307);assert.equal((await request('/finance/dashboard',null,cookies.saman)).data.html.includes('دسترسی مالی ندارید'),true);const financePage=(await request('/finance/compare',null,'',manager)).data.html;for(const target of ['/work/contracts','/manage/finance','/staff?view=invoices'])assert.ok(financePage.includes(target));console.log('Passed: old six-desk page redirects, finance destinations render, unauthorized finance blocked.');
 
 // Intake metadata, message queue, handoff and due filters share the original source record.
 const intakeBase={action:'create',subtype:'مشاوره پیش از سفارش',title:'تیکت پذیرش دانشگاهی',sourceBody:'نیازمند بررسی پروپوزال',clientName:'مشتری پذیرش',email:'intake@example.test',phone:'09124445566',assignee:'staff:saman',direction:'inbound',channel:'manual',isTicket:true,requestType:'academic',clientKind:'university',organization:'دانشگاه آزمایشی',representative:'نماینده آزمون',intakeState:'incomplete',intakeNotes:'پروپوزال تکمیل شود',ticketKind:'documents',due:new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Dubai',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date())};

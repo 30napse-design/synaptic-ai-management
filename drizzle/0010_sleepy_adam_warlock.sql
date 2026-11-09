@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX `finance_link_version_type_unique` ON `finance_links` (`document_id`,`document_version`,`type`);

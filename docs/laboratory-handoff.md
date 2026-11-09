@@ -17,7 +17,7 @@ Membership makes an account portal-only even if broad old staff permissions rema
 8. Each external laboratory receives only its own inquiry and submits only its own quote. Internal laboratories have no inquiry flow.
 
 ## Deliberately deferred to the relevant review stage
-- Finance: automatic invoice-line allocation, payment authorization, bank reconciliation and linking statements to actual payments. Current statements/settlement labels are manual records only; they never confirm a bank transfer.
+- Finance connection completed: issued invoice line → scoped work order; approved statement → payable; verified payments → settled portal statement. Bank CSV / documented manual verification supported. Legacy manual settlement is retained and is not proof of a transfer. No automatic bank execution.
 - Scientific/T02: final scientific approval, revision requests from the reviewer and release authorization to the client. Current topic-based discussion and named scientific contact do not replace that approval.
 - T04 staff board: automatic creation of reminders/tasks from sample delays, inquiries and laboratory messages. Existing work-order dashboard shows pending/overdue orders; no scheduled automation is implied.
 - Leadership/T05: final KPI and risk definitions after management review.
