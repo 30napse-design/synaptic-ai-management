@@ -15,7 +15,8 @@ assert.equal((await req('/api/lab-operations',{...own,action:'update',price:9876
 let da=(await load('internal',ca)).data;assert.equal(da.jobs.length,1);assert.equal(da.jobs[0].id,aid);assert.equal(da.laboratories.length,1);assert.equal(da.accounts.length,0);assert.equal(da.members.length,0);for(const secret of ['CONFIDENTIAL-CUSTOMER','INV-SECRET-001','PRIVATE-INSTITUTE-NOTES','DIRECTORY-PRIVATE-SECRET','987654321','5000000',bid])assert.ok(!JSON.stringify(da).includes(secret),secret+' leaked');
 for(const key of ['client','reference','notes','price','paid','cost','vendor_paid','created_by','assignee'])assert.ok(!(key in da.jobs[0]),key);
 assert.equal((await load('external',ca)).status,403);assert.equal((await call({...jobBody,job_id:aid},ca)).status,403);assert.equal((await call({action:'progress',job_id:bid,revision:0,status:'doing',progress:10},ca)).status,404);
-for(const path of ['/api/staff','/api/operations','/api/lab-operations','/api/auth/accounts','/api/manager-tools?section=tariffs'])assert.equal((await req(path,null,ca)).status,403,path);
+for(const path of ['/api/staff','/api/lab-operations','/api/auth/accounts','/api/manager-tools?section=tariffs'])assert.equal((await req(path,null,ca)).status,403,path);
+assert.equal((await req('/api/operations',null,ca)).status,200);
 assert.equal((await req('/api/staff',{action:'create',kind:'task',title:'bad'},ca)).status,403);
 assert.equal((await req('/',null,ca)).status,307);assert.equal((await req('/staff',null,ca)).status,307);
 assert.equal((await call({action:'progress',job_id:aid,revision:da.jobs[0].revision,status:'doing',progress:10,progress_notes:'شروع'},ca)).status,400);

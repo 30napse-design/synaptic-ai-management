@@ -1,3 +1,4 @@
+import {mayAssignWork,SELF_ASSIGNMENT_ERROR} from '../../../lib/work-assignment-policy';
 import {canDeleteData,deletionAction} from '../../../lib/deletion-policy';
 import {validCommunication} from '../../../lib/communication-policy';
 import {readOperationsData} from '../../../lib/operations-data';
@@ -21,7 +22,7 @@ export async function POST(req:Request){
   if(!validateOpsInput(item))return json({error:'عنوان، موضوع و شرح معتبر وارد کنید'},400);
   const candidate={...item,managerOnly:c?.id==='internal'||privateSubtypes.includes(b.subtype)||sensitive(b.title)};
   if(!canSeeOps(u,candidate)||sourceType==='incoming'&&!hasAccess(u,'calls'))return json({error:'اجازه ثبت در این بخش ندارید'},403);
-  const assignee=String(b.assignee??u.email);if(!await validOpsAssignee(assignee,candidate))return json({error:'مسئول باید فعال باشد و دسترسی این پرونده را داشته باشد'},400);
+  const assignee=String(b.assignee??'');if(!mayAssignWork(u,assignee))return json({error:SELF_ASSIGNMENT_ERROR},403);if(!await validOpsAssignee(assignee,candidate))return json({error:'مسئول باید فعال باشد و دسترسی این پرونده را داشته باشد'},400);
   const id=crypto.randomUUID(),now=new Date().toISOString(),ticketFlag=f.isTicket&&direction!=='visit'&&channel!=='phone'?1:0;
   await db().batch([db().prepare('INSERT INTO ops_items (id,source_key,category,subtype,title,source_body,client_name,phone,email,reference,call_date,source_type,assignee,due,payment_state,manager_only,created_by,created_at,updated_at,direction,channel,visit_purpose,request_type,client_kind,organization,representative,intake_state,intake_notes,is_ticket,ticket_kind) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)').bind(id,'native:'+id,c!.id,b.subtype,b.title.trim(),item.sourceBody,String(b.clientName||'').slice(0,160),String(b.phone||'').slice(0,80),String(b.email||'').slice(0,200),String(b.reference||'').slice(0,160),String(b.callDate||'').slice(0,80),sourceType,assignee,b.due||'',c!.id==='billing'?'pending':'unknown',candidate.managerOnly?1:0,u.email,now,now,direction,channel,visitPurpose,f.requestType,f.clientKind,f.organization,f.representative,f.intakeState,f.intakeNotes,ticketFlag,f.ticketKind),await eventStmt(id,u.email,'ops-create','ثبت '+(direction==='visit'?'مراجعه حضوری':sourceType==='incoming'?'تماس':ticketFlag||channel!=='manual'?'تیکت پیام':'درخواست عملیاتی'))]);
   return json({ok:true,id});
@@ -36,7 +37,7 @@ export async function POST(req:Request){
   if(b.status==='closed'&&!String(b.resolution||'').trim())return json({error:'برای بستن، نتیجه پیگیری را بنویسید'},400);
   if(!u.manager&&b.paymentState!==raw.payment_state&&(b.paymentState==='verified'||raw.payment_state==='verified'))return json({error:'تأیید بانکی فقط توسط مدیریت انجام می‌شود'},403);
   const paymentState=['unknown','pending','reported','verified'].includes(b.paymentState)?b.paymentState:raw.payment_state;
-  const assignee=String(b.assignee??raw.assignee??u.email);
+  const assignee=String(b.assignee??raw.assignee??'');if(!mayAssignWork(u,assignee,raw.assignee))return json({error:SELF_ASSIGNMENT_ERROR},403);
   if(!u.manager&&!assignee)return json({error:'برای ارجاع، مسئول فعال انتخاب کنید'},400);
   if(!await validOpsAssignee(assignee,raw))return json({error:'گیرنده باید فعال باشد و دسترسی این پرونده را داشته باشد'},400);
   const now=new Date().toISOString(),rev=Number(b.revision),due=b.due??raw.due,ticketFlag=f.isTicket&&raw.direction!=='visit'&&raw.channel!=='phone'&&raw.source_type!=='incoming'?1:0;

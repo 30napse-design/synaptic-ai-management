@@ -1,7 +1,7 @@
 import { env } from 'cloudflare:workers';
 import { getChatGPTUser } from '../app/chatgpt-auth';
 import { OWNER } from './staff-policy';
-import {DEFAULT_PERMISSIONS} from './auth-policy';
+import {DEFAULT_PERMISSIONS,effectivePermissions} from './auth-policy';
 import {localSession} from './staff-auth';
 export const json=(data:any,status=200)=>Response.json(data,{status,headers:{'Cache-Control':'no-store'}});
 export function db(){if(!env.DB)throw new Error('پایگاه داده در دسترس نیست');return env.DB}
@@ -10,4 +10,4 @@ export function mutationAllowed(req:Request){const origin=req.headers.get('origi
 export async function eventStmt(recordId:string,actor:string,action:string,body:string){return db().prepare('INSERT INTO staff_events (id,record_id,actor,action,body,created_at) VALUES(?,?,?,?,?,?)').bind(crypto.randomUUID(),recordId,actor,action,body,new Date().toISOString())}
 export function row(r:any){return {...r,sourceUrl:r.source_url,evidenceUrl:r.evidence_url,createdBy:r.created_by,updatedAt:r.updated_at,checks:JSON.parse(r.checks||'[]')}}
 
-async function withLaboratory(user:any){const lab=await db().prepare('SELECT l.id,l.type,l.name,l.status FROM laboratory_members m JOIN laboratories l ON l.id=m.laboratory_id WHERE m.member_id=?').bind(user.email).first<any>();return lab?{...user,laboratory:true,manager:false,laboratoryId:lab.id,laboratoryType:lab.type,laboratoryName:lab.name,laboratoryStatus:lab.status,permissions:['lab_portal']}:user}
+async function withLaboratory(user:any){user={...user,permissions:effectivePermissions(user.permissions)};const lab=await db().prepare('SELECT l.id,l.type,l.name,l.status FROM laboratory_members m JOIN laboratories l ON l.id=m.laboratory_id WHERE m.member_id=?').bind(user.email).first<any>();return lab?{...user,laboratory:true,manager:false,laboratoryId:lab.id,laboratoryType:lab.type,laboratoryName:lab.name,laboratoryStatus:lab.status,permissions:effectivePermissions(['lab_portal'])}:user}

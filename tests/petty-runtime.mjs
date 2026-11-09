@@ -5,6 +5,26 @@ assert.equal((await req('/api/auth/provision-request',setupBody,{})).status,404)
 async function login(username,password){const l=await req('/api/auth/login',{username,password},{});assert.equal(l.status,200,JSON.stringify(l));const c=await req('/api/auth/password',{currentPassword:password,newPassword:'Changed-Test-Password-2026!'},{Cookie:l.cookie});assert.equal(c.status,200,JSON.stringify(c));return {Cookie:c.cookie}}
 const admin=await login('testadmin','Initial-Admin-Password-2026!'),cash=await login('testcash','Initial-Cash-Password-2026!');
 assert.equal((await req('/api/auth/accounts',null,admin)).status,200);assert.equal((await req('/api/staff',{action:'delete',id:'any'},admin)).status,403);assert.equal((await req('/api/operations',{action:'delete',id:'any'},admin)).status,403);assert.equal((await req('/api/finance',null,admin)).status,200);assert.equal((await req('/api/science',null,admin)).status,200);assert.equal((await req('/api/auth/accounts',null,cash)).status,403);assert.equal((await req('/api/finance',null,cash)).status,403);assert.equal((await req('/api/science',null,cash)).status,403);assert.equal((await req('/api/auth/accounts',{action:'permissions',username:'testcash',permissions:['institute_admin']},cash)).status,403);
+// New rules: shared customer operations and no self-created work.
+const work={kind:'task',title:'Rules verification',body:'Complete assigned work',assignee:'staff:testcash',reviewer:'ekramiihamid@gmail.com',priority:'normal'};
+for(const kind of ['task','plan','project'])assert.equal((await req('/api/staff',{action:'create',...work,kind},cash)).status,403);
+assert.equal((await req('/api/staff',{action:'create',...work,assignee:'staff:testadmin'},admin)).status,403);
+let assigned=await req('/api/staff',{action:'create',...work},admin);assert.equal(assigned.status,200,JSON.stringify(assigned));
+let delegated=(await req('/api/staff',null,cash)).data.records.find(r=>r.id===assigned.data.id);assert.ok(delegated);
+assert.equal((await req('/api/staff',{action:'update',id:delegated.id,revision:delegated.revision,status:'doing',result:'Progress recorded'},cash)).status,200);
+const intake={action:'create',subtype:'ثبت سفارش',title:'RULES-CUSTOMER-REQUEST',sourceBody:'Customer request',direction:'inbound',channel:'manual',assignee:''};
+assert.equal((await req('/api/operations',null,cash)).status,200);
+for(const query of ['', '?view=tickets','?source=incoming','?direction=outbound','?direction=visit'])assert.equal((await req('/operations'+query,null,cash)).status,200);
+assert.equal((await req('/api/operations',{...intake,assignee:'staff:testcash'},cash)).status,403);
+let incoming=await req('/api/operations',intake,cash);assert.equal(incoming.status,200,JSON.stringify(incoming));
+let item=(await req('/api/operations?id='+incoming.data.id,null,cash)).data.selected;
+const followup={action:'update',id:item.id,revision:item.revision,status:'doing',priority:'normal',resolution:'In progress',paymentState:'unknown',assignee:'staff:testcash'};
+assert.equal((await req('/api/operations',followup,cash)).status,403);
+assert.equal((await req('/api/operations',followup)).status,200);
+item=(await req('/api/operations?id='+incoming.data.id,null,cash)).data.selected;
+assert.equal((await req('/api/operations',{...followup,revision:item.revision,resolution:'Assigned work updated'},cash)).status,200);
+assert.equal((await req('/api/auth/accounts',{action:'permissions',username:'testcash',permissions:['petty_cash']},admin)).status,200);
+assert.ok((await req('/api/auth/accounts',null,admin)).data.accounts.find(a=>a.username==='testcash').permissions.includes('operations'));
 const get=async(h=cash)=>{const r=await req('/api/petty-cash',null,h);assert.equal(r.status,200,JSON.stringify(r));return r.data};const post=async(b,h=cash)=>{const r=await req('/api/petty-cash',b,h);assert.equal(r.status,200,JSON.stringify(r));return r.data};
 let data=await get();assert.equal(data.entries.length,2);assert.equal(data.periods[0].summary.balance,800000);assert.equal(data.periods[0].summary.discrepancies,1);assert.equal(data.entries.find(e=>e.kind==='expense').source_raw.old_balance,850000);
 const legacy=data.entries.find(e=>e.kind==='expense');assert.equal((await req('/api/petty-cash',{action:'save',id:legacy.id,revision:0,kind:'expense',amount_rial:1,description:'changed',category:'x',date:'1405/07/12'},cash)).status,400);assert.equal((await req('/api/petty-cash',{action:'opening',period:'1405-07',opening_rial:0,note:'fake'},cash)).status,403);assert.equal((await req('/api/petty-cash',{action:'save',kind:'charge',amount_rial:100,category:'charge',description:'fake',date:'1405/08/18'},cash)).status,403);
@@ -16,4 +36,5 @@ await post({action:'legacy_review',id:legacy.id,revision:legacy.revision,note:'H
 assert.ok((await req('/finance/petty-cash',null,cash)).data.html.includes('تنخواه و هزینه‌های جاری'));
 // Broad stored management permission must never defeat laboratory membership.
 await db.prepare("INSERT INTO laboratories(id,type,name,areas,created_at,updated_at) VALUES('cash-test-lab','internal','Lab','[]',?,?)").bind(new Date().toISOString(),new Date().toISOString()).run();await db.prepare("INSERT INTO laboratory_members(member_id,laboratory_id,created_at) VALUES('staff:testadmin','cash-test-lab',?)").bind(new Date().toISOString()).run();assert.equal((await req('/api/auth/accounts',null,admin)).status,403);assert.equal((await req('/api/petty-cash',null,admin)).status,403);
-console.log('PASS expiring exact-body account provisioning, full administrator role, restricted custodian, preserved historical amounts, private receipts, review and immutable approved costs');
+assert.equal((await req('/api/operations',null,admin)).status,200);
+console.log('PASS shared operations and self-assignment guards; expiring exact-body account provisioning, full administrator role, restricted custodian, preserved historical amounts, private receipts, review and immutable approved costs');
