@@ -1,0 +1,170 @@
+SYNAPSE work planning verification — isolated local environment
+Base: cc1d5caa7aace1481d6d7ceb60a0fe64a83c9c6d
+Branch: work/my-planning
+No production deploy, remote push, live migration or secret changes.
+
+TypeScript: PASS (tsc --noEmit, exit 0; empty diagnostics).
+
+
+=== Logical regression tests ===
+✔ all four authorized employee modules are enabled; management modules remain blocked (1.862598ms)
+✔ scope revocation blocks module records even if previously assigned (3.833797ms)
+✔ shared operations visible inside granted module only (2.24424ms)
+✔ weak passwords rejected (0.536238ms)
+✔ deletion is exclusive to the authenticated primary owner (3.702634ms)
+✔ delegated managers cannot receive working legacy deletion controls (0.267333ms)
+✔ employee entrance shows six units and only opens employee workspace (0.471573ms)
+✔ employee identity is escaped in shared entrance (2.257649ms)
+✔ Financial totals include repeats, discount, cost and configurable VAT (6.376976ms)
+✔ Rial conversion and ledger balance never infer units (0.641263ms)
+✔ Scientific reduction and laboratory exclusion (1.386919ms)
+✔ Bank CSV handles quoted commas, Persian digits and malformed input (11.788844ms)
+✔ daily message changes at six in Dubai and stays stable during the workday (2.043715ms)
+✔ personal home distinguishes own tasks, independent approvals, and completed local day (0.858772ms)
+✔ date markers move between columns and use both date orders (2.097715ms)
+✔ source calendar dates convert without inventing contact times (0.654492ms)
+✔ messages become tickets while phone and visits stay outside the ticket queue (0.495739ms)
+✔ classification and intake values are explicit and bounded (1.814999ms)
+✔ laboratory membership defeats broad inherited permissions (0.583298ms)
+✔ ordinary staff need an assigned role while coordinators have the operational view (1.865924ms)
+✔ deadlines reject impossible dates (0.255175ms)
+✔ single navigation has six consistent groups and preserves protected manager entries (0.701131ms)
+✔ active submenu distinguishes call and billing filters (2.121319ms)
+✔ six desks are integrated into existing groups (0.510401ms)
+✔ financial modules live only in the finance group (1.411115ms)
+✔ shared customer financial entries visible, internal and security entries blocked (1.03376ms)
+✔ ungranted account cannot view shared billing (0.321123ms)
+✔ bank statements and login codes receive private classification (1.139035ms)
+✔ Scientific design validates actual groups, counts and repeats (0.444103ms)
+✔ Scientific access follows named team and separate technical authority (0.623457ms)
+✔ Latest scientific revisions are chosen by sequence, including simultaneous timestamps (0.146315ms)
+✔ employee cannot read another employee record (0.260453ms)
+✔ assigned employee and reviewer can read record (0.080668ms)
+✔ employee cannot close their own invoice (0.083903ms)
+✔ reviewer cannot self approve (0.049032ms)
+✔ manager can approve fully checked invoice (0.051195ms)
+✔ incomplete invoice cannot be submitted (0.076172ms)
+✔ empty deliverable cannot be submitted (0.057535ms)
+✔ closing bypassing review is blocked (0.045467ms)
+✔ unsafe document links rejected (0.134257ms)
+✔ https source accepted (0.057555ms)
+✔ all active account roles have customer operations without inheriting finance (0.227564ms)
+✔ new self assignment blocked for employees and local administrators, existing delegated work preserved (0.198001ms)
+✔ future execution enters today on execution day without relying on creation (0.301884ms)
+✔ past execution is retained in all and overdue, absent from today (0.142089ms)
+✔ collaborator participates while unrelated users and non-task projects stay outside (0.139866ms)
+✔ filters combine date, assignee, collaborator, unit, project, priority and status (0.139094ms)
+✔ start, submit, reviewer approval and correction enforce workflow (0.456782ms)
+✔ stop requires next actor, approval can be delegated or omitted by manager policy (0.13592ms)
+✔ invalid dates and inverted times rejected, Dubai boundaries consistent (0.314012ms)
+✔ more than 1000 tasks remain represented and summary preserves completion date (1.059468ms)
+✔ calendar uses Saturday weeks and complete Persian months without duplicating tasks (0.602365ms)
+ℹ tests 52
+ℹ suites 0
+ℹ pass 52
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 69.107813
+
+
+=== Additive migration/backout test ===
+.
+----------------------------------------------------------------------
+Ran 1 test in 0.020s
+
+OK
+
+
+=== Worker + D1/R2 API integration ===
+PASS: local Worker API, collaborations, real notifications/read state, permission isolation, actual attachment download, legacy route protection, employee-manager cooperation, schedule edit without duplication, revision conflict, delegated approval/correction history, >1000 records, and unchanged project source.
+
+
+=== Production build ===
+
+  vinext build  (Vite 8.0.13)
+
+▲ [WARNING] Proxy environment variables detected. We'll use your proxy for fetch requests.
+
+
+[1/5] analyze client references...
+
+transforming...✓ 342 modules transformed.
+rendering chunks...
+✓ built in 803ms
+[2/5] analyze server references...
+
+transforming...✓ 231 modules transformed.
+rendering chunks...
+✓ built in 349ms
+[3/5] build rsc environment...
+
+transforming...✓ 339 modules transformed.
+rendering chunks...
+computing gzip size...
+✓ built in 784ms
+[4/5] build client environment...
+
+transforming...✓ 1952 modules transformed.
+rendering chunks...
+computing gzip size...
+✓ built in 1.49s
+[5/5] build ssr environment...
+
+transforming...✓ 233 modules transformed.
+rendering chunks...
+computing gzip size...
+✓ built in 534ms
+
+  Route (app)
+  ┌ ƒ /
+  ├ ? /account
+  ├ ƒ /account/password
+  ├ ? /accounts
+  ├ λ /api/auth/accounts
+  ├ λ /api/auth/login
+  ├ λ /api/auth/logout
+  ├ λ /api/auth/password
+  ├ λ /api/auth/provision
+  ├ λ /api/auth/provision-request
+  ├ λ /api/command/:asset
+  ├ λ /api/finance
+  ├ λ /api/finance/files
+  ├ λ /api/lab-operations
+  ├ λ /api/laboratories
+  ├ λ /api/laboratories/files
+  ├ λ /api/manager-tools
+  ├ λ /api/operations
+  ├ λ /api/ops/import
+  ├ λ /api/petty-cash
+  ├ λ /api/petty-cash/files
+  ├ λ /api/profile
+  ├ λ /api/science
+  ├ λ /api/science/files
+  ├ λ /api/staff
+  ├ λ /api/work
+  ├ λ /api/work/files
+  ├ λ /api/work/notifications
+  ├ ƒ /finance-print/:id
+  ├ ƒ /finance/:section
+  ├ ƒ /finance/petty-cash
+  ├ ƒ /laboratories/:type
+  ├ ƒ /login
+  ├ ƒ /manage/:section
+  ├ λ /mcp
+  ├ ƒ /operations
+  ├ ƒ /staff
+  └ ƒ /work/:section
+
+  λ API  ƒ Dynamic  ? Unknown
+
+  ? Some routes could not be classified. vinext currently uses static analysis
+    and cannot detect dynamic API usage (headers(), cookies(), etc.) at build time.
+    Automatic classification will be improved in a future release.
+
+  Build complete. Run `vinext start` to start the production server.
+
+
+
+NOT VERIFIED: interactive visual QA at 375, 768, 1440px, zoom, focus/drag on actual devices, real production accounts. Required managed Sites cua_repl.js tool unavailable. SSR with mobile/desktop User-Agent passed, but does not substitute for browser QA.

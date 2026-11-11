@@ -6,7 +6,7 @@ import {hasAccess} from '../../lib/auth-policy';
 import {useRouter,useSearchParams} from 'next/navigation';
 import {LayoutDashboard,Columns3,CalendarDays,ClipboardCheck,Receipt,Network,Users,Plus,ArrowUpLeft,Search,X,RefreshCw,ChevronLeft,Check,MessageSquare,ExternalLink,Clock,ShieldCheck,Menu,FileText,AlertCircle} from 'lucide-react';
 const kinds:any={task:'وظیفه',plan:'برنامه',invoice:'بررسی فاکتور',reseller:'ریسلر',decision:'دستور و تأیید',project:'پروژه و پیمانکار',order:'سفارش آزمایشگاه',correspondence:'مکاتبه',development:'مدیریت و توسعه',scientific:'کار علمی',contract:'قرارداد و توافق'};
-const statuses:any={todo:'برای انجام',doing:'در حال انجام',blocked:'متوقف',review:'منتظر تأیید',done:'تأیید و بسته‌شده'};
+const statuses:any={todo:'برای انجام',doing:'در حال انجام',blocked:'متوقف',review:'منتظر تأیید',changes:'نیازمند اصلاح',done:'تأیید و بسته‌شده'};
 const icons:any={overview:LayoutDashboard,board:Columns3,plans:CalendarDays,approvals:ClipboardCheck,invoices:Receipt,resellers:Network,team:Users};
 const nav:any={overview:'امروز من',board:'برد وظایف',plans:'برنامه‌ریزی',approvals:'بررسی و تأیید',invoices:'فاکتورها',resellers:'ریسلر',team:'افراد و دسترسی‌ها'};
 const fa=(n:any)=>Number(n).toLocaleString('fa-IR');
