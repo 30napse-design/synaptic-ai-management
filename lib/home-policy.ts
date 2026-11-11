@@ -1,7 +1,7 @@
-import {workSummary} from './work-policy.ts';
+import {workSummary,workDayKey} from './work-policy.ts';
 import {visible,canReview} from './staff-policy.ts';
-export function dateKey(value:any){return value?new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Dubai',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(value)):''}
-export function workDay(now=new Date()){return new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Dubai',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(now.getTime()-6*3600000))}
+export function dateKey(value:any){return value?workDayKey(value):''}
+export function workDay(now=new Date()){return workDayKey(new Date(now.getTime()-6*3600000))}
 export const dailyMessages=[['کار مشخص، مسیر روشن','امروز یک کار مهم را با نتیجه‌ای روشن به پایان برسانید.'],['پیشرفت از پیگیری می‌آید','یک پیگیری به‌موقع می‌تواند مسیر یک پروژه را باز کند.'],['قدم‌های کوچک، نتیجه‌های بزرگ','اولویت امروز را مشخص کنید و قدم اول را بردارید.'],['کیفیت در جزئیات است','پیش از تحویل، نتیجه و مدرک انجام کار را بررسی کنید.'],['با هم، دقیق‌تر پیش می‌رویم','اگر مانعی هست، زود مطرحش کنید؛ حل مسئله کار مشترک ماست.'],['هر کار، یک قدم تا نتیجه','کار مهم امروز را به یک خروجی مشخص تبدیل کنید.'],['نظم امروز، آرامش فردا','موعدها را مرور کنید و پیگیری بعدی را ثبت کنید.'],['دانش وقتی ارزش دارد که به عمل برسد','یک ایده کاربردی برای بهترشدن کارها پیشنهاد دهید.'],['مسیر پیشرفت را ثبت کنید','نتیجه امروزتان را بنویسید تا قدم بعدی روشن باشد.'],['پاسخ روشن، همکاری بهتر','قول‌ها و زمان پاسخ را کنار همان درخواست ثبت کنید.'],['تمرکز روی کار اثرگذار','از میان کارها، آن‌که بیشترین گره را باز می‌کند انتخاب کنید.'],['هر نتیجه، حاصل همکاری است','همکارتان را از پیشرفت یا مانع کار باخبر کنید.'],['شروع روشن، پایان قابل سنجش','پیش از شروع، خروجی مورد انتظار را مشخص کنید.'],['امروز فرصتی برای بهترشدن است','یک کار نیمه‌تمام را به نتیجه برسانید.']];
-export function dailyMessage(now=new Date()){const key=workDay(now);return dailyMessages[Math.floor(Date.parse(key+'T00:00:00Z')/86400000)%dailyMessages.length]}
+export function dailyMessage(now=new Date()){const key=workDay(now);return dailyMessages[Math.floor(Date.parse(key+'T00:00:00Z')/86400000)%dailyMessages.length]||dailyMessages[0]}
 export function personalWork(records:any[],user:any,today:string){return workSummary(records,user,today)}

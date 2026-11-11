@@ -7,7 +7,7 @@ import {filterWork,isWork,participant,workSummary,workDayKey,workStatuses,isOver
 const titles:Record<string,string>={overview:'امروز من',all:'همه وظایف',board:'برد وظایف',plans:'برنامه‌ریزی',approvals:'بررسی و تأیید'};
 const priorities:Record<string,string>={normal:'عادی',high:'مهم',urgent:'فوری'};
 const fa=(n:any)=>Number(n).toLocaleString('fa-IR');
-const date=(s:string)=>s?new Intl.DateTimeFormat('fa-IR',{dateStyle:'medium',timeZone:'Asia/Dubai'}).format(new Date(s+'T12:00:00Z')):'بدون تاریخ';
+const date=(s:string)=>{if(!s)return 'بدون تاریخ';const value=new Date(s+'T12:00:00Z');return Number.isFinite(value.getTime())?new Intl.DateTimeFormat('fa-IR',{dateStyle:'medium',timeZone:'Asia/Dubai'}).format(value):'تاریخ نیازمند بررسی'};
 function shift(s:string,n:number){const d=new Date(s+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10)}
 const defaults=(u:any,kind='task')=>({kind,title:'',body:'',assignee:u.email==='ekramiihamid@gmail.com'?u.email:'',reviewer:'ekramiihamid@gmail.com',priority:'normal',due:'',scheduledDate:'',startTime:'',endTime:'',collaborators:[],unit:'',project:'',ref:'',sourceUrl:'',linkType:'',linkId:'',reminder:true,approvalRequired:true});
 export default function WorkApp({initialData}: {initialData:any}){
