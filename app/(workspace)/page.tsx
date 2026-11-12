@@ -1,3 +1,4 @@
+import '../home.css';
 import {redirect} from 'next/navigation';
 import {workspaceUser} from '../../lib/workspace-user';
 import {readHomeData} from '../../lib/home-data';

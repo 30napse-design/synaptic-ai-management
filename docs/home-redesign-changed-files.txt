@@ -1,0 +1,16 @@
+app/(workspace)/page.tsx
+app/home.css
+components/workspace/home-toolbar.tsx
+components/workspace/personal-home.tsx
+components/workspace/work-notifications.tsx
+components/workspace/workspace-shell.tsx
+design-qa.md
+docs/home-redesign-changed-files.txt
+docs/home-redesign-handoff.md
+docs/home-redesign-verification.txt
+lib/home-dashboard.ts
+lib/home-data.ts
+public/home/mountain-sunrise.png
+public/home/research-campus.png
+scripts/test-home-browser.mjs
+tests/home-dashboard.test.mjs
