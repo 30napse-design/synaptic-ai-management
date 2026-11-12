@@ -1,0 +1,69 @@
+{
+  "observed_date_client": "2026-11-12",
+  "timezone": "Asia/Dubai",
+  "project_id": "appgprj_6af06be01a5481918c6578c73c9b888a",
+  "remote": "https://git.chatgpt-team.site/827182ab-5c0a-49f4-a427-68ec851cd5ac/appgprj_6af06be01a5481918c6578c73c9b888a.git",
+  "shared_ref": "origin/main",
+  "shared_commit": "8f13eb3dd5ff3db4df54b3c4666771750faca273",
+  "published": {
+    "version": 36,
+    "commit": "8f13eb3dd5ff3db4df54b3c4666771750faca273",
+    "version_id": "appgprj_6af06be01a5481918c6578c73c9b888a~appgver_eb82ba71249081919aa8cdebf55eae4a",
+    "deployment_id": "appgdep_6af5f04d7ab4819198eac3fbcb056d65",
+    "status": "succeeded",
+    "url": "https://synapse.ekramiihamid.chatgpt.site"
+  },
+  "history": [
+    {
+      "version": 33,
+      "commit": "cc1d5caa7aace1481d6d7ceb60a0fe64a83c9c6d"
+    },
+    {
+      "version": 34,
+      "commit": "d9a9e61431ebd78fec658cfd9b4fe145039f973d"
+    },
+    {
+      "version": 35,
+      "commit": "ee128373791ae2e037d6a357205dbb275e14bef9"
+    },
+    {
+      "version": 36,
+      "commit": "8f13eb3dd5ff3db4df54b3c4666771750faca273"
+    }
+  ],
+  "preserved_local_deliveries": [
+    {
+      "branch": "work/home-redesign",
+      "commit": "b4e1d79f1ab3286e220e582b918cd714e9e29ea6",
+      "note": "Preserved; Work incorporated home changes under its own history. Not used to replace newer Work source."
+    }
+  ],
+  "owner_approval": {
+    "current_governance_task": "Explicit user instruction in this conversation",
+    "all_product_changes": "Not inferred from deployment alone"
+  },
+  "archive": {
+    "profile_name": "Ai Manager",
+    "email": "30napse@gmail.com",
+    "folder_id": "1Uzl3YvidLofmL4zbsd-mowHY58DnfyKx",
+    "folder_url": "https://drive.google.com/drive/folders/1Uzl3YvidLofmL4zbsd-mowHY58DnfyKx",
+    "sharing_changed": false
+  },
+  "operations_performed": {
+    "git_fetch": true,
+    "production_deploy": false,
+    "remote_push": false,
+    "live_database_change": false,
+    "runtime_secrets_read": false
+  },
+  "scope": "Source governance, packaging, restore verification and migration documentation; no application code changes.",
+  "verified_at": "2026-11-12T22:21:26.983957+04:00",
+  "validation": {
+    "release_tool_unit_tests": 2,
+    "work_home_date_logical_tests": 17,
+    "typescript": "passed",
+    "build": "passed",
+    "work_home_render_integration": "passed in isolated Miniflare",
+    "live_data_used": false
+  }
+}

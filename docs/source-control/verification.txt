@@ -1,0 +1,133 @@
+SOURCE MANAGEMENT VERIFICATION
+Base/shared/live: 8f13eb3dd5ff3db4df54b3c4666771750faca273, published v36.
+No application code changes; no remote push/deploy or live data operations.
+TypeScript: passed (empty diagnostics).
+
+=== Release creation and independent restore tests ===
+test_forbidden_paths_and_preserved_examples (test_package.ReleaseTests.test_forbidden_paths_and_preserved_examples) ... ok
+test_full_restore_patch_and_stale_base_guard (test_package.ReleaseTests.test_full_restore_patch_and_stale_base_guard) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.118s
+
+OK
+
+=== Work date/home regressions ===
+✔ legacy completion dates cannot crash home or fabricate completion today (24.001599ms)
+✔ daily message changes at six in Dubai and stays stable during the workday (0.690561ms)
+✔ personal home distinguishes own tasks, independent approvals, and completed local day (3.499888ms)
+✔ home projects authorized work with a stable maximum of five priorities (3.515881ms)
+✔ decisions, overdue and non-task entities preserve central work semantics (0.946139ms)
+✔ next plan excludes completed, past and priorities already shown (0.626226ms)
+✔ empty home contains no invented task, appointment or decision (0.372832ms)
+✔ personal correspondence is scoped and never infers an unread count (0.379711ms)
+✔ future execution enters today on execution day without relying on creation (0.279083ms)
+✔ past execution is retained in all and overdue, absent from today (0.168309ms)
+✔ collaborator participates while unrelated users and non-task projects stay outside (0.106488ms)
+✔ filters combine date, assignee, collaborator, unit, project, priority and status (0.12177ms)
+✔ start, submit, reviewer approval and correction enforce workflow (0.415946ms)
+✔ stop requires next actor, approval can be delegated or omitted by manager policy (0.160748ms)
+✔ invalid dates and inverted times rejected, Dubai boundaries consistent (0.837249ms)
+✔ more than 1000 tasks remain represented and summary preserves completion date (0.902084ms)
+✔ calendar uses Saturday weeks and complete Persian months without duplicating tasks (0.877899ms)
+ℹ tests 17
+ℹ suites 0
+ℹ pass 17
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 44.949791
+
+=== Current Work SSR and home API integration ===
+PASS home reflects real work API review/correction on the same record
+PASS SSR / with legacy invalid dates
+PASS SSR /staff?view=overview with legacy invalid dates
+PASS SSR /staff?view=all with legacy invalid dates
+PASS SSR /staff?view=board with legacy invalid dates
+PASS SSR /staff?view=plans with legacy invalid dates
+PASS SSR /staff?view=approvals with legacy invalid dates
+
+=== Build current source ===
+
+  vinext build  (Vite 8.0.13)
+
+▲ [WARNING] Proxy environment variables detected. We'll use your proxy for fetch requests.
+
+
+[1/5] analyze client references...
+
+transforming...✓ 350 modules transformed.
+rendering chunks...
+✓ built in 1.09s
+[2/5] analyze server references...
+
+transforming...✓ 233 modules transformed.
+rendering chunks...
+✓ built in 364ms
+[3/5] build rsc environment...
+
+transforming...✓ 347 modules transformed.
+rendering chunks...
+computing gzip size...
+✓ built in 788ms
+[4/5] build client environment...
+
+transforming...✓ 1954 modules transformed.
+rendering chunks...
+computing gzip size...
+✓ built in 1.27s
+[5/5] build ssr environment...
+
+transforming...✓ 235 modules transformed.
+rendering chunks...
+computing gzip size...
+✓ built in 545ms
+
+  Route (app)
+  ┌ ƒ /
+  ├ ? /account
+  ├ ƒ /account/password
+  ├ ? /accounts
+  ├ λ /api/auth/accounts
+  ├ λ /api/auth/login
+  ├ λ /api/auth/logout
+  ├ λ /api/auth/password
+  ├ λ /api/auth/provision
+  ├ λ /api/auth/provision-request
+  ├ λ /api/command/:asset
+  ├ λ /api/finance
+  ├ λ /api/finance/files
+  ├ λ /api/lab-operations
+  ├ λ /api/laboratories
+  ├ λ /api/laboratories/files
+  ├ λ /api/manager-tools
+  ├ λ /api/operations
+  ├ λ /api/ops/import
+  ├ λ /api/petty-cash
+  ├ λ /api/petty-cash/files
+  ├ λ /api/profile
+  ├ λ /api/science
+  ├ λ /api/science/files
+  ├ λ /api/staff
+  ├ λ /api/work
+  ├ λ /api/work/files
+  ├ λ /api/work/notifications
+  ├ ƒ /finance-print/:id
+  ├ ƒ /finance/:section
+  ├ ƒ /finance/petty-cash
+  ├ ƒ /laboratories/:type
+  ├ ƒ /login
+  ├ ƒ /manage/:section
+  ├ λ /mcp
+  ├ ƒ /operations
+  ├ ƒ /staff
+  └ ƒ /work/:section
+
+  λ API  ƒ Dynamic  ? Unknown
+
+  ? Some routes could not be classified. vinext currently uses static analysis
+    and cannot detect dynamic API usage (headers(), cookies(), etc.) at build time.
+    Automatic classification will be improved in a future release.
+
+  Build complete. Run `vinext start` to start the production server.
