@@ -75,6 +75,7 @@
 }
 .unified-workspace:not(.home-route) :where(.unified-caption,.unified-account>a,.unified-user small){color:#bdcce7}
 .unified-workspace:not(.home-route) :where(.unified-home,.nav-group-title,.nav-group-links>a,.nav-subgroup-title){color:#eef3ff}
+.unified-workspace:not(.home-route) .unified-sidebar #nav-finance .nav-subgroup-title{color:#203c61}
 .unified-workspace:not(.home-route) :where(.nav-group,.unified-user){border-color:#b1c2e138}
 .unified-workspace:not(.home-route) :where(.unified-home.selected,.nav-group-links>a.selected){
  background:linear-gradient(110deg,#526dff,#8970ff);color:#fff;box-shadow:0 4px 14px #071b5130;
