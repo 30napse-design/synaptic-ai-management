@@ -1,5 +1,5 @@
 import {resolveOrganizationalWork} from '../../../lib/workflow-core';
-import {organizationalCode} from '../../../lib/organizational-logins';
+import {organizationalCode,organizationalUsernames} from '../../../lib/organizational-logins';
 import {db,identity,json,mutationAllowed} from '../../../lib/staff-server';
 import {OWNER,canReview,validateRecord} from '../../../lib/staff-policy';
 import {mayAssignWork} from '../../../lib/work-assignment-policy';
@@ -7,7 +7,7 @@ import {isWork,participant,validSchedule,workTransition} from '../../../lib/work
 import {WorkError,workRecord,canExecute,notification} from '../../../lib/work-server';
 export const dynamic='force-dynamic';
 export async function POST(req:Request){try{if(!mutationAllowed(req))throw new WorkError('درخواست نامعتبر.',403);const u=await identity();if(!u||u.laboratory)throw new WorkError('دسترسی ندارید.',403);if((await req.clone().text()).length>100000)throw new WorkError('درخواست بزرگ است.',413);const b=await req.json() as any;const create=b.action==='create';const r=create?null:await workRecord(String(b.id||''),u);if(r&&!isWork(r))throw new WorkError('این رکورد وظیفه اجرایی نیست.');
- const members=(await db().prepare('SELECT email,role FROM staff_members WHERE active=1').all()).results as any[];const active=(id:string)=>id===OWNER||members.some(m=>m.email===id);const ts=new Date().toISOString(),eventId=crypto.randomUUID(),id=r?.id||crypto.randomUUID();let details:any=r?JSON.parse(r.details||'{}'):{collaborators:[],progress:0,subtasks:[],approvalRequired:true};let title=r?.title,status=r?.status,result=r?.result||'',body='',action=b.action;
+ const members=(await db().prepare('SELECT m.email,m.role FROM staff_members m JOIN staff_accounts a ON a.member_id=m.email WHERE m.active=1 AND a.username IN (SELECT value FROM json_each(?))').bind(JSON.stringify(organizationalUsernames)).all()).results as any[];const active=(id:string)=>id===OWNER||members.some(m=>m.email===id);const ts=new Date().toISOString(),eventId=crypto.randomUUID(),id=r?.id||crypto.randomUUID();let details:any=r?JSON.parse(r.details||'{}'):{collaborators:[],progress:0,subtasks:[],approvalRequired:true};let title=r?.title,status=r?.status,result=r?.result||'',body='',action=b.action;
  if(r?.status==='done'&&!details.completedAt)details.completedAt=r.updatedAt;
  const target=new Set<string>();
  if(create||action==='edit'){
