@@ -17,6 +17,7 @@ for(const p of list.account_plan){
  await call('/account',undefined,h);await call('/api/work/notifications',undefined,h);await call('/api/header/messages',undefined,h);const ai=(await call('/api/assistant',undefined,h)).d;assert.equal(ai.connected,false);
  if(p.username!=='owner')await api(undefined,403,h);
 }
+const customerProfile=await api({action:'role_preview',username:'customer',roles:['customer_manager'],qualified:false});await api({...customerProfile,action:'apply_roles',username:'customer',confirm_replace:true,preflight_id:pre,reason:'Synthetic explicit owner confirmation of short-login profile'});
 const ownerData=(await call('/api/staff',undefined,users.owner)).d;assert.equal(ownerData.user.email,'ekramiihamid@gmail.com');
 await api({action:'owner_login',password:'Cc123456',confirm_owner_login:true,preflight_id:pre,reason:'Local owner cannot impersonate native recovery'},403,users.owner);
 for(const path of ['/','/operations','/finance/dashboard','/finance/petty-cash','/laboratories/internal','/work/science','/accounts','/account','/manage/management']){const page=(await call(path,undefined,users.owner)).d.html;assert.ok(page.includes('Ctrl + K'),path)}
