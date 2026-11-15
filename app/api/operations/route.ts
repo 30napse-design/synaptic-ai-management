@@ -3,12 +3,13 @@ import {canDeleteData,deletionAction} from '../../../lib/deletion-policy';
 import {validCommunication} from '../../../lib/communication-policy';
 import {readOperationsData} from '../../../lib/operations-data';
 import {db,identity,json,mutationAllowed,eventStmt} from '../../../lib/staff-server';
-import {hasAccess} from '../../../lib/auth-policy';
-import {canSeeOps,categoryFor,privateSubtypes,sensitive,opsStatuses,validateOpsInput} from '../../../lib/ops-policy';
+import {hasDataAccess} from '../../../lib/auth-policy';
+import {operationPayments} from '../../../lib/finance-data';
+import {canSeeOps,canUseOps,canUseOpsCategory,categoryFor,privateSubtypes,sensitive,opsStatuses,validateOpsInput} from '../../../lib/ops-policy';
 import {intakeFields,validIntake,validDue} from '../../../lib/intake-policy';
 import {validOpsAssignee} from '../../../lib/intake-server';
 export const dynamic='force-dynamic';
-export async function GET(req:Request){const u=await identity();if(!u)return json({error:'ابتدا وارد شوید'},401);if(!u.manager&&!['operations','calls','billing_ops','results_ops'].some(s=>hasAccess(u,s)))return json({error:'دسترسی ندارید'},403);return json(await readOperationsData(u,new URL(req.url).searchParams))}
+export async function GET(req:Request){const u=await identity();if(!u)return json({error:'ابتدا وارد شوید'},401);if(!canUseOps(u))return json({error:'دسترسی ندارید'},403);return json(await readOperationsData(u,new URL(req.url).searchParams))}
 export async function POST(req:Request){
  if(!mutationAllowed(req))return json({error:'درخواست نامعتبر'},403);
  const u=await identity();if(!u)return json({error:'ابتدا وارد شوید'},401);
@@ -20,8 +21,8 @@ export async function POST(req:Request){
   const sourceType=channel==='phone'?'incoming':'manual',item={...b,category:c?.id,sourceType,sourceBody:String(b.sourceBody||'')};
   const f=intakeFields(b);if(!validIntake(f)||!validDue(b.due||''))return json({error:'نوع درخواست، اطلاعات پذیرش یا موعد معتبر نیست'},400);
   if(!validateOpsInput(item))return json({error:'عنوان، موضوع و شرح معتبر وارد کنید'},400);
-  const candidate={...item,managerOnly:c?.id==='internal'||privateSubtypes.includes(b.subtype)||sensitive(b.title)};
-  if(!canSeeOps(u,candidate)||sourceType==='incoming'&&!hasAccess(u,'calls'))return json({error:'اجازه ثبت در این بخش ندارید'},403);
+  const candidate={...item,managerOnly:c?.id==='internal'||privateSubtypes.includes(b.subtype)||sensitive(b.title+' '+item.sourceBody)};
+  if(!canUseOpsCategory(u,candidate)||sourceType==='incoming'&&!hasDataAccess(u,'calls'))return json({error:'اجازه ثبت در این بخش ندارید'},403);
   const assignee=String(b.assignee??'');if(!mayAssignWork(u,assignee))return json({error:SELF_ASSIGNMENT_ERROR},403);if(!await validOpsAssignee(assignee,candidate))return json({error:'مسئول باید فعال باشد و دسترسی این پرونده را داشته باشد'},400);
   const id=crypto.randomUUID(),now=new Date().toISOString(),ticketFlag=f.isTicket&&direction!=='visit'&&channel!=='phone'?1:0;
   await db().batch([db().prepare('INSERT INTO ops_items (id,source_key,category,subtype,title,source_body,client_name,phone,email,reference,call_date,source_type,assignee,due,payment_state,manager_only,created_by,created_at,updated_at,direction,channel,visit_purpose,request_type,client_kind,organization,representative,intake_state,intake_notes,is_ticket,ticket_kind) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)').bind(id,'native:'+id,c!.id,b.subtype,b.title.trim(),item.sourceBody,String(b.clientName||'').slice(0,160),String(b.phone||'').slice(0,80),String(b.email||'').slice(0,200),String(b.reference||'').slice(0,160),String(b.callDate||'').slice(0,80),sourceType,assignee,b.due||'',c!.id==='billing'?'pending':'unknown',candidate.managerOnly?1:0,u.email,now,now,direction,channel,visitPurpose,f.requestType,f.clientKind,f.organization,f.representative,f.intakeState,f.intakeNotes,ticketFlag,f.ticketKind),await eventStmt(id,u.email,'ops-create','ثبت '+(direction==='visit'?'مراجعه حضوری':sourceType==='incoming'?'تماس':ticketFlag||channel!=='manual'?'تیکت پیام':'درخواست عملیاتی'))]);
@@ -35,8 +36,9 @@ export async function POST(req:Request){
   const f=intakeFields(b,raw);if(!validIntake(f)||!validDue(b.due??raw.due))return json({error:'اطلاعات پذیرش یا موعد معتبر نیست'},400);
   if(!opsStatuses[b.status]||!['normal','high','urgent'].includes(b.priority)||String(b.resolution||'').length>12000)return json({error:'وضعیت یا گزارش معتبر نیست'},400);
   if(b.status==='closed'&&!String(b.resolution||'').trim())return json({error:'برای بستن، نتیجه پیگیری را بنویسید'},400);
-  if(!u.manager&&b.paymentState!==raw.payment_state&&(b.paymentState==='verified'||raw.payment_state==='verified'))return json({error:'تأیید بانکی فقط توسط مدیریت انجام می‌شود'},403);
-  const paymentState=['unknown','pending','reported','verified'].includes(b.paymentState)?b.paymentState:raw.payment_state;
+  const financial=(await operationPayments([raw.id])).get(raw.id);
+  if(b.paymentState==='verified'&&!(financial?.paid_rial>0))return json({error:'وصول فقط از تراکنش تأییدشده دفتر مالی قابل اثبات است.'},409);
+  const paymentState=['unknown','pending','reported'].includes(b.paymentState)?b.paymentState:raw.payment_state==='reported'?'reported':raw.category==='billing'?'pending':'unknown';
   const assignee=String(b.assignee??raw.assignee??'');if(!mayAssignWork(u,assignee,raw.assignee))return json({error:SELF_ASSIGNMENT_ERROR},403);
   if(!u.manager&&!assignee)return json({error:'برای ارجاع، مسئول فعال انتخاب کنید'},400);
   if(!await validOpsAssignee(assignee,raw))return json({error:'گیرنده باید فعال باشد و دسترسی این پرونده را داشته باشد'},400);
