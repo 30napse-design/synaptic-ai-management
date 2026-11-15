@@ -1,3 +1,4 @@
+import {organizationReady} from '../../../lib/org-access';
 import {readWorkflow,writeWorkflow} from '../../../lib/workflow-core';
 import {workflowActions,workflowViews,WorkflowError} from '../../../lib/workflow-policy';
 import {mayAssignWork,SELF_ASSIGNMENT_ERROR} from '../../../lib/work-assignment-policy';
@@ -7,7 +8,7 @@ import {readOperationsData} from '../../../lib/operations-data';
 import {db,identity,json,mutationAllowed,eventStmt} from '../../../lib/staff-server';
 import {hasDataAccess} from '../../../lib/auth-policy';
 import {operationPayments} from '../../../lib/finance-data';
-import {canSeeOps,canUseOps,canUseOpsCategory,categoryFor,privateSubtypes,sensitive,opsStatuses,validateOpsInput} from '../../../lib/ops-policy';
+import {canSeeOps,canUseOps,canUseOpsCategory,requestedAccessScope,categoryFor,privateSubtypes,sensitive,opsStatuses,validateOpsInput} from '../../../lib/ops-policy';
 import {intakeFields,validIntake,validDue} from '../../../lib/intake-policy';
 import {validOpsAssignee} from '../../../lib/intake-server';
 export const dynamic='force-dynamic';
@@ -23,11 +24,11 @@ export async function POST(req:Request){
   const sourceType=channel==='phone'?'incoming':'manual',item={...b,category:c?.id,sourceType,sourceBody:String(b.sourceBody||'')};
   const f=intakeFields(b);if(!validIntake(f)||!validDue(b.due||''))return json({error:'نوع درخواست، اطلاعات پذیرش یا موعد معتبر نیست'},400);
   if(!validateOpsInput(item))return json({error:'عنوان، موضوع و شرح معتبر وارد کنید'},400);
-  const candidate={...item,managerOnly:c?.id==='internal'||privateSubtypes.includes(b.subtype)||sensitive(b.title+' '+item.sourceBody)};
+  const orgReady=await organizationReady();const candidate:any={...item,access_scope:orgReady?requestedAccessScope(u,item,b.accessScope):'',managerOnly:c?.id==='internal'||privateSubtypes.includes(b.subtype)||sensitive(b.title+' '+item.sourceBody)};
   if(!canUseOpsCategory(u,candidate)||sourceType==='incoming'&&!hasDataAccess(u,'calls'))return json({error:'اجازه ثبت در این بخش ندارید'},403);
   const assignee=String(b.assignee??'');if(!mayAssignWork(u,assignee))return json({error:SELF_ASSIGNMENT_ERROR},403);if(!await validOpsAssignee(assignee,candidate))return json({error:'مسئول باید فعال باشد و دسترسی این پرونده را داشته باشد'},400);
   const id=crypto.randomUUID(),now=new Date().toISOString(),ticketFlag=f.isTicket&&direction!=='visit'&&channel!=='phone'?1:0;
-  await db().batch([db().prepare('INSERT INTO ops_items (id,source_key,category,subtype,title,source_body,client_name,phone,email,reference,call_date,source_type,assignee,due,payment_state,manager_only,created_by,created_at,updated_at,direction,channel,visit_purpose,request_type,client_kind,organization,representative,intake_state,intake_notes,is_ticket,ticket_kind) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)').bind(id,'native:'+id,c!.id,b.subtype,b.title.trim(),item.sourceBody,String(b.clientName||'').slice(0,160),String(b.phone||'').slice(0,80),String(b.email||'').slice(0,200),String(b.reference||'').slice(0,160),String(b.callDate||'').slice(0,80),sourceType,assignee,b.due||'',c!.id==='billing'?'pending':'unknown',candidate.managerOnly?1:0,u.email,now,now,direction,channel,visitPurpose,f.requestType,f.clientKind,f.organization,f.representative,f.intakeState,f.intakeNotes,ticketFlag,f.ticketKind),await eventStmt(id,u.email,'ops-create','ثبت '+(direction==='visit'?'مراجعه حضوری':sourceType==='incoming'?'تماس':ticketFlag||channel!=='manual'?'تیکت پیام':'درخواست عملیاتی'))]);
+  await db().batch([db().prepare('INSERT INTO ops_items ('+(orgReady?'access_scope,':'')+'id,source_key,category,subtype,title,source_body,client_name,phone,email,reference,call_date,source_type,assignee,due,payment_state,manager_only,created_by,created_at,updated_at,direction,channel,visit_purpose,request_type,client_kind,organization,representative,intake_state,intake_notes,is_ticket,ticket_kind) VALUES ('+(orgReady?'?,':'')+'?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)').bind(...(orgReady?[candidate.access_scope]:[]),id,'native:'+id,c!.id,b.subtype,b.title.trim(),item.sourceBody,String(b.clientName||'').slice(0,160),String(b.phone||'').slice(0,80),String(b.email||'').slice(0,200),String(b.reference||'').slice(0,160),String(b.callDate||'').slice(0,80),sourceType,assignee,b.due||'',c!.id==='billing'?'pending':'unknown',candidate.managerOnly?1:0,u.email,now,now,direction,channel,visitPurpose,f.requestType,f.clientKind,f.organization,f.representative,f.intakeState,f.intakeNotes,ticketFlag,f.ticketKind),await eventStmt(id,u.email,'ops-create','ثبت '+(direction==='visit'?'مراجعه حضوری':sourceType==='incoming'?'تماس':ticketFlag||channel!=='manual'?'تیکت پیام':'درخواست عملیاتی'))]);
   return json({ok:true,id});
  }
  const raw=await db().prepare('SELECT * FROM ops_items WHERE id=?').bind(String(b.id||'')).first<any>();

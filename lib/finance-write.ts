@@ -3,7 +3,7 @@ import {canSeeOps} from './ops-policy';
 import {mayAssignWork,SELF_ASSIGNMENT_ERROR} from './work-assignment-policy';
 import {canDeleteData,deletionAction} from './deletion-policy';
 import {db} from './staff-server';
-import {canFinance,canApproveFinance,documentKinds,calculateDocument,needsScientificReview,balanced,integer,str,day,link,currencyRial,defaults} from './finance-policy';
+import {canFinance,canQuote,quoteOnly,canApproveFinance,documentKinds,calculateDocument,needsScientificReview,balanced,integer,str,day,link,currencyRial,defaults} from './finance-policy';
 import {writeLabWorkspace} from './lab-execution-write';
 import {canCoordinate} from './lab-execution-policy';
 export class FinanceError extends Error{status:number;constructor(message:string,status=400){super(message);this.status=status}}
@@ -16,7 +16,7 @@ async function settings(){return {...defaults,...Object.fromEntries((await db().
 function payload(raw:any){const p={client:raw.client,contact:String(raw.contact||'').slice(0,240),reference:String(raw.reference||'').slice(0,180),project_id:String(raw.project_id||'').slice(0,120),lines:raw.lines?.map((l:any)=>({id:l.id,description:l.description,area:l.area||'',unit:l.unit||'خدمت',quantity:l.quantity,repeats:l.repeats,unit_price:l.unit_price,cost_total:l.cost_total||0,rate_source:String(l.rate_source||'').slice(0,240)})),discount:raw.discount||0,tax_bps:raw.tax_bps||0,execution_min:raw.execution_min||0,due:raw.due||'',installments:raw.installments||[],payment_terms:String(raw.payment_terms||'').slice(0,12000),scope:String(raw.scope||'').slice(0,12000),terms:String(raw.terms||'').slice(0,16000),source_url:raw.source_url||'',note:String(raw.note||'').slice(0,12000),amendment_reason:String(raw.amendment_reason||'').slice(0,2000)};must(day(p.due)&&link(p.source_url),'موعد و لینک سند معتبر وارد شود.');calculateDocument(p);return p}
 async function netPaid(docId:string){const r:any=await db().prepare("SELECT COALESCE(SUM(CASE kind WHEN 'receipt' THEN amount_rial WHEN 'refund' THEN -amount_rial ELSE 0 END),0) n FROM finance_transactions WHERE document_id=? AND status='verified'").bind(docId).first();return r.n}
 async function syncPayable(payableId:string){if(!payableId)return;const p=await db().prepare('SELECT * FROM finance_payables WHERE id=?').bind(payableId).first<any>();if(!p?.lab_record_id)return;const r=await db().prepare("SELECT * FROM laboratory_records WHERE id=? AND kind='statement'").bind(p.lab_record_id).first<any>();if(!r)return;const total:any=await db().prepare("SELECT COALESCE(SUM(amount_rial),0) n FROM finance_transactions WHERE payable_id=? AND kind='payment' AND status='verified'").bind(p.id).first();const v=JSON.parse(r.payload);if(total.n>=p.total_rial){v.status='settled';v.finance_payable_id=p.id;v.settled_at=now()}else if(v.finance_payable_id===p.id){v.status='approved';delete v.settled_at}await db().prepare('UPDATE laboratory_records SET payload=?,revision=revision+1,updated_at=? WHERE id=? AND revision=?').bind(JSON.stringify(v),now(),r.id,r.revision).run()}
-export async function writeFinance(u:any,b:any,origin:string){if(deletionAction(b.action)&&!canDeleteData(u))throw new FinanceError('حذف فقط برای مالک اصلی سامانه مجاز است.',403);must(canFinance(u),'دسترسی مالی ندارید.',403);const ts=now(),approve=canApproveFinance(u);
+export async function writeFinance(u:any,b:any,origin:string){if(deletionAction(b.action)&&!canDeleteData(u))throw new FinanceError('حذف فقط برای مالک اصلی سامانه مجاز است.',403);must(canQuote(u),'دسترسی مالی ندارید.',403);if(quoteOnly(u))await guardScientificQuote(b);const ts=now(),approve=canApproveFinance(u);
 if(b.action==='document_save'){
  const old=b.id?await doc(String(b.id)):null;must(Object.hasOwn(documentKinds,b.kind)&&(!old||old.kind===b.kind),'نوع سند معتبر نیست.');must(!old||old.status!=='issued','فاکتور صادرشده قابل بازنویسی نیست؛ اصلاح با ابطال مستند و سند جدید انجام شود.');if(b.source_id){const source=await doc(String(b.source_id));must(source.kind==='quote'&&source.status==='accepted'&&source.accepted_version===source.version,'مرجع باید پیش‌فاکتور تأییدشده باشد.');must(source.payload.client===b.payload?.client,'مشتری سند با مرجع یکسان نیست.')}const p:any=payload(b.payload);if(old?.accepted_version)must(str(p.amendment_reason,2000,true),'دلیل اصلاحیه سند تأییدشده را بنویسید.');p.scientific_review_required=!!old?.payload.scientific_review_required||needsScientificReview(old?.payload,p);const version=old?old.version+1:1,docId=old?.id||id(),number=String(old?.number||b.number||({quote:'PF',invoice:'INV',contract:'CTR'}[b.kind as 'quote'])+'-'+ts.slice(0,10).replaceAll('-','')+'-'+docId.slice(0,6).toUpperCase()).slice(0,120);
  const first=old?db().prepare("UPDATE finance_documents SET payload=?,version=?,status='draft',revision=revision+1,updated_at=? WHERE id=? AND revision=?").bind(JSON.stringify(p),version,ts,docId,Number(b.revision)):db().prepare('INSERT INTO finance_documents(id,number,kind,payload,source_id,created_by,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?)').bind(docId,number,b.kind,JSON.stringify(p),String(b.source_id||''),u.email,ts,ts);
@@ -78,3 +78,14 @@ if(b.action==='create_lab_order'){
 }
 
 throw new FinanceError('عملیات معتبر نیست.');}
+
+async function guardScientificQuote(b:any){
+ must(['document_save','document_status'].includes(b.action),'این نقش فقط پیش‌نویس تخصصی پیش‌فاکتور را آماده می‌کند.',403);
+ const old=b.id?await doc(String(b.id)):null;must(!old||old.kind==='quote','دسترسی فقط به پیش‌فاکتور است.',403);
+ if(b.action==='document_status'){must(['review','draft'].includes(b.status)&&['draft','review'].includes(old.status),'تأیید، ارسال و صدور با مالی است.',403);return}
+ must(old?.status!=='cancelled'&&b.kind==='quote'&&!b.source_id,'فقط پیش‌نویس پیش‌فاکتور مجاز است.',403);const p=b.payload||{};
+ for(const key of ['discount','tax_bps','execution_min'])must(Number(p[key]||0)===Number(old?.payload[key]||0),'تغییر قواعد و شرایط مالی با واحد مالی است.',403);
+ for(const key of ['installments','payment_terms','terms']){const empty=key==='installments'?[]:'';must(JSON.stringify(p[key]??empty)===JSON.stringify(old?.payload[key]??empty),'تغییر شرایط مالی با واحد مالی است.',403)}
+ must(!p.note,'یادداشت مالی از این نقش قابل ویرایش نیست.',403);for(const l of p.lines||[])must(!l.cost_total,'هزینه داخلی توسط مالی تعیین می‌شود.',403);
+ b.payload={...p,note:old?.payload.note||'',lines:p.lines?.map((l:any)=>({...l,cost_total:old?.payload.lines.find((x:any)=>x.id===l.id)?.cost_total||0}))};
+}

@@ -1,0 +1,85 @@
+ALTER TABLE `staff_accounts` ADD `org_proposed_roles` text DEFAULT '[]' NOT NULL;--> statement-breakpoint
+ALTER TABLE `staff_accounts` ADD `org_roles` text DEFAULT '[]' NOT NULL;--> statement-breakpoint
+ALTER TABLE `staff_accounts` ADD `org_mode` text DEFAULT 'legacy' NOT NULL;--> statement-breakpoint
+ALTER TABLE `staff_accounts` ADD `scientific_qualified` integer DEFAULT 0 NOT NULL;--> statement-breakpoint
+ALTER TABLE `staff_accounts` ADD `org_revision` integer DEFAULT 0 NOT NULL;--> statement-breakpoint
+ALTER TABLE `ops_items` ADD `access_scope` text DEFAULT '' NOT NULL;--> statement-breakpoint
+ALTER TABLE `workflow_positions` ADD `role_definition` text DEFAULT '{}' NOT NULL;
+
+--> statement-breakpoint
+INSERT INTO workflow_positions(id,code,title,permission,created_by,created_at,updated_at,role_definition) VALUES('customer_manager','customer_manager','پذیرش و خدمات مشتریان','customer_ops','migration-0019','2026-11-15T00:00:00Z','2026-11-15T00:00:00Z','{"role_key":"customer_manager","title_en":"Customer Manager","title_fa":"پذیرش و خدمات مشتریان","permissions":["people","operations","calls","customer_ops","sample_intake","projects","mail"],"duties":["ثبت درخواست و ارتباط با محققان","پذیرش، ثبت دریافت و پیگیری نمونه‌ها","پیگیری سفارش و تحویل اداری نتایج","پشتیبانی مشتریان"],"authority":["ثبت و پیگیری امور مشتریان و دریافت واقعی نمونه","کارتابل شخصی، برد وظایف و پرونده‌های ارجاعی"],"requires_approval":["تأیید پرداخت، تصمیم علمی و ارسال نتیجه نهایی فقط از مسیر مسئول مجاز"],"reports_to":"management"}');
+
+--> statement-breakpoint
+INSERT INTO staff_events(id,record_id,actor,action,body,created_at) VALUES('org-definition-seed-customer_manager','customer_manager','migration-0019','workflow.v2.position.changed','{"schema_version":1,"aggregate_type":"position","aggregate_id":"customer_manager","aggregate_revision":0,"change":{"after":{"definition":{"role_key":"customer_manager","title_en":"Customer Manager","title_fa":"پذیرش و خدمات مشتریان","permissions":["people","operations","calls","customer_ops","sample_intake","projects","mail"],"duties":["ثبت درخواست و ارتباط با محققان","پذیرش، ثبت دریافت و پیگیری نمونه‌ها","پیگیری سفارش و تحویل اداری نتایج","پشتیبانی مشتریان"],"authority":["ثبت و پیگیری امور مشتریان و دریافت واقعی نمونه","کارتابل شخصی، برد وظایف و پرونده‌های ارجاعی"],"requires_approval":["تأیید پرداخت، تصمیم علمی و ارسال نتیجه نهایی فقط از مسیر مسئول مجاز"],"reports_to":"management"}},"source":"approved-organizational-structure"}}','2026-11-15T00:00:00Z');
+
+--> statement-breakpoint
+INSERT INTO workflow_positions(id,code,title,permission,created_by,created_at,updated_at,role_definition) VALUES('scientific_manager','scientific_manager','طراحی علمی و پیش‌فاکتور','quote_ops','migration-0019','2026-11-15T00:00:00Z','2026-11-15T00:00:00Z','{"role_key":"scientific_manager","title_en":"Scientific Manager","title_fa":"طراحی علمی و پیش‌فاکتور","permissions":["people","results_ops","quote_ops","projects","tariffs","mail"],"duties":["بررسی درخواست و طراحی مطالعه","انتخاب تکنیک و خدمات تخصصی","تنظیم و اصلاح تخصصی پیش‌فاکتور","بررسی نیاز علمی پیش از اجرا"],"authority":["طراحی و مستندسازی علمی پرونده مجاز","تهیه پیش‌نویس تخصصی پیش‌فاکتور با موتور مالی موجود"],"requires_approval":["تأیید تجاری، وصول وجه و صدور فاکتور با مالی است","تأیید نهایی علمی از این نقش به‌تنهایی حاصل نمی‌شود"],"reports_to":"management"}');
+
+--> statement-breakpoint
+INSERT INTO staff_events(id,record_id,actor,action,body,created_at) VALUES('org-definition-seed-scientific_manager','scientific_manager','migration-0019','workflow.v2.position.changed','{"schema_version":1,"aggregate_type":"position","aggregate_id":"scientific_manager","aggregate_revision":0,"change":{"after":{"definition":{"role_key":"scientific_manager","title_en":"Scientific Manager","title_fa":"طراحی علمی و پیش‌فاکتور","permissions":["people","results_ops","quote_ops","projects","tariffs","mail"],"duties":["بررسی درخواست و طراحی مطالعه","انتخاب تکنیک و خدمات تخصصی","تنظیم و اصلاح تخصصی پیش‌فاکتور","بررسی نیاز علمی پیش از اجرا"],"authority":["طراحی و مستندسازی علمی پرونده مجاز","تهیه پیش‌نویس تخصصی پیش‌فاکتور با موتور مالی موجود"],"requires_approval":["تأیید تجاری، وصول وجه و صدور فاکتور با مالی است","تأیید نهایی علمی از این نقش به‌تنهایی حاصل نمی‌شود"],"reports_to":"management"}},"source":"approved-organizational-structure"}}','2026-11-15T00:00:00Z');
+
+--> statement-breakpoint
+INSERT INTO workflow_positions(id,code,title,permission,created_by,created_at,updated_at,role_definition) VALUES('finance_manager','finance_manager','مالی و قراردادها','finance_ops','migration-0019','2026-11-15T00:00:00Z','2026-11-15T00:00:00Z','{"role_key":"finance_manager","title_en":"Finance Manager","title_fa":"مالی و قراردادها","permissions":["people","finance_ops","finance_approve","billing_ops","petty_cash","mail"],"duties":["صدور و اصلاح اسناد مالی و قراردادها","ثبت دریافت و پرداخت و تطبیق بانکی","کنترل تسویه و شرایط مالی اجرا","کنترل مالی تنخواه و هزینه‌ها"],"authority":["دسترسی به دفتر مالی، تطبیق و تأیید وصول مستند","بررسی و تأیید مالی هزینه‌های ارجاعی"],"requires_approval":["تغییر تعرفه و سیاست کلان یا استثنا خارج از سقف مصوب با مدیریت کل است","این نقش مجوز تأیید علمی یا مدیریت حساب‌ها ندارد"],"reports_to":"management"}');
+
+--> statement-breakpoint
+INSERT INTO staff_events(id,record_id,actor,action,body,created_at) VALUES('org-definition-seed-finance_manager','finance_manager','migration-0019','workflow.v2.position.changed','{"schema_version":1,"aggregate_type":"position","aggregate_id":"finance_manager","aggregate_revision":0,"change":{"after":{"definition":{"role_key":"finance_manager","title_en":"Finance Manager","title_fa":"مالی و قراردادها","permissions":["people","finance_ops","finance_approve","billing_ops","petty_cash","mail"],"duties":["صدور و اصلاح اسناد مالی و قراردادها","ثبت دریافت و پرداخت و تطبیق بانکی","کنترل تسویه و شرایط مالی اجرا","کنترل مالی تنخواه و هزینه‌ها"],"authority":["دسترسی به دفتر مالی، تطبیق و تأیید وصول مستند","بررسی و تأیید مالی هزینه‌های ارجاعی"],"requires_approval":["تغییر تعرفه و سیاست کلان یا استثنا خارج از سقف مصوب با مدیریت کل است","این نقش مجوز تأیید علمی یا مدیریت حساب‌ها ندارد"],"reports_to":"management"}},"source":"approved-organizational-structure"}}','2026-11-15T00:00:00Z');
+
+--> statement-breakpoint
+INSERT INTO workflow_positions(id,code,title,permission,created_by,created_at,updated_at,role_definition) VALUES('research_manager','research_manager','مدیر پژوهش','research_supervision','migration-0019','2026-11-15T00:00:00Z','2026-11-15T00:00:00Z','{"role_key":"research_manager","title_en":"Research Manager","title_fa":"مدیر پژوهش","permissions":["people","results_ops","projects","research_supervision","mail"],"duties":["راهبری و نظارت علمی بر اجرا","نظارت بر واحدهای آزمایشگاهی","بررسی گزارش کارشناسان","کنترل کیفیت و تصمیم اصلاحات علمی","تأیید نهایی فقط توسط مسئول معرفی‌شده واجد صلاحیت"],"authority":["مشاهده و نظارت پژوهشی و بررسی گزارش‌های مجاز","ارجاع تصمیم علمی به بازبین پرونده"],"requires_approval":["مجوز تأیید نهایی نیازمند احراز صلاحیت و تأیید جداگانه مدیریت است","مالی و مدیریت حساب‌ها از این نقش حاصل نمی‌شوند"],"reports_to":"management"}');
+
+--> statement-breakpoint
+INSERT INTO staff_events(id,record_id,actor,action,body,created_at) VALUES('org-definition-seed-research_manager','research_manager','migration-0019','workflow.v2.position.changed','{"schema_version":1,"aggregate_type":"position","aggregate_id":"research_manager","aggregate_revision":0,"change":{"after":{"definition":{"role_key":"research_manager","title_en":"Research Manager","title_fa":"مدیر پژوهش","permissions":["people","results_ops","projects","research_supervision","mail"],"duties":["راهبری و نظارت علمی بر اجرا","نظارت بر واحدهای آزمایشگاهی","بررسی گزارش کارشناسان","کنترل کیفیت و تصمیم اصلاحات علمی","تأیید نهایی فقط توسط مسئول معرفی‌شده واجد صلاحیت"],"authority":["مشاهده و نظارت پژوهشی و بررسی گزارش‌های مجاز","ارجاع تصمیم علمی به بازبین پرونده"],"requires_approval":["مجوز تأیید نهایی نیازمند احراز صلاحیت و تأیید جداگانه مدیریت است","مالی و مدیریت حساب‌ها از این نقش حاصل نمی‌شوند"],"reports_to":"management"}},"source":"approved-organizational-structure"}}','2026-11-15T00:00:00Z');
+
+--> statement-breakpoint
+INSERT INTO workflow_positions(id,code,title,permission,created_by,created_at,updated_at,role_definition) VALUES('administration_manager','administration_manager','مدیریت اداری','administration_ops','migration-0019','2026-11-15T00:00:00Z','2026-11-15T00:00:00Z','{"role_key":"administration_manager","title_en":"Administration Manager","title_fa":"مدیریت اداری","permissions":["people","mail","petty_cash","resources","administration_ops"],"duties":["مکاتبات وزارتخانه‌ها، پارک علم و فناوری و بیمه","جذب و پیگیری پرونده کارکنان در مکاتبات و کارهای مجاز","خرید اداری، تنخواه و پشتیبانی اجرایی","ثبت و پیگیری دستورات ارجاع‌شده مدیریت","برنامه جلسات، کارتابل و برد وظایف"],"authority":["امور اداری مشخصاً ارجاع‌شده و مدارک مجاز","ثبت هزینه و ارسال برای بررسی مالی"],"requires_approval":["تأیید مالی هزینه، استخدام نهایی و تغییر حساب یا مجوز کارکنان با مسئول مجاز است","این نقش مدیریت کل سامانه نیست"],"reports_to":"management"}');
+
+--> statement-breakpoint
+INSERT INTO staff_events(id,record_id,actor,action,body,created_at) VALUES('org-definition-seed-administration_manager','administration_manager','migration-0019','workflow.v2.position.changed','{"schema_version":1,"aggregate_type":"position","aggregate_id":"administration_manager","aggregate_revision":0,"change":{"after":{"definition":{"role_key":"administration_manager","title_en":"Administration Manager","title_fa":"مدیریت اداری","permissions":["people","mail","petty_cash","resources","administration_ops"],"duties":["مکاتبات وزارتخانه‌ها، پارک علم و فناوری و بیمه","جذب و پیگیری پرونده کارکنان در مکاتبات و کارهای مجاز","خرید اداری، تنخواه و پشتیبانی اجرایی","ثبت و پیگیری دستورات ارجاع‌شده مدیریت","برنامه جلسات، کارتابل و برد وظایف"],"authority":["امور اداری مشخصاً ارجاع‌شده و مدارک مجاز","ثبت هزینه و ارسال برای بررسی مالی"],"requires_approval":["تأیید مالی هزینه، استخدام نهایی و تغییر حساب یا مجوز کارکنان با مسئول مجاز است","این نقش مدیریت کل سامانه نیست"],"reports_to":"management"}},"source":"approved-organizational-structure"}}','2026-11-15T00:00:00Z');
+
+--> statement-breakpoint
+INSERT INTO workflow_positions(id,code,title,permission,created_by,created_at,updated_at,role_definition) VALUES('it_security_manager','it_security_manager','فناوری اطلاعات و امنیت','security_ops','migration-0019','2026-11-15T00:00:00Z','2026-11-15T00:00:00Z','{"role_key":"it_security_manager","title_en":"IT & Security Manager","title_fa":"فناوری اطلاعات و امنیت","permissions":["people","mail","resources","development","security_ops"],"duties":["پیگیری رایانه، شبکه و سرورها","پشتیبانی فنی کارکنان","پیگیری فنی درخواست دسترسی و امنیت اطلاعات","پیگیری پشتیبان‌گیری و خطاهای سامانه"],"authority":["کارتابل و درخواست‌های فنی و امنیتی مجاز","مستندسازی و پیشنهاد اصلاح دسترسی"],"requires_approval":["اعطای مجوز، بازنشانی حساب دیگران و دسترسی به Secrets نیازمند تأیید مدیریت است","این نقش دسترسی خودکار مالی، علمی یا اجرای زیرساخت ایجاد نمی‌کند"],"reports_to":"management"}');
+
+--> statement-breakpoint
+INSERT INTO staff_events(id,record_id,actor,action,body,created_at) VALUES('org-definition-seed-it_security_manager','it_security_manager','migration-0019','workflow.v2.position.changed','{"schema_version":1,"aggregate_type":"position","aggregate_id":"it_security_manager","aggregate_revision":0,"change":{"after":{"definition":{"role_key":"it_security_manager","title_en":"IT & Security Manager","title_fa":"فناوری اطلاعات و امنیت","permissions":["people","mail","resources","development","security_ops"],"duties":["پیگیری رایانه، شبکه و سرورها","پشتیبانی فنی کارکنان","پیگیری فنی درخواست دسترسی و امنیت اطلاعات","پیگیری پشتیبان‌گیری و خطاهای سامانه"],"authority":["کارتابل و درخواست‌های فنی و امنیتی مجاز","مستندسازی و پیشنهاد اصلاح دسترسی"],"requires_approval":["اعطای مجوز، بازنشانی حساب دیگران و دسترسی به Secrets نیازمند تأیید مدیریت است","این نقش دسترسی خودکار مالی، علمی یا اجرای زیرساخت ایجاد نمی‌کند"],"reports_to":"management"}},"source":"approved-organizational-structure"}}','2026-11-15T00:00:00Z');
+
+--> statement-breakpoint
+INSERT INTO workflow_positions(id,code,title,permission,created_by,created_at,updated_at,role_definition) VALUES('research_specialist','research_specialist','کارشناس پژوهش','lab_operations','migration-0019','2026-11-15T00:00:00Z','2026-11-15T00:00:00Z','{"role_key":"research_specialist","title_en":"Research Specialist","title_fa":"کارشناس پژوهش","permissions":["people","projects","lab","lab_operations","results_ops","mail"],"duties":["هماهنگی خدمات و زمان‌بندی آزمایشگاه‌ها","جمع‌آوری نتایج و مستندات","بررسی اولیه، مرتب‌سازی و جمع‌بندی","تهیه گزارش برای مدیر پژوهش","پیگیری اصلاحات اعلام‌شده مدیر پژوهش"],"authority":["هماهنگی اجرا با مجوز مالی معتبر","تهیه داده و گزارش و ثبت پیگیری"],"requires_approval":["تأیید نهایی علمی، تأیید پروتکل و وصول وجه مجاز نیست"],"reports_to":"research_manager"}');
+
+--> statement-breakpoint
+INSERT INTO staff_events(id,record_id,actor,action,body,created_at) VALUES('org-definition-seed-research_specialist','research_specialist','migration-0019','workflow.v2.position.changed','{"schema_version":1,"aggregate_type":"position","aggregate_id":"research_specialist","aggregate_revision":0,"change":{"after":{"definition":{"role_key":"research_specialist","title_en":"Research Specialist","title_fa":"کارشناس پژوهش","permissions":["people","projects","lab","lab_operations","results_ops","mail"],"duties":["هماهنگی خدمات و زمان‌بندی آزمایشگاه‌ها","جمع‌آوری نتایج و مستندات","بررسی اولیه، مرتب‌سازی و جمع‌بندی","تهیه گزارش برای مدیر پژوهش","پیگیری اصلاحات اعلام‌شده مدیر پژوهش"],"authority":["هماهنگی اجرا با مجوز مالی معتبر","تهیه داده و گزارش و ثبت پیگیری"],"requires_approval":["تأیید نهایی علمی، تأیید پروتکل و وصول وجه مجاز نیست"],"reports_to":"research_manager"}},"source":"approved-organizational-structure"}}','2026-11-15T00:00:00Z');
+
+--> statement-breakpoint
+UPDATE workflow_positions SET role_definition='{"canonical_role": "customer_manager", "mapping_state": "proposed"}' WHERE code='intake';
+
+--> statement-breakpoint
+UPDATE workflow_positions SET role_definition='{"canonical_role": "customer_manager", "mapping_state": "proposed"}' WHERE code='customer_support';
+
+--> statement-breakpoint
+UPDATE workflow_positions SET role_definition='{"canonical_role": "scientific_manager", "mapping_state": "proposed"}' WHERE code='scientific_design';
+
+--> statement-breakpoint
+UPDATE workflow_positions SET role_definition='{"canonical_role": "scientific_manager", "mapping_state": "proposed"}' WHERE code='quotation';
+
+--> statement-breakpoint
+UPDATE workflow_positions SET role_definition='{"canonical_role": "finance_manager", "mapping_state": "proposed"}' WHERE code='finance';
+
+--> statement-breakpoint
+UPDATE workflow_positions SET role_definition='{"canonical_role": "research_manager", "mapping_state": "proposed"}' WHERE code='technical_director';
+
+--> statement-breakpoint
+UPDATE workflow_positions SET role_definition='{"canonical_role": "research_specialist", "mapping_state": "proposed"}' WHERE code='execution_coordination';
+
+--> statement-breakpoint
+UPDATE workflow_positions SET role_definition='{"canonical_role": "research_manager", "mapping_state": "proposed"}' WHERE code='scientific_control';
+
+--> statement-breakpoint
+UPDATE workflow_positions SET role_definition='{"canonical_role": "customer_manager", "mapping_state": "proposed"}' WHERE code='result_delivery';
+
+--> statement-breakpoint
+CREATE TRIGGER organization_account_fields BEFORE UPDATE OF org_roles,org_proposed_roles,org_mode,scientific_qualified,permissions ON staff_accounts
+WHEN json_valid(NEW.org_roles)=0 OR json_valid(NEW.org_proposed_roles)=0 OR NEW.org_mode NOT IN ('legacy','managed') OR NEW.scientific_qualified NOT IN (0,1)
+BEGIN SELECT RAISE(ABORT,'invalid organizational profile'); END;
+--> statement-breakpoint
+CREATE TRIGGER organization_qualified_approval BEFORE UPDATE OF org_roles,org_mode,scientific_qualified,permissions ON staff_accounts
+WHEN NEW.org_mode='managed' AND EXISTS(SELECT 1 FROM json_each(NEW.permissions) WHERE value='science_approve') AND (NEW.scientific_qualified!=1 OR NOT EXISTS(SELECT 1 FROM json_each(NEW.org_roles) WHERE value='research_manager'))
+BEGIN SELECT RAISE(ABORT,'qualified research manager required for final approval'); END;

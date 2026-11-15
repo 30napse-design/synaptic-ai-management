@@ -1,4 +1,13 @@
 import assert from 'node:assert/strict';
+
+// Stage-one execution gate also applies to these older laboratory fixtures.
+async function authorizedFixture(lines,client){
+ const send=async b=>{const r=await req('/api/finance',b,'',true);assert.equal(r.status,200,JSON.stringify(r));return r.data};
+ const id=(await send({action:'document_save',kind:'invoice',payload:{client,lines,execution_min:0}})).id;
+ for(const status of ['review','approved','issued']){const d=(await send(null)).documents.find(d=>d.id===id);await send({action:'document_status',id,revision:d.revision,status})}
+ return id;
+}
+
 const base='https://synapse.test',manager={'oai-authenticated-user-id':'local-owner','oai-authenticated-user-email':'ekramiihamid@gmail.com'};
 async function req(path,payload,cookie='',owner=false){const r=await fetch(base+path,{method:payload?'POST':'GET',redirect:'manual',headers:{Origin:base,'Content-Type':'application/json',...(cookie?{Cookie:cookie}:{}),...(owner?manager:{})},...(payload?{body:JSON.stringify(payload)}:{})});const raw=await r.text();let data;try{data=JSON.parse(raw)}catch{data={html:raw}}return {status:r.status,data,cookie:r.headers.get('set-cookie')?.split(';')[0],headers:r.headers}}
 const call=(b,c='',owner=false)=>req('/api/laboratories',b,c,owner),load=(type,c='',owner=false)=>req('/api/laboratories?type='+type,null,c,owner);
@@ -9,14 +18,15 @@ async function labAccount(labId,username){const r=await call({action:'lab_accoun
 const ca=await labAccount(a,'lab_animal'),cb=await labAccount(b,'lab_molecular'),ce=await labAccount(ext,'lab_external_one'),ce2=await labAccount(ext2,'lab_external_two');
 assert.equal((await req('/api/auth/accounts',{action:'permissions',username:'lab_animal',permissions:['people','lab','lab_operations','billing_ops','results_ops','resources','tariffs']},'',true)).status,200);
 const jobBody={action:'job_save',laboratory_id:a,area:'مطالعات حیوانی',service:'آزمون رفتاری',quantity:5,due:'2026-11-20',instructions:'فقط همین بسته حیوانی اجرا شود',assignee:'ekramiihamid@gmail.com',scientific_contact:'',client:'CONFIDENTIAL-CUSTOMER',reference:'INV-SECRET-001',notes:'PRIVATE-INSTITUTE-NOTES'};
-const ja=await call(jobBody,'',true);assert.equal(ja.status,200,JSON.stringify(ja));const aid=ja.data.id;const jb=await call({...jobBody,laboratory_id:b,area:'مولکولی و پروتئینی',service:'qPCR'},'',true);assert.equal(jb.status,200);const bid=jb.data.id;
+const fixtureDoc=await authorizedFixture([{id:'legacy-animal',description:jobBody.service,area:jobBody.area,quantity:5,repeats:1,unit_price:100},{id:'legacy-molecular',description:'qPCR',area:'مولکولی و پروتئینی',quantity:5,repeats:1,unit_price:100}],jobBody.client);jobBody.document_id=fixtureDoc;jobBody.line_id='legacy-animal';
+const ja=await call(jobBody,'',true);assert.equal(ja.status,200,JSON.stringify(ja));const aid=ja.data.id;const jb=await call({...jobBody,line_id:'legacy-molecular',laboratory_id:b,area:'مولکولی و پروتئینی',service:'qPCR'},'',true);assert.equal(jb.status,200);const bid=jb.data.id;
 let owner=(await load('internal','',true)).data,own=owner.jobs.find(j=>j.id===aid);
-assert.equal((await req('/api/lab-operations',{...own,action:'update',price:987654321,paid:0,cost:5000000,vendor_paid:1000000},'',true)).status,200);
+assert.equal((await req('/api/lab-operations',{...own,action:'update',price:987654321,paid:0,cost:5000000,vendor_paid:1000000},'',true)).status,409);
 let da=(await load('internal',ca)).data;assert.equal(da.jobs.length,1);assert.equal(da.jobs[0].id,aid);assert.equal(da.laboratories.length,1);assert.equal(da.accounts.length,0);assert.equal(da.members.length,0);for(const secret of ['CONFIDENTIAL-CUSTOMER','INV-SECRET-001','PRIVATE-INSTITUTE-NOTES','DIRECTORY-PRIVATE-SECRET','987654321','5000000',bid])assert.ok(!JSON.stringify(da).includes(secret),secret+' leaked');
 for(const key of ['client','reference','notes','price','paid','cost','vendor_paid','created_by','assignee'])assert.ok(!(key in da.jobs[0]),key);
 assert.equal((await load('external',ca)).status,403);assert.equal((await call({...jobBody,job_id:aid},ca)).status,403);assert.equal((await call({action:'progress',job_id:bid,revision:0,status:'doing',progress:10},ca)).status,404);
 for(const path of ['/api/staff','/api/lab-operations','/api/auth/accounts','/api/manager-tools?section=tariffs'])assert.equal((await req(path,null,ca)).status,403,path);
-assert.equal((await req('/api/operations',null,ca)).status,200);
+assert.equal((await req('/api/operations',null,ca)).status,403);
 assert.equal((await req('/api/staff',{action:'create',kind:'task',title:'bad'},ca)).status,403);
 assert.equal((await req('/',null,ca)).status,307);assert.equal((await req('/staff',null,ca)).status,307);
 assert.equal((await call({action:'progress',job_id:aid,revision:da.jobs[0].revision,status:'doing',progress:10,progress_notes:'شروع'},ca)).status,400);
@@ -38,7 +48,7 @@ assert.equal((await call({action:'inquiry_create',laboratory_ids:[ext,ext2],area
 let qe=(await load('external',ce)).data.inquiries,qe2=(await load('external',ce2)).data.inquiries;assert.equal(qe.length,1);assert.equal(qe2.length,1);assert.notEqual(qe[0].id,qe2[0].id);assert.equal((await call({action:'inquiry_reply',id:qe2[0].id,revision:0,status:'quoted',amount:999,lead_days:1},ce)).status,404);
 assert.equal((await call({action:'inquiry_reply',id:qe[0].id,revision:0,status:'quoted',amount:10000000,lead_days:7,reply_notes:'پیشنهاد مجری یک'},ce)).status,200);assert.equal((await call({action:'inquiry_reply',id:qe2[0].id,revision:0,status:'quoted',amount:11000000,lead_days:5,reply_notes:'پیشنهاد مجری دو'},ce2)).status,200);
 assert.ok(!JSON.stringify((await load('external',ce)).data).includes('11000000'));assert.equal((await load('external','',true)).data.inquiries.length,2);
-owner=(await load('internal','',true)).data;own=owner.jobs.find(j=>j.id===aid);assert.equal((await call({...own,action:'job_save',instructions:'شرح اصلاح‌شده نسخه دوم',quantity:6},'',true)).status,200);
+owner=(await load('internal','',true)).data;own=owner.jobs.find(j=>j.id===aid);assert.equal((await call({...own,action:'job_save',instructions:'شرح اصلاح‌شده نسخه دوم',quantity:5},'',true)).status,200);
 job=(await load('internal',ca)).data.jobs[0];assert.equal(job.work_version,2);assert.equal(job.acceptance,'pending');assert.equal((await call({action:'job_accept',job_id:aid,revision:job.revision,work_version:1,acceptance:'accepted'},ca)).status,409);assert.equal((await load('internal',ca)).data.records.filter(r=>r.kind==='result').length,2);
 assert.equal((await call({action:'job_accept',job_id:aid,revision:job.revision,work_version:2,acceptance:'accepted'},ca)).status,200);
 owner=(await load('internal','',true)).data;own=owner.jobs.find(j=>j.id===aid);assert.equal((await call({...own,action:'job_save',laboratory_id:b},'',true)).status,200);assert.equal((await load('internal',ca)).data.jobs.length,0);assert.equal((await call({action:'message_create',job_id:aid,topic:'operations',body:'after revocation'},ca)).status,404);assert.equal((await fetch(base+'/api/laboratories/files?id='+file.id,{headers:{Cookie:ca}})).status,404);

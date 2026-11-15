@@ -1,7 +1,7 @@
 import {db} from './staff-server';
 import {canSeeOps} from './ops-policy';
-import {canFinance} from './finance-policy';
-import {canReadLabJob,canEnterLabs} from './lab-execution-policy';
+import {canFinance,canQuote} from './finance-policy';
+import {canReadLabJob,canEnterLabs,sampleIntakeOnly,canReadLabEvidence} from './lab-execution-policy';
 import {canReadScience} from './science-policy';
 import {visible} from './staff-policy';
 import {referenceKey,workflowMust,WorkflowReference} from './workflow-policy';
@@ -66,9 +66,10 @@ export async function workflowGraph(initial:WorkflowReference[]){
 export async function readableWorkflowNode(u:any,n:WorkflowNode,graph:Map<string,WorkflowNode>){
  if(!u||u.laboratory)return false;if(u.manager)return true;const r=n.row;
  if(n.type==='operation')return canSeeOps(u,r);
- if(['finance_document','finance_version','payment'].includes(n.type))return canFinance(u);
+ if(n.type==='payment')return canFinance(u);if(n.type==='finance_document')return canFinance(u)||r.kind==='quote'&&canQuote(u);if(n.type==='finance_version')return canFinance(u)||graph.get('finance_document:'+r.document_id)?.row.kind==='quote'&&canQuote(u);
  if(['project','task','correspondence'].includes(n.type))return visible({...r,...JSON.parse(r.details||'{}')},u);
  if(n.type==='lab_job')return canEnterLabs(u)&&canReadLabJob(u,r);
+ if(n.type==='lab_result'&&!canReadLabEvidence(u,graph.get('lab_job:'+r.job_id)?.row||{}))return false;
  if(n.type==='sample'||n.type==='lab_result'){const j=graph.get('lab_job:'+r.job_id)?.row;return !!j&&canEnterLabs(u)&&canReadLabJob(u,j)}
  if(n.type==='science_case')return canReadScience(u,r);
  if(n.type==='science_result'){const c=graph.get('science_case:'+r.case_id)?.row;return !!c&&canReadScience(u,c)}return false;

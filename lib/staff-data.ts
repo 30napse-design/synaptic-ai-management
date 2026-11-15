@@ -1,3 +1,4 @@
+import {myOrganizationalResponsibilities} from './organizational-data';
 import {db,row} from './staff-server';
 import {visible,OWNER} from './staff-policy';
 export async function readStaffData(u:any){
@@ -7,4 +8,4 @@ const records:any[]=[];let offset=0;for(;;){const page=await db().prepare('SELEC
 const mm=await db().prepare('SELECT email,name,role,active FROM staff_members ORDER BY name').all();
 const ee=await db().prepare('SELECT e.* FROM staff_events e JOIN staff_records r ON r.id=e.record_id'+(u.manager?'':' WHERE '+clause)+' ORDER BY e.created_at DESC,e.id').bind(...(u.manager?[]:args)).all();
 const authorized=records.filter((r:any)=>visible(r,u));const ids=new Set(authorized.map((r:any)=>r.id));const files=await db().prepare('SELECT id,record_id,file_name,size,created_by,created_at FROM staff_work_files').all();
-return {user:u,records:authorized,members:[{email:OWNER,name:'حمید اکرامی',role:'manager',active:1},...mm.results.filter((m:any)=>u.manager||m.active)],events:ee.results.filter((e:any)=>ids.has(e.record_id)),files:files.results.filter((f:any)=>ids.has(f.record_id))}}
+return {organization:await myOrganizationalResponsibilities(u),user:u,records:authorized,members:[{email:OWNER,name:'حمید اکرامی',role:'manager',active:1},...mm.results.filter((m:any)=>u.manager||m.active)],events:ee.results.filter((e:any)=>ids.has(e.record_id)),files:files.results.filter((f:any)=>ids.has(f.record_id))}}

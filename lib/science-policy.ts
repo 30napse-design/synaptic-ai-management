@@ -1,7 +1,7 @@
 import {hasAccess} from './auth-policy.ts';
 export const canScience=(u:any)=>!!u&&!u.laboratory&&(u.manager||hasAccess(u,'results_ops')||hasAccess(u,'science_approve'));
-export const canScienceApprove=(u:any)=>canScience(u)&&(u.manager||hasAccess(u,'science_approve'));
-export function canReadScience(u:any,c:any){const p=typeof c.payload==='string'?JSON.parse(c.payload):c.payload;return canScience(u)&&(u.manager||p.assignee===u.email||p.reviewer===u.email||p.collaborators?.includes(u.email))}
+export const canScienceApprove=(u:any)=>canScience(u)&&(u.manager||hasAccess(u,'science_approve')&&(u.orgMode!=='managed'||u.scientificQualified&&u.orgRoles?.includes('research_manager')));
+export function canReadScience(u:any,c:any){const p=typeof c.payload==='string'?JSON.parse(c.payload):c.payload;return canScience(u)&&(u.manager||hasAccess(u,'research_supervision')||p.assignee===u.email||p.reviewer===u.email||p.collaborators?.includes(u.email))}
 export function canEditScience(u:any,c:any){const p=typeof c.payload==='string'?JSON.parse(c.payload):c.payload;return canReadScience(u,c)&&(u.manager||p.assignee===u.email||p.collaborators?.includes(u.email))}
 export const scienceChecks:Record<string,string>={raw:'بررسی داده خام و کامل‌بودن فایل',images:'بررسی کیفیت تصاویر یا ثبت عدم کاربرد',repeats:'بررسی تعداد نمونه و تکرارها',protocol:'انطباق روش و اجرا با نسخه پروتکل'};
 export const scienceDecisions:Record<string,string>={accepted:'پذیرفته شد',rejected:'رد شد',correction:'نیازمند اصلاح'};

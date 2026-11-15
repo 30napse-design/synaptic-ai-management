@@ -1,3 +1,5 @@
+import {orgRoleKeys} from './org-role-catalog';
+import {accountOrganization,organizationReady} from './org-access';
 import {db} from './staff-server';
 import {OWNER} from './staff-policy';
 import {AVAILABLE_PERMISSIONS,DEFAULT_PERMISSIONS} from './auth-policy';
@@ -15,10 +17,10 @@ async function commit(statements:any[]){try{const result=await db().batch(statem
 export async function workflowMember(id:string){
  if(id===OWNER)return {email:OWNER,name:'مدیریت',manager:true,permissions:[],dataPermissions:[],laboratory:false,active:1};if(!id)return null;
  const m=await db().prepare('SELECT m.*,a.permissions,lm.laboratory_id,l.status laboratory_status FROM staff_members m LEFT JOIN staff_accounts a ON a.member_id=m.email LEFT JOIN laboratory_members lm ON lm.member_id=m.email LEFT JOIN laboratories l ON l.id=lm.laboratory_id WHERE m.email=? AND m.active=1').bind(id).first<any>();
- if(!m)return null;const permissions=m.permissions?JSON.parse(m.permissions):DEFAULT_PERMISSIONS;return {...m,permissions,dataPermissions:permissions,manager:permissions.includes('institute_admin'),laboratory:!!m.laboratory_id,laboratoryId:m.laboratory_id};
+ if(!m)return null;const permissions=m.permissions?JSON.parse(m.permissions):DEFAULT_PERMISSIONS;return {...m,...await accountOrganization(m.email),permissions,dataPermissions:permissions,manager:permissions.includes('institute_admin'),laboratory:!!m.laboratory_id,laboratoryId:m.laboratory_id};
 }
 async function validScope(type:any,id:any){must(['institute','laboratory'].includes(type)&&text(id,160),'محدوده مسئولیت معتبر نیست.');must(type!=='institute'||id==='','محدوده پژوهشکده شناسه واحد جدا ندارد.');if(type==='laboratory')must(!!id&&await row('laboratories',id),'آزمایشگاه محدوده پیدا نشد.');}
-function memberEligible(m:any,p:any,scopeType:string,scopeId:string){if(!m)return false;if(p.code==='lab_executor')return scopeType==='laboratory'&&m.laboratory&&m.laboratoryId===scopeId&&m.laboratory_status==='active'&&workflowMemberPermission(m,p.permission);return !m.laboratory&&workflowMemberPermission(m,p.permission)}
+function memberEligible(m:any,p:any,scopeType:string,scopeId:string){if(!m)return false;if(p.role_definition){const def=JSON.parse(p.role_definition);if(def.role_key&&!m.manager&&!m.orgRoles?.includes(def.role_key))return false;}if(p.code==='lab_executor')return scopeType==='laboratory'&&m.laboratory&&m.laboratoryId===scopeId&&m.laboratory_status==='active'&&workflowMemberPermission(m,p.permission);return !m.laboratory&&workflowMemberPermission(m,p.permission)&&(p.permission!=='science_approve'||m.manager||m.orgMode!=='managed'||m.scientificQualified&&m.orgRoles?.includes('research_manager'))}
 export async function resolveWorkflowOwner(positionId:string,scopeType='institute',scopeId=''){
  const p=await row('workflow_positions',positionId);if(!p?.active)return {owner:null,reason:'inactive_position',assignment_revision:null};
  const a=await db().prepare('SELECT * FROM workflow_position_assignments WHERE position_id=? AND scope_type=? AND scope_id=?').bind(positionId,scopeType,scopeId).first<any>();
@@ -44,7 +46,7 @@ export async function readWorkflow(u:any,p:URLSearchParams){await ready();must(u
  if(p.get('queue')==='management')manager(u);
  // Scan in bounded pages, then authorize before pagination. No hidden record counts or ids are returned.
  const limit=Math.min(50,Math.max(1,pageNumber(p,'limit',25))),items:any[]=[];let offset=pageNumber(p,'cursor',0);
- for(;;){const page=(await db().prepare('SELECT * FROM research_orders ORDER BY updated_at DESC,id LIMIT 100 OFFSET ?').bind(offset).all()).results as any[];if(!page.length)return {orders:items,next_cursor:null};for(let i=0;i<page.length;i++){const o=page[i];if(!await orderAccess(u,o))continue;const summary=await orderSummary(o);if(p.get('queue')==='management'&&!summary.needs_management_review)continue;if(p.get('researcher_id')&&o.researcher_id!==p.get('researcher_id'))continue;if(items.length===limit)return {orders:items,next_cursor:String(offset+i)};items.push(summary)}if(page.length<100)return {orders:items,next_cursor:null};offset+=100;}
+ for(;;){const page=(await db().prepare('SELECT * FROM research_orders ORDER BY updated_at DESC,id LIMIT 100 OFFSET ?').bind(offset).all()).results as any[];if(!page.length)return {orders:items,next_cursor:null};for(let i=0;i<page.length;i++){const o=page[i];if(!await orderAccess(u,o))continue;const summary=await orderSummary(o);if(p.get('queue')==='management'&&!summary.needs_management_review)continue;if(p.get('owner')==='me'&&summary.current_owner?.id!==u.email)continue;if(p.get('researcher_id')&&o.researcher_id!==p.get('researcher_id'))continue;if(items.length===limit)return {orders:items,next_cursor:String(offset+i)};items.push(summary)}if(page.length<100)return {orders:items,next_cursor:null};offset+=100;}
 }
 export async function writeWorkflow(u:any,b:any){await ready();must(u&&!u.laboratory,'دسترسی به پرونده مرکزی ندارید.',403);const ts=now();
  if(b.action==='researcher_save'){
@@ -56,7 +58,7 @@ export async function writeWorkflow(u:any,b:any){await ready();must(u&&!u.labora
   await commit([first,audit('researcher',id,rev,{before:old?{name:old.name,phone:old.phone,email:old.email,organization:old.organization}:null,after:p,shared_contact_reason:b.shared_contact_reason||''},u)]);return {ok:true,id,revision:rev};
  }
  if(b.action==='position_save'){
-  manager(u);const old=b.id?await row('workflow_positions',String(b.id)):null;if(b.id)must(old,'سمت پیدا نشد.',404);if(old)revision(b.revision);must(text(b.code,64,true)&&/^[a-z][a-z0-9_]{2,63}$/.test(b.code)&&text(b.title,240,true)&&AVAILABLE_PERMISSIONS.includes(b.permission)&&[0,1].includes(b.active??1),'تعریف سمت معتبر نیست.');must(!old||old.code===b.code,'کد پایدار سمت قابل تغییر نیست.');const id=old?.id||uid(),rev=old?old.revision+1:0;
+  manager(u);const old=b.id?await row('workflow_positions',String(b.id)):null;if(b.id)must(old,'سمت پیدا نشد.',404);if(old)revision(b.revision);if(old&&orgRoleKeys.includes(old.code))must(b.title===old.title&&b.permission===old.permission,'شرح نقش سازمانی را از ویرایشگر مرکزی حساب‌ها تغییر دهید.',409);must(text(b.code,64,true)&&/^[a-z][a-z0-9_]{2,63}$/.test(b.code)&&text(b.title,240,true)&&AVAILABLE_PERMISSIONS.includes(b.permission)&&[0,1].includes(b.active??1),'تعریف سمت معتبر نیست.');must(!old||old.code===b.code,'کد پایدار سمت قابل تغییر نیست.');const id=old?.id||uid(),rev=old?old.revision+1:0;
   const fields=[b.title.trim(),b.permission,b.active??1];const q=old?db().prepare('UPDATE workflow_positions SET title=?,permission=?,active=?,revision=revision+1,updated_at=? WHERE id=? AND revision=?').bind(...fields,ts,id,b.revision):db().prepare('INSERT INTO workflow_positions(id,code,title,permission,active,created_by,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?)').bind(id,b.code,...fields,u.email,ts,ts);await commit([q,audit('position',id,rev,{before:old,after:{code:b.code,title:b.title,permission:b.permission,active:b.active??1}},u)]);return {ok:true,id,revision:rev};
  }
  if(b.action==='position_assign'){

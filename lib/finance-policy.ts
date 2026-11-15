@@ -19,3 +19,6 @@ export const T03Comparison=[{area:'قیمت‌گذاری',before:'بانک تع�
 
 // Trusted SQL expression only; all external identifiers are bound by callers.
 export const verifiedNetSQL=(documentExpression:string)=>`COALESCE((SELECT SUM(CASE kind WHEN 'receipt' THEN amount_rial WHEN 'refund' THEN -amount_rial ELSE 0 END) FROM finance_transactions WHERE document_id=${documentExpression} AND status='verified'),0)`;
+
+export const canQuote=(u:any)=>!!u&&!u.laboratory&&(canFinance(u)||hasAccess(u,'quote_ops'));
+export const quoteOnly=(u:any)=>canQuote(u)&&!canFinance(u);
