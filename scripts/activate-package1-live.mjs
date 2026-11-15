@@ -1,0 +1,32 @@
+// Owner-authorized deployment client. No Miniflare, source upload, or third-party test endpoint.
+// Passwords, request tokens and cookies exist only in process memory and are never printed.
+import {randomBytes,createHash} from 'node:crypto';
+import {createInterface} from 'node:readline';
+import {execFileSync} from 'node:child_process';
+if(process.stdin.isTTY)execFileSync('stty',['-echo'],{stdio:['inherit','ignore','ignore']});
+const origin='https://synapse.ekramiihamid.chatgpt.site',owner='ekramiihamid@gmail.com',names=['owner','executive','customer','scientific','finance','research','admin','it','specialist'],fresh=names.filter(n=>!['scientific','admin'].includes(n));
+const randomPassword=()=>randomBytes(24).toString('base64url')+'Aa7!',sha=s=>createHash('sha256').update(s).digest('hex'),id='package1-'+randomBytes(12).toString('hex'),token=randomBytes(32).toString('hex'),finalToken=randomBytes(32).toString('hex');
+const initial=new Map(fresh.map(n=>[n,randomPassword()])),current=new Map(initial),cookies=new Map();let testId='',activationApplied=false,finalized=false;
+const payload={package1_activation:true,accept_without_restored_backup:true,non_destructive_confirmed:true,owner_consent:'Owner instruction 2026-11-16: restore-tested D1/R2 backup prerequisites revoked; nondestructive compatible migrations 0018–0020 and nine persistent accounts explicitly authorized; no existing account or data reset.',accounts:names.map(username=>username==='scientific'?{username,expected_member_id:'staff:mazaheri'}:username==='admin'?{username,expected_member_id:'staff:shakiba'}:{username,password:initial.get(username)})},raw=JSON.stringify(payload);
+let finalRaw='';
+const emit=x=>process.stdout.write(JSON.stringify(x)+'\n');
+async function http(path,body,extra={}){const r=await fetch(origin+path,{method:body?'POST':'GET',headers:{Origin:origin,'Content-Type':'application/json',...extra},...(body?{body:typeof body==='string'?body:JSON.stringify(body)}:{}),signal:AbortSignal.timeout(20000)});let d;try{d=await r.json()}catch{throw Error('Unexpected non-JSON response ('+r.status+') at '+path)}if(!r.ok)throw Error('HTTP '+r.status+' at '+path+': '+String(d.error||'request failed').slice(0,240));return {r,d}}
+async function login(username){const {r,d}=await http('/api/auth/login',{username,password:current.get(username)});const cookie=r.headers.get('set-cookie')?.split(';')[0];if(!cookie)throw Error('Missing login session');cookies.set(username,cookie);return d}
+async function action(x){
+ if(x.action==='grant'){emit({kind:'grant',config:{id,scope:'package1-activation',expires_at:Date.now()+45*60000,token_hash:sha(token),body_hash:sha(raw)},usernames:names});return}
+ if(x.action==='activate'){const {d}=await http('/api/auth/provision-request',raw,{'x-synapse-request':token});activationApplied=true;emit({kind:'activated',...d});return}
+ if(x.action==='test_new'){
+  if(!activationApplied)throw Error('Activation has not been applied');const results=[];
+  for(const username of fresh){const first=await login(username);if(first.next!=='/account/password')throw Error('Initial rotation not enforced for '+username);const next=randomPassword();const {r}=await http('/api/auth/password',{currentPassword:current.get(username),newPassword:next},{Cookie:cookies.get(username)});current.set(username,next);cookies.set(username,r.headers.get('set-cookie').split(';')[0]);const {d}=await http('/api/staff',null,{Cookie:cookies.get(username)});if(d.user.username!==username||d.user.manager!==(username==='owner'))throw Error('Unexpected identity or privilege for '+username);results.push({username,login:true,workspace:true,roles:d.organization.roles.map(r=>r.code)});}
+  const today=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Dubai',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+  const created=await http('/api/work',{action:'create',kind:'task',title:'آزمون پایداری بسته اول — '+id.slice(-8),body:'رکورد ساختگی برای آزمون ورود، ارجاع و ماندگاری بسته اول؛ اطلاعات واقعی مشتری نیست.',assignee:'staff:specialist',reviewer:owner,priority:'normal',due:today,scheduledDate:today,collaborators:[],approvalRequired:true},{Cookie:cookies.get('owner')});testId=created.d.id;
+  const got=await http('/api/staff',null,{Cookie:cookies.get('specialist')}),record=got.d.records.find(r=>r.id===testId);if(!record)throw Error('Test task is not visible to specialist');await http('/api/work',{action:'update',id:testId,revision:record.revision,status:'doing',progress:10,result:'آزمون واقعی بسته اول با داده ساختگی انجام شد.'},{Cookie:cookies.get('specialist')});emit({kind:'tested',accounts:results,test_record_id:testId,existing_passwords_preserved:['scientific','admin']});return
+ }
+ if(x.action==='final_grant'){finalRaw=JSON.stringify({package1_finalize:true,accounts:fresh.map(username=>({username,password:current.get(username)}))});emit({kind:'final_grant',config:{id:id+'-finalize',scope:'package1-credential-finalize',activation_request:id,expires_at:Date.now()+45*60000,token_hash:sha(finalToken),body_hash:sha(finalRaw)}});return}
+ if(x.action==='verify_persistence'){await login('specialist');const {d}=await http('/api/staff',null,{Cookie:cookies.get('specialist')});const record=d.records.find(r=>r.id===testId);if(!record||record.status!=='doing')throw Error('Stored test task did not survive deployment');emit({kind:'persistent',test_record_id:testId,status:record.status});return}
+ if(x.action==='finalize'){if(!finalRaw)throw Error('Final grant not prepared');const {d}=await http('/api/auth/provision-request',finalRaw,{'x-synapse-request':finalToken});finalized=true;emit({kind:'finalized',...d});return}
+ if(x.action==='verify_initial_logins'){if(!finalized)throw Error('Finalization required');const rows=[];for(const username of fresh){const d=await login(username);if(d.next!=='/account/password')throw Error('Initial password protection missing');rows.push({username,login:true,requires_password_change:true})}emit({kind:'initial-logins-verified',accounts:rows,credential_retrieval:origin+'/accounts',old_passwords_unchanged:['scientific','admin']});return}
+ if(x.action==='stop'){emit({kind:'stopped',passwords_written_to_disk:false});process.exit(0)}
+ throw Error('Unknown deployment client command');
+}
+let queue=Promise.resolve();const input=createInterface({input:process.stdin,terminal:false});input.on('line',line=>{queue=queue.then(()=>action(JSON.parse(line))).catch(e=>emit({kind:'error',message:e.message}))});emit({kind:'ready',origin,credentials_in_memory_only:true});

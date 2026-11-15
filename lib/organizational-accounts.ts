@@ -1,3 +1,4 @@
+import {readInitialCredentials} from './package1-activation';
 import {organizationalLogins} from './organizational-logins';
 import {provisionOwnerLogin} from './owner-login';
 import {handoverInventory,previewHandover,executeHandover,recordActivationPreflight,accountPreservation,activationPreflight,identityRenames,retirementAccounts} from './account-handover';
@@ -21,6 +22,7 @@ export async function readOrganizationalAccounts(u:any,p:URLSearchParams){must(u
 }
 function protect(u:any,a:any,b:any){must(a.username!=='chiefmanager','هویت مالک chiefmanager هنوز تأیید نشده؛ این حساب تغییر نمی‌کند.',403);if(a.member_id===OWNER||a.role==='system'||!a.member_id.startsWith('staff:'))throw new WorkflowError('حساب مالک اصلی از این مسیر قابل تغییر نیست.',403);if(JSON.parse(a.permissions).includes('institute_admin'))must(isPrimaryOwner(u)&&b.confirm_critical===true&&typeof b.reason==='string'&&!!b.reason.trim(),'تغییر حساب دارای مدیریت کل نیازمند تأیید صریح مالک و دلیل است.',403)}
 export async function writeOrganizationalAccount(u:any,b:any){must(u?.manager&&!u.laboratory,'فقط مدیریت مجاز است.',403);
+ if(b.action==='initial_credentials')return readInitialCredentials(u);
  if(b.action==='owner_login')return provisionOwnerLogin(u,b);
  if(b.action==='activation_preflight')return recordActivationPreflight(u,b);
  if(b.action==='handover_preview')return previewHandover(u,b);
@@ -53,7 +55,7 @@ export async function writeOrganizationalAccount(u:any,b:any){must(u?.manager&&!
  }
  if(b.action==='edit'){
   if(retirementAccounts.includes(username))must(!b.new_username||b.new_username===username,'نام این حساب تا تعیین تکلیف انتقال مسئولیت‌ها محفوظ است.',409);
-  if(identityRenames[username]){must(isPrimaryOwner(u)&&b.confirm_identity===true,'تغییر نام این حساب فقط با تأیید صریح مالک و پشتیبان بازیابی‌شده مجاز است.',403);await activationPreflight(b.preflight_id);must(b.new_username===identityRenames[username],'نام کاربری مقصد با ساختار نهایی مصوب یکسان نیست.');}
+  if(identityRenames[username]){must(isPrimaryOwner(u)&&b.confirm_identity===true,'تغییر نام این حساب فقط با تأیید صریح فعال‌سازی مالک مجاز است.',403);await activationPreflight(b.preflight_id);must(b.new_username===identityRenames[username],'نام کاربری مقصد با ساختار نهایی مصوب یکسان نیست.');}
 
   const next=String(b.new_username||username).trim().toLowerCase(),name=String(b.name||'').trim();must(usernameValid(next)&&name&&name.length<=100,'نام و نام کاربری معتبر وارد کنید.');must(next!=='owner','نام owner برای هویت اصلی مالک محفوظ است.',403);must(next===username||!await db().prepare('SELECT username FROM staff_accounts WHERE username=?').bind(next).first(),'نام کاربری تکراری است.',409);
   await db().batch([db().prepare('UPDATE staff_accounts SET username=?,updated_at=?'+(ready?',org_revision=org_revision+1':'')+' WHERE username=?').bind(next,ts(),username),db().prepare('UPDATE staff_members SET name=? WHERE email=?').bind(name,a.member_id),db().prepare('DELETE FROM staff_sessions WHERE username=?').bind(username),await eventStmt('auth',u.email,'account-edit',JSON.stringify({member_id:a.member_id,old_username:username,new_username:next,name}))]);return {ok:true};
