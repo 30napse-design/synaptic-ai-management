@@ -18,11 +18,12 @@ def inspect_backup(path, expected):
         fields={'staff_accounts':{'org_roles','org_proposed_roles','org_mode','scientific_qualified','org_revision'},'ops_items':{'access_scope'},'workflow_positions':{'role_definition'}}
         present=sum(len(required&columns(t)) for t,required in fields.items())
         state19='applied' if present==sum(map(len,fields.values())) else 'missing' if present==0 else 'partial-blocked'
+        state20='applied' if state19=='applied' and db.execute("SELECT COUNT(*) FROM workflow_positions WHERE code='executive_director' AND json_extract(role_definition,'$.role_key')='executive_director'").fetchone()[0]==1 else 'missing'
         integrity=[r[0] for r in db.execute('PRAGMA integrity_check')]
         foreign_keys=db.execute('PRAGMA foreign_key_check').fetchall()
         prerequisites={'staff_accounts','staff_members','staff_records','staff_events','staff_work_details','staff_work_notifications','staff_work_files','ops_items','laboratory_jobs','finance_documents','science_cases'}<=tables
         ready=integrity==['ok'] and not foreign_keys and prerequisites and 'partial-blocked' not in [state18,state19] and not (state19=='applied' and state18!='applied')
-        return {'backup_sha256':actual,'read_only':True,'integrity_ok':integrity==['ok'],'foreign_key_violations':len(foreign_keys),'prerequisites_present':prerequisites,'0018':state18,'0019':state19,'next_migrations':[s for s,state in [('0018',state18),('0019',state19)] if state=='missing'] if ready else [],'restore_structure_valid':ready,'production_activation_authorized':False,'note':'Backup file validation only; validate actual credentials, secrets, R2 restoration, target version and management approvals separately.'}
+        return {'backup_sha256':actual,'read_only':True,'integrity_ok':integrity==['ok'],'foreign_key_violations':len(foreign_keys),'prerequisites_present':prerequisites,'0018':state18,'0019':state19,'0020':state20,'next_migrations':[s for s,state in [('0018',state18),('0019',state19),('0020',state20)] if state=='missing'] if ready else [],'restore_structure_valid':ready,'production_activation_authorized':False,'note':'Backup file validation only; validate actual credentials, secrets, R2 restoration, target version and management approvals separately.'}
     finally: db.close()
 
 if __name__=='__main__':

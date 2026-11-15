@@ -6,8 +6,8 @@ const accounts=(b,status=200,h=owner)=>ok('/api/auth/accounts',b,status,h),core=
 const account=async username=>(await accounts()).accounts.find(a=>a.username===username);
 async function login(username,password){const r=await req('/api/auth/login',{username,password},{});assert.equal(r.status,200,JSON.stringify(r.data));checks++;return {Cookie:r.headers.get('set-cookie').split(';')[0]}}
 async function change(h,current,newPassword){const r=await req('/api/auth/password',{currentPassword:current,newPassword},h);assert.equal(r.status,200,JSON.stringify(r.data));checks++;return {Cookie:r.headers.get('set-cookie').split(';')[0]}}
-const roles=['customer_manager','scientific_manager','finance_manager','research_manager','administration_manager','it_security_manager','research_specialist'];
-let d=await accounts();assert.equal(d.password_minimum,8);assert.equal(d.roles.length,7);assert.ok(d.legacy_mapping.every(m=>JSON.parse(m.role_definition).mapping_state==='proposed'));
+const roles=['executive_director','customer_manager','scientific_manager','finance_manager','research_manager','administration_manager','it_security_manager','research_specialist'];
+let d=await accounts();assert.equal(d.password_minimum,8);assert.equal(d.roles.length,8);assert.ok(d.legacy_mapping.every(m=>JSON.parse(m.role_definition).mapping_state==='proposed'));
 await accounts({action:'create',username:'org_bad',name:'Synthetic rejected',password:'Aa12345',roles:['customer_manager']},400);
 await accounts({action:'create',username:'org_bad2',name:'Synthetic rejected',password:'abcdefgh',roles:['customer_manager']},400);
 const users={};for(const role of roles){const username='org_'+role,name='Synthetic '+role;const c=(await accounts({action:'create',username,name,password:'Aa123456',roles:[role]})).credential;assert.equal(c.password,'Aa123456');let h=await login(username,c.password);await ok('/api/staff',null,403,h);const pwpage=await ok('/account/password',null,200,h);assert.ok(pwpage.html.includes('minLength="8"')||pwpage.html.includes('minlength="8"'));h=await change(h,c.password,'Bb123456');users[role]={username,name,h,password:'Bb123456',id:'staff:'+username};
@@ -77,4 +77,4 @@ await accounts({action:'password_policy',minimum_length:32});await accounts({act
 // Failed-attempt throttling is retained; successful eight-character passwords were already exercised.
 for(let i=0;i<6;i++)await ok('/api/auth/login',{username:'org_locked',password:'Wrong123'},401,{});await ok('/api/auth/login',{username:'org_locked',password:'Wrong123'},429,{});
 assert.ok((await db.prepare("SELECT COUNT(*) n FROM staff_events WHERE action='password-reset' AND body LIKE '%Bb123456%'").first()).n===0);
-console.log('PASS organization: '+checks+' HTTP/SSR checks; all seven roles, supervisor/duty history, quote-only and sample projections, qualified final approval, password 8/configuration, rename, reset, session revocation and staged permission replacement. Temporary accounts/D1/R2 only.');
+console.log('PASS organization: '+checks+' HTTP/SSR checks; all eight roles, supervisor/duty history, quote-only and sample projections, qualified final approval, password 8/configuration, rename, reset, session revocation and staged permission replacement. Temporary accounts/D1/R2 only.');
