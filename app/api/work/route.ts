@@ -1,3 +1,5 @@
+import {resolveOrganizationalWork} from '../../../lib/workflow-core';
+import {organizationalCode} from '../../../lib/organizational-logins';
 import {db,identity,json,mutationAllowed} from '../../../lib/staff-server';
 import {OWNER,canReview,validateRecord} from '../../../lib/staff-policy';
 import {mayAssignWork} from '../../../lib/work-assignment-policy';
@@ -10,6 +12,12 @@ export async function POST(req:Request){try{if(!mutationAllowed(req))throw new W
  const target=new Set<string>();
  if(create||action==='edit'){
   if(!u.manager)throw new WorkError('ایجاد و ارجاع با مدیریت است.',403);if(r?.status==='done')throw new WorkError('ابتدا کار را بازگشایی کنید.');
+  if(create||b.assignee!==r?.assignee||b.assigneePosition){
+   const account=await db().prepare('SELECT username FROM staff_accounts WHERE member_id=?').bind(String(b.assignee||'')).first<any>();
+   const code=b.assigneePosition||organizationalCode(account?.username||'');if(!code)throw new WorkError('مسئول باید یکی از نه سمت مصوب باشد.',403);
+   const resolved=await resolveOrganizationalWork(code);if(b.assignee&&b.assignee!==resolved.member_id)throw new WorkError('فرد با مسئول فعال سمت تطابق ندارد.',409);
+   b.assignee=resolved.member_id;details.assigneePosition=resolved.position;details.assignmentRevision=resolved.assignment_revision;
+  }
   if(!['task','plan','decision'].includes(b.kind)||!validateRecord(b)||!validSchedule(b))throw new WorkError('اطلاعات، تاریخ یا زمان معتبر نیست.');
   if(!active(b.assignee)||!mayAssignWork(u,b.assignee,r?.assignee))throw new WorkError('مسئول مجاز انتخاب کنید.',403);
   if(!active(b.reviewer)||(b.reviewer!==OWNER&&!members.some(m=>m.email===b.reviewer&&m.role==='reviewer'))||b.reviewer===b.assignee&&b.reviewer!==OWNER)throw new WorkError('تأییدکننده مستقل و مجاز انتخاب کنید.');

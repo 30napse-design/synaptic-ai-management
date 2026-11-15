@@ -1,5 +1,5 @@
-import {orgRoleKeys} from './org-role-catalog';
-import {accountOrganization,organizationReady} from './org-access';
+import {orgRoleKeys,legacyRoleMapping} from './org-role-catalog';
+import {accountOrganization,organizationReady,organizationalRuntimeProfile} from './org-access';
 import {db} from './staff-server';
 import {OWNER} from './staff-policy';
 import {AVAILABLE_PERMISSIONS,DEFAULT_PERMISSIONS} from './auth-policy';
@@ -16,14 +16,16 @@ function audit(aggregate:string,id:string,rev:number,change:any,u:any,conditiona
 async function commit(statements:any[]){try{const result=await db().batch(statements);must(result[0].meta.changes,'اطلاعات هم‌زمان تغییر کرده یا ارتباط متعارض است.',409);return result}catch(e){if(e instanceof WorkflowError)throw e;if(/UNIQUE|CONSTRAINT/i.test(String(e)))throw new WorkflowError('شناسه تکراری، ارتباط نامعتبر یا تعارض هم‌زمان؛ سوابق را بازخوانی کنید.',409);throw e}}
 export async function workflowMember(id:string){
  if(id===OWNER)return {email:OWNER,name:'مدیریت',manager:true,permissions:[],dataPermissions:[],laboratory:false,active:1};if(!id)return null;
- const m=await db().prepare('SELECT m.*,a.permissions,lm.laboratory_id,l.status laboratory_status FROM staff_members m LEFT JOIN staff_accounts a ON a.member_id=m.email LEFT JOIN laboratory_members lm ON lm.member_id=m.email LEFT JOIN laboratories l ON l.id=lm.laboratory_id WHERE m.email=? AND m.active=1').bind(id).first<any>();
- if(!m)return null;const permissions=m.permissions?JSON.parse(m.permissions):DEFAULT_PERMISSIONS;return {...m,...await accountOrganization(m.email),permissions,dataPermissions:permissions,manager:permissions.includes('institute_admin'),laboratory:!!m.laboratory_id,laboratoryId:m.laboratory_id};
+ const m=await db().prepare('SELECT m.*,a.username,a.permissions,lm.laboratory_id,l.status laboratory_status FROM staff_members m LEFT JOIN staff_accounts a ON a.member_id=m.email LEFT JOIN laboratory_members lm ON lm.member_id=m.email LEFT JOIN laboratories l ON l.id=lm.laboratory_id WHERE m.email=? AND m.active=1').bind(id).first<any>();
+ if(!m)return null;const permissions=m.permissions?JSON.parse(m.permissions):DEFAULT_PERMISSIONS;const user={...m,...await accountOrganization(m.email),permissions,local:true,manager:false,laboratory:!!m.laboratory_id,laboratoryId:m.laboratory_id};const profile=user.laboratory?user:organizationalRuntimeProfile(user);return {...profile,dataPermissions:profile.permissions};
 }
 async function validScope(type:any,id:any){must(['institute','laboratory'].includes(type)&&text(id,160),'محدوده مسئولیت معتبر نیست.');must(type!=='institute'||id==='','محدوده پژوهشکده شناسه واحد جدا ندارد.');if(type==='laboratory')must(!!id&&await row('laboratories',id),'آزمایشگاه محدوده پیدا نشد.');}
 export function eligibleWorkflowMember(m:any,p:any,scopeType:string,scopeId:string){if(!m)return false;if(p.role_definition){const def=JSON.parse(p.role_definition);if(def.role_key&&!m.manager&&!m.orgRoles?.includes(def.role_key))return false;}if(p.code==='lab_executor')return scopeType==='laboratory'&&m.laboratory&&m.laboratoryId===scopeId&&m.laboratory_status==='active'&&workflowMemberPermission(m,p.permission);return !m.laboratory&&workflowMemberPermission(m,p.permission)&&(p.permission!=='science_approve'||m.manager||m.orgMode!=='managed'||m.scientificQualified&&m.orgRoles?.includes('research_manager'))}
 export async function resolveWorkflowOwner(positionId:string,scopeType='institute',scopeId=''){
- const p=await row('workflow_positions',positionId);if(!p?.active)return {owner:null,reason:'inactive_position',assignment_revision:null};
- const a=await db().prepare('SELECT * FROM workflow_position_assignments WHERE position_id=? AND scope_type=? AND scope_id=?').bind(positionId,scopeType,scopeId).first<any>();
+ let p=await row('workflow_positions',positionId);
+ if(scopeType==='institute'&&p?.code!=='lab_executor'&&p?.code!=='management'&&!orgRoleKeys.includes(p?.code)){const canonical=p?(legacyRoleMapping[p.code]||'executive_director'):'executive_director';p=await db().prepare('SELECT * FROM workflow_positions WHERE code=?').bind(canonical).first<any>();}
+ if(!p?.active)return {owner:null,reason:'inactive_position',assignment_revision:null};
+ const a=await db().prepare('SELECT * FROM workflow_position_assignments WHERE position_id=? AND scope_type=? AND scope_id=?').bind(p.id,scopeType,scopeId).first<any>();
  if(!a?.active)return {owner:null,reason:'unassigned_position',assignment_revision:a?.revision??null};
  const primary=await workflowMember(a.primary_member_id),substitute=await workflowMember(a.substitute_member_id);let selected:any=null,source='';
  if(a.use_substitute){if(eligibleWorkflowMember(substitute,p,scopeType,scopeId)){selected=substitute;source='substitute'}}else if(eligibleWorkflowMember(primary,p,scopeType,scopeId)){selected=primary;source='primary'}else if(eligibleWorkflowMember(substitute,p,scopeType,scopeId)){selected=substitute;source='substitute'}
@@ -58,11 +60,11 @@ export async function writeWorkflow(u:any,b:any){await ready();must(u&&!u.labora
   await commit([first,audit('researcher',id,rev,{before:old?{name:old.name,phone:old.phone,email:old.email,organization:old.organization}:null,after:p,shared_contact_reason:b.shared_contact_reason||''},u)]);return {ok:true,id,revision:rev};
  }
  if(b.action==='position_save'){
-  manager(u);const old=b.id?await row('workflow_positions',String(b.id)):null;if(b.id)must(old,'سمت پیدا نشد.',404);if(old)revision(b.revision);if(old&&orgRoleKeys.includes(old.code))must(b.title===old.title&&b.permission===old.permission,'شرح نقش سازمانی را از ویرایشگر مرکزی حساب‌ها تغییر دهید.',409);must(text(b.code,64,true)&&/^[a-z][a-z0-9_]{2,63}$/.test(b.code)&&text(b.title,240,true)&&AVAILABLE_PERMISSIONS.includes(b.permission)&&[0,1].includes(b.active??1),'تعریف سمت معتبر نیست.');must(!old||old.code===b.code,'کد پایدار سمت قابل تغییر نیست.');const id=old?.id||uid(),rev=old?old.revision+1:0;
+  manager(u);const old=b.id?await row('workflow_positions',String(b.id)):null;must(old&&['management',...orgRoleKeys].includes(old.code),'فقط نه سمت مصوب موجود مجازند؛ سمت تازه ایجاد نمی‌شود.',403);if(b.id)must(old,'سمت پیدا نشد.',404);if(old)revision(b.revision);if(old&&orgRoleKeys.includes(old.code))must(b.title===old.title&&b.permission===old.permission,'شرح نقش سازمانی را از ویرایشگر مرکزی حساب‌ها تغییر دهید.',409);must(text(b.code,64,true)&&/^[a-z][a-z0-9_]{2,63}$/.test(b.code)&&text(b.title,240,true)&&AVAILABLE_PERMISSIONS.includes(b.permission)&&[0,1].includes(b.active??1),'تعریف سمت معتبر نیست.');must(!old||old.code===b.code,'کد پایدار سمت قابل تغییر نیست.');const id=old?.id||uid(),rev=old?old.revision+1:0;
   const fields=[b.title.trim(),b.permission,b.active??1];const q=old?db().prepare('UPDATE workflow_positions SET title=?,permission=?,active=?,revision=revision+1,updated_at=? WHERE id=? AND revision=?').bind(...fields,ts,id,b.revision):db().prepare('INSERT INTO workflow_positions(id,code,title,permission,active,created_by,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?)').bind(id,b.code,...fields,u.email,ts,ts);await commit([q,audit('position',id,rev,{before:old,after:{code:b.code,title:b.title,permission:b.permission,active:b.active??1}},u)]);return {ok:true,id,revision:rev};
  }
  if(b.action==='position_assign'){
-  manager(u);const p=await row('workflow_positions',String(b.position_id||''));must(p?.active,'سمت فعال انتخاب شود.');const type=b.scope_type||'institute',scope=b.scope_id||'';await validScope(type,scope);const primary=String(b.primary_member_id||''),substitute=String(b.substitute_member_id||'');must(text(primary,180)&&text(substitute,180)&&(!primary||primary!==substitute)&&[0,1].includes(b.use_substitute??0)&&[0,1].includes(b.active??1),'مسئول و جانشین معتبر نیستند.');must(!b.use_substitute||!!substitute,'جانشین مشخص نشده است.');
+  manager(u);const p=await row('workflow_positions',String(b.position_id||''));must(p&&['management',...orgRoleKeys].includes(p.code),'انتصاب جدید فقط به نه سمت مصوب مجاز است.',403);must(p?.active,'سمت فعال انتخاب شود.');const type=b.scope_type||'institute',scope=b.scope_id||'';await validScope(type,scope);const primary=String(b.primary_member_id||''),substitute=String(b.substitute_member_id||'');must(text(primary,180)&&text(substitute,180)&&(!primary||primary!==substitute)&&[0,1].includes(b.use_substitute??0)&&[0,1].includes(b.active??1),'مسئول و جانشین معتبر نیستند.');must(!b.use_substitute||!!substitute,'جانشین مشخص نشده است.');
   for(const id of [primary,substitute].filter(Boolean))must(eligibleWorkflowMember(await workflowMember(id),p,type,scope),'مسئول باید فعال، دارای مجوز واقعی سمت و مجاز به همین واحد باشد.',403);
   const old=await db().prepare('SELECT * FROM workflow_position_assignments WHERE position_id=? AND scope_type=? AND scope_id=?').bind(p.id,type,scope).first<any>();if(old)revision(b.revision);else must(b.revision===undefined||b.revision===0,'نسخه اولیه معتبر نیست.');const id=old?.id||uid(),rev=old?old.revision+1:0,values=[primary,substitute,b.use_substitute??0,b.active??1];
   const q=old?db().prepare('UPDATE workflow_position_assignments SET primary_member_id=?,substitute_member_id=?,use_substitute=?,active=?,revision=revision+1,updated_at=? WHERE id=? AND revision=?').bind(...values,ts,id,b.revision):db().prepare('INSERT INTO workflow_position_assignments(id,position_id,scope_type,scope_id,primary_member_id,substitute_member_id,use_substitute,active,created_by,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?,?,?,?)').bind(id,p.id,type,scope,...values,u.email,ts,ts);
@@ -90,4 +92,13 @@ export async function writeWorkflow(u:any,b:any){await ready();must(u&&!u.labora
   await commit([db().prepare('UPDATE research_orders SET revision=revision+1,updated_at=? WHERE id=? AND revision=? AND EXISTS(SELECT 1 FROM workflow_order_links WHERE id=? AND retired_at=\'\')').bind(ts,o.id,b.revision,l.id),db().prepare("UPDATE workflow_order_links SET retired_at=?,retired_by=?,retirement_reason=?,revision=revision+1 WHERE id=? AND retired_at='' AND changes()=1").bind(ts,u.email,b.reason,l.id),audit('order',o.id,o.revision+1,{link_retired:l.id,reason:b.reason},u)]);return {ok:true,revision:o.revision+1};
  }
  throw new WorkflowError('عملیات مرکزی معتبر نیست.');
+}
+
+// Package-one routing contract only. Does not classify inputs or advance workflow stages.
+export async function resolveOrganizationalWork(position:string){
+ const code=position==='management'||orgRoleKeys.includes(position)?position:'executive_director';
+ const p=await db().prepare('SELECT id FROM workflow_positions WHERE code=? AND active=1').bind(code).first<any>();
+ must(p,'سمت مصوب فعال نیست.',409);const resolved=await resolveWorkflowOwner(p.id);
+ must(resolved.owner,'مسئول فعال سمت مشخص نیست؛ مدیریت باید انتصاب همین سمت را اصلاح کند.',409);
+ return {member_id:resolved.owner.id,position:code,assignment_revision:resolved.assignment_revision};
 }

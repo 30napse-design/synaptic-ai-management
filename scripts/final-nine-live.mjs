@@ -1,0 +1,8 @@
+// Owner-authorized, exact-body request on the existing SYNAPSE hosting route.
+// Generated passwords/tokens remain in process memory; stdout contains hashes and test summaries only.
+import {randomBytes,createHash} from 'node:crypto';import {createInterface} from 'node:readline';import {execFileSync} from 'node:child_process';
+if(process.stdin.isTTY)execFileSync('stty',['-echo'],{stdio:['inherit','ignore','ignore']});
+const origin='https://synapse.ekramiihamid.chatgpt.site',id='nine-final-'+randomBytes(12).toString('hex'),token=randomBytes(32).toString('hex'),hash=x=>createHash('sha256').update(x).digest('hex');
+const body=JSON.stringify({package1_password_reset:true,accounts:['scientific','admin'].map(username=>({username,password:randomBytes(24).toString('base64url')+'Aa7!'}))});
+const emit=x=>process.stdout.write(JSON.stringify(x)+'\n');const config={id,scope:'package1-password-reset',expires_at:Date.now()+60*60000,token_hash:hash(token),body_hash:hash(body)};
+createInterface({input:process.stdin,terminal:false}).on('line',async line=>{try{const x=JSON.parse(line);if(x.action==='grant')return emit({kind:'grant',config});if(x.action==='stop')process.exit(0);const r=await fetch(origin+'/api/auth/provision-request',{method:x.action==='apply'?'POST':'GET',headers:{Origin:origin,'Content-Type':'application/json','x-synapse-request':token},...(x.action==='apply'?{body}:{}),signal:AbortSignal.timeout(180000)});const d=await r.json();emit({kind:x.action,status:r.status,...d})}catch(e){emit({kind:'error',message:e.message})}});emit({kind:'ready',credentials_in_memory_only:true});
