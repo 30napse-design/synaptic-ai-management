@@ -1,0 +1,3 @@
+'use client';
+import {useEffect,useState} from 'react';
+export default function UserAvatar({name,version=''}:{name:string,version?:string}){const [failed,setFailed]=useState(false),[stamp,setStamp]=useState(version);useEffect(()=>{const refresh=()=>{setFailed(false);setStamp(String(Date.now()))};window.addEventListener('synapse-profile-updated',refresh);return()=>window.removeEventListener('synapse-profile-updated',refresh)},[]);return <span className="home-user-avatar" aria-hidden="true">{!failed?<img src={'/api/profile/avatar?v='+encodeURIComponent(stamp)} alt="" onError={()=>setFailed(true)}/>:name?.slice(0,1)||'س'}</span>}

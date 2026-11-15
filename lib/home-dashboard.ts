@@ -14,7 +14,7 @@ export function homeDashboard(records:any[],user:any,today:string,now=new Date()
   return {priorities,nextPlan,counts:{today:current.length,decisions:summary.review.length,overdue:summary.overdue.length}};
 }
 
-export function personalCorrespondence(records:any[],user:any){
+export function personalCorrespondence(records:any[],user:any,limit=8){
   if(!hasAccess(user,'mail'))return [];
-  return records.filter(r=>r.kind==='correspondence'&&visible(r,user)&&(r.assignee===user.email||r.reviewer===user.email||r.createdBy===user.email||(r.collaborators||[]).includes(user.email))).sort((a,b)=>(b.updatedAt||'').localeCompare(a.updatedAt||'')).slice(0,8);
+  return records.filter(r=>r.kind==='correspondence'&&visible(r,user)&&(r.assignee===user.email||r.reviewer===user.email||r.createdBy===user.email||(r.collaborators||[]).includes(user.email))).sort((a,b)=>(b.updatedAt||'').localeCompare(a.updatedAt||'')).slice(0,limit);
 }
