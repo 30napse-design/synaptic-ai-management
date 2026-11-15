@@ -9,7 +9,7 @@ export const moduleKinds:Record<string,string>={projects:'project',lab:'order',m
 export const kindModules:Record<string,string>={project:'projects',order:'lab',correspondence:'mail',development:'development',scientific:'results_ops',contract:'billing_ops'};
 export function hasAccess(user:any,section:string){if(!user)return false;if(SHARED_OPERATIONS_PERMISSIONS.includes(section))return true;if(user?.laboratory)return ['lab','lab_portal'].includes(section);if(['science','results_ops'].includes(section)&&user?.permissions?.includes('science_approve'))return true;if(['billing_ops','tariffs'].includes(section)&&user?.permissions?.includes('finance_ops'))return true;section=({science:'results_ops',contracts:'billing_ops'} as Record<string,string>)[section]||section;return !!user&&(user.manager||user.permissions?.includes('institute_admin')||section==='people'||(user.permissions||[]).includes(section))}
 export function passwordValid(value:unknown,minimumLength=8){return typeof value==='string'&&value.length>=minimumLength&&value.length<=128&&/[a-z]/.test(value)&&/[A-Z]/.test(value)&&/[0-9]/.test(value)}
-export function usernameValid(value:unknown){return typeof value==='string'&&/^[a-z][a-z0-9._-]{2,39}$/.test(value)}
+export function usernameValid(value:unknown){return typeof value==='string'&&(value==='it'||/^[a-z][a-z0-9._-]{2,39}$/.test(value))}
 
 // Menu availability never grants access to operational data.
 export function hasDataAccess(user:any,scope:string){if(!user||user.laboratory)return false;if(user.manager)return true;const permissions=user.dataPermissions??user.permissions??[];return permissions.includes(scope)||(scope==='billing_ops'&&permissions.includes('finance_ops'))||(scope==='results_ops'&&permissions.includes('science_approve'))}
