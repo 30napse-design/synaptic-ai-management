@@ -1,3 +1,5 @@
+import {readWorkflow,writeWorkflow} from '../../../lib/workflow-core';
+import {workflowActions,workflowViews,WorkflowError} from '../../../lib/workflow-policy';
 import {mayAssignWork,SELF_ASSIGNMENT_ERROR} from '../../../lib/work-assignment-policy';
 import {canDeleteData,deletionAction} from '../../../lib/deletion-policy';
 import {validCommunication} from '../../../lib/communication-policy';
@@ -9,12 +11,12 @@ import {canSeeOps,canUseOps,canUseOpsCategory,categoryFor,privateSubtypes,sensit
 import {intakeFields,validIntake,validDue} from '../../../lib/intake-policy';
 import {validOpsAssignee} from '../../../lib/intake-server';
 export const dynamic='force-dynamic';
-export async function GET(req:Request){const u=await identity();if(!u)return json({error:'ابتدا وارد شوید'},401);if(!canUseOps(u))return json({error:'دسترسی ندارید'},403);return json(await readOperationsData(u,new URL(req.url).searchParams))}
+export async function GET(req:Request){const u=await identity();if(!u)return json({error:'ابتدا وارد شوید'},401);if(workflowViews.includes(new URL(req.url).searchParams.get('view')||'')){try{return json(await readWorkflow(u,new URL(req.url).searchParams))}catch(e){if(e instanceof WorkflowError)return json({error:e.message},e.status);console.error('workflow read failed',e);return json({error:'خواندن پرونده مرکزی ممکن نشد.'},500)}}if(!canUseOps(u))return json({error:'دسترسی ندارید'},403);return json(await readOperationsData(u,new URL(req.url).searchParams))}
 export async function POST(req:Request){
  if(!mutationAllowed(req))return json({error:'درخواست نامعتبر'},403);
  const u=await identity();if(!u)return json({error:'ابتدا وارد شوید'},401);
  if(Number(req.headers.get('content-length')||0)>50000)return json({error:'حجم درخواست زیاد است'},413);
- const b:any=await req.json();if(deletionAction(b.action)&&!canDeleteData(u))return json({error:'حذف فقط برای مالک اصلی سامانه مجاز است.'},403);
+ const b:any=await req.json();if(workflowActions.includes(b.action)){try{return json(await writeWorkflow(u,b))}catch(e){if(e instanceof WorkflowError)return json({error:e.message},e.status);console.error('workflow mutation failed',e);return json({error:'ثبت پرونده مرکزی انجام نشد.'},500)}}if(deletionAction(b.action)&&!canDeleteData(u))return json({error:'حذف فقط برای مالک اصلی سامانه مجاز است.'},403);
  if(b.action==='create'){
   const c=categoryFor(b.subtype),direction=String(b.direction||'inbound'),channel=String(b.channel||(b.sourceType==='incoming'?'phone':'manual')),visitPurpose=String(b.visitPurpose||'');
   if(!validCommunication(direction,channel,visitPurpose))return json({error:'روش ارتباط یا موضوع مراجعه معتبر نیست'},400);
