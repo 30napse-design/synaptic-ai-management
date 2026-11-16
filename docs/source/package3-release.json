@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "package": 3,
+  "version_name": "synapse-package3-financial-lifecycle-2026-11-16",
+  "date": "2026-11-16",
+  "repository": "30napse-design/synapse-ai-management",
+  "branch": "feature/package3-financial-lifecycle-2026-11-16",
+  "source_base_commit": "0a75ddc684cb07f73b6659b143695f59ecad035b",
+  "previous_publication": {"version": 43, "commit": "eebc281b9863b85ada374553245e79b8258d2fbb"},
+  "source_commit_resolution": "The Git commit containing this file; publication proof is recorded after native hosting confirmation in the private delivery report and SYNAPSE-LATEST.json.",
+  "source_manifest": "docs/source/package3-source-manifest.json",
+  "handoff": "docs/package3-financial-lifecycle.md",
+  "tests": {
+    "command": "node scripts/test-finance-runtime.mjs package3-finance-runtime.mjs",
+    "passed": true,
+    "http_checks": 110,
+    "environment": "Compiled production Worker with isolated temporary Miniflare D1/R2 and synthetic role accounts",
+    "typecheck": "passed",
+    "build": "passed",
+    "browser": "Synthetic finance identity fixture: two approved services selected, line values and 640000 IRT total verified",
+    "real_browser_login_tested": false,
+    "real_external_email_or_bank_transaction": false
+  },
+  "migration_required": false,
+  "new_secrets_required": false,
+  "operational_data_changed_for_testing": false,
+  "automatic_outbound_service_enabled": false,
+  "next_package_started": false
+}
