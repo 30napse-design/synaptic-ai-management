@@ -5,7 +5,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {spawnSync} from 'node:child_process';
 const root=fileURLToPath(new URL('../',import.meta.url));
-const manifestPath=process.argv[2]||'docs/source/package2-source-manifest.json';
+const manifestPath=process.argv[2]||'docs/source/package5-completion-source-manifest.json';
 const manifest=JSON.parse(readFileSync(path.join(root,manifestPath),'utf8'));
 let failures=0;
 for(const f of manifest.files){

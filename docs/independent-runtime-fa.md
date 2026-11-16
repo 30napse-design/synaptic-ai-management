@@ -138,3 +138,19 @@ git ls-remote --tags origin refs/tags/synapse-package2-v43-source-2026-11-16 ref
 
 برچسب موجود را بازنویسی نکنید. برای بسته‌های بعد، فقط پس از تکمیل واقعی، همان الگوی شناسنامه، SHA و برچسب مستقل استفاده شود؛
 شماره نسخه زنده، Commit توسعه و وضعیت تأیید مالک جدا بمانند. بسته سوم در این تحویل آغاز نشده است.
+
+## تکمیل بسته پنجم پس از نسخه ۴۷ — مرجع اجرای آینده
+
+مطالب نسخه‌ها و برچسب‌های بالا سابقه تحویل قبلی‌اند؛ وضعیت جدید و قرارداد اتصال‌ها در `docs/package5-independent-connectors.md` است. شاخه این تکمیل `feature/package5-completion-2026-11-16` از Commit واقعی نسخه ۴۷ است؛ Commit تحویل جدید، مجوز Merge یا انتشار نیست.
+
+- بازیابی سورس: clone مخزن خصوصی، checkout دقیق Commit تأییدشده، نصب با نسخه Node و package manager مندرج در package.json و lockfile، اجرای `npm run install:ci` در صورت نیاز و سپس `npm run build`. پیکربندی DB/BUCKET و Secretهای نمونه از `.env.example` مستقل انجام شوند. فایل `.env.example` هیچ مقدار واقعی ندارد.
+- همه SQLها و snapshotها در `drizzle/` و Schema در `db/schema.ts` حفظ می‌شوند. این تکمیل Migration تازه ندارد. روی دیتابیس بازیابی‌شده فقط Migrationهای واقعاً غایب و تأییدشده به ترتیب اجرا شوند؛ جدول یا تاریخچه زنده reset نشود.
+- **D1**: پس از مجوز جداگانه، خروجی رسمی کامل نظیر `wrangler d1 export <DATABASE> --remote --output <PRIVATE_PATH>/database.sql` تهیه شود. checksum فایل، نقطه زمانی و نسخه Schema در Manifest خصوصی ثبت و SQL در یک DB مستقل restore شود. `integrity_check`، Foreign Key، شمار رکوردها، شناسه‌ها، روابط، تاریخچه نسخه‌ها، نمونه‌ها و تطبیق مالی باید در مقصد کنترل شوند. این دستور در این تحویل اجرا نشده است.
+- **R2**: پس از مجوز، از ابزار رسمی یا S3-compatible خصوصی برای خروجی کامل تمام object keyها، bytes، MIME و metadata استفاده شود؛ فهرست objectها و checksum هر فایل کنار Manifest رمزگذاری‌شده نگهداری شود. کلیدهای مرجع جدول‌های فایل باید در مقصد دقیقاً وجود داشته باشند. هیچ bucket یا فایل خصوصی برای این تحویل خوانده، کپی یا مهاجرت نشده است.
+- **Secrets**: STAFF_AUTH_PEPPER و SYNAPSE_INTEGRATION_KEY همراه داده از مسیر امن جدا منتقل شوند؛ تغییرشان بدون برنامه بازیابی، رمزهای حساب و refresh tokenهای رمزگذاری‌شده را از کار می‌اندازد. OAuth client، credential زمان‌بند و API keyهای اختیاری در Git یا گزارش Drive قرار نگیرند. اتصال ChatGPT قابل تبدیل به refresh token مستقل برنامه نیست.
+- Worker و D1/R2 همچنان وابستگی اجرایی‌اند. در حساب Cloudflare مستقل bindingها و هویت رسمی مقصد لازم‌اند؛ روی Hostinger معمولی باید runtime سازگار و adapter آزموده DB/storage/هویت فراهم شود. کپی سورس به PHP/shared hosting به‌تنهایی کافی نیست. هدرهای هویت را از بازدیدکننده نپذیرید؛ ورود محلی کارکنان و مسیرهای رزروشده احراز هویت حفظ شوند.
+- `/api/integrations/tick` و `scripts/run-integration-tick.mjs` درگاه و runner اجرای مستقل‌اند؛ هیچ Cron نصب نشده و درگاه به‌صورت پیش‌فرض غیرفعال است. فقط پس از تأیید میزبان، Secret، توقف مسیر موازی Work و آزمون واقعی منابع، مالک آن را فعال کند. الگوی OAuth، queue/cursor، مجوزها و حدود Drive در سند اتصال‌ها آمده است.
+
+وجود سورس و Build موفق، بازیابی کامل داده‌های عملیاتی را اثبات نمی‌کند. آزمون بازیابی واقعی DB/R2/Secrets و استقرار روی میزبان مقصد همچنان یک اقدام مستقل و نیازمند تأیید است.
+
+برای این تحویل، `node scripts/verify-source-manifest.mjs` به‌صورت پیش‌فرض Manifest جدید `docs/source/package5-completion-source-manifest.json` را بررسی می‌کند. Manifestهای بسته‌های قبلی سوابق تاریخی‌اند؛ برای بررسی یک snapshot قدیمی باید همان checkout و مسیر Manifest متناظر را صریح بدهید. این راستی‌آزمایی فقط سورس را پوشش می‌دهد، نه داده یا Secret.
