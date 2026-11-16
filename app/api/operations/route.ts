@@ -1,3 +1,4 @@
+import {dispatchReady,dispatchWrite,readDispatch,dispatchCreate} from '../../../lib/dispatch-engine';
 import {organizationReady} from '../../../lib/org-access';
 import {readWorkflow,writeWorkflow} from '../../../lib/workflow-core';
 import {workflowActions,workflowViews,WorkflowError} from '../../../lib/workflow-policy';
@@ -12,12 +13,12 @@ import {canSeeOps,canUseOps,canUseOpsCategory,requestedAccessScope,categoryFor,p
 import {intakeFields,validIntake,validDue} from '../../../lib/intake-policy';
 import {validOpsAssignee} from '../../../lib/intake-server';
 export const dynamic='force-dynamic';
-export async function GET(req:Request){const u=await identity();if(!u)return json({error:'ابتدا وارد شوید'},401);if(workflowViews.includes(new URL(req.url).searchParams.get('view')||'')){try{return json(await readWorkflow(u,new URL(req.url).searchParams))}catch(e){if(e instanceof WorkflowError)return json({error:e.message},e.status);console.error('workflow read failed',e);return json({error:'خواندن پرونده مرکزی ممکن نشد.'},500)}}if(!canUseOps(u))return json({error:'دسترسی ندارید'},403);return json(await readOperationsData(u,new URL(req.url).searchParams))}
+export async function GET(req:Request){const u=await identity();if(!u)return json({error:'ابتدا وارد شوید'},401);if(new URL(req.url).searchParams.get('view')==='dispatch'){try{return json(await readDispatch(u,new URL(req.url).searchParams))}catch(e:any){return json({error:e.message},e.status||500)}}if(workflowViews.includes(new URL(req.url).searchParams.get('view')||'')){try{return json(await readWorkflow(u,new URL(req.url).searchParams))}catch(e){if(e instanceof WorkflowError)return json({error:e.message},e.status);console.error('workflow read failed',e);return json({error:'خواندن پرونده مرکزی ممکن نشد.'},500)}}if(!canUseOps(u))return json({error:'دسترسی ندارید'},403);return json(await readOperationsData(u,new URL(req.url).searchParams))}
 export async function POST(req:Request){
  if(!mutationAllowed(req))return json({error:'درخواست نامعتبر'},403);
  const u=await identity();if(!u)return json({error:'ابتدا وارد شوید'},401);
  if(Number(req.headers.get('content-length')||0)>50000)return json({error:'حجم درخواست زیاد است'},413);
- const b:any=await req.json();if(workflowActions.includes(b.action)){try{return json(await writeWorkflow(u,b))}catch(e){if(e instanceof WorkflowError)return json({error:e.message},e.status);console.error('workflow mutation failed',e);return json({error:'ثبت پرونده مرکزی انجام نشد.'},500)}}if(deletionAction(b.action)&&!canDeleteData(u))return json({error:'حذف فقط برای مالک اصلی سامانه مجاز است.'},403);
+ const rawBody=await req.text();if(rawBody.length>50000)return json({error:'حجم درخواست زیاد است'},413);let b:any;try{b=JSON.parse(rawBody)}catch{return json({error:'JSON معتبر نیست'},400)};if(String(b.action).startsWith('dispatch_')||b.action==='create'&&await dispatchReady()){try{return json(await dispatchWrite(u,{...b,action:b.action==='create'?'dispatch_create':b.action}))}catch(e:any){return json({error:e.message},e.status||500)}}if(workflowActions.includes(b.action)){try{return json(await writeWorkflow(u,b))}catch(e){if(e instanceof WorkflowError)return json({error:e.message},e.status);console.error('workflow mutation failed',e);return json({error:'ثبت پرونده مرکزی انجام نشد.'},500)}}if(deletionAction(b.action)&&!canDeleteData(u))return json({error:'حذف فقط برای مالک اصلی سامانه مجاز است.'},403);
  if(b.action==='create'){
   const c=categoryFor(b.subtype),direction=String(b.direction||'inbound'),channel=String(b.channel||(b.sourceType==='incoming'?'phone':'manual')),visitPurpose=String(b.visitPurpose||'');
   if(!validCommunication(direction,channel,visitPurpose))return json({error:'روش ارتباط یا موضوع مراجعه معتبر نیست'},400);
@@ -33,7 +34,9 @@ export async function POST(req:Request){
  }
  const raw=await db().prepare('SELECT * FROM ops_items WHERE id=?').bind(String(b.id||'')).first<any>();
  if(!raw||!canSeeOps(u,raw))return json({error:'مورد پیدا نشد یا دسترسی ندارید'},404);
+ if(b.action==='comment'&&JSON.parse(raw.routing||'{}').ownerRole){try{return json(await dispatchCreate(u,{requestId:raw.id,title:raw.title,sourceBody:String(b.body||''),partyKind:'employee',direction:'internal',channel:'manual',informational:true}))}catch(e:any){return json({error:e.message},e.status||500)}}
  if(b.action==='comment'){const body=String(b.body||'').trim();if(!body||body.length>12000)return json({error:'متن معتبر بنویسید'},400);await(await eventStmt(raw.id,u.email,'comment',body)).run();return json({ok:true})}
+ if(b.action==='update'&&JSON.parse(raw.routing||'{}').ownerRole){try{return json(await dispatchWrite(u,{...b,action:'dispatch_update',state:({open:'routed',doing:'doing',waiting:'waiting_customer',review:'waiting_approval',closed:'closed'} as any)[b.status]}))}catch(e:any){return json({error:e.message},e.status||500)}}
  if(b.action==='update'){
   if(!u.manager&&raw.assignee&&raw.assignee!==u.email)return json({error:'تغییر وضعیت فقط برای مسئول پیگیری یا مدیر مجاز است'},403);
   const f=intakeFields(b,raw);if(!validIntake(f)||!validDue(b.due??raw.due))return json({error:'اطلاعات پذیرش یا موعد معتبر نیست'},400);
