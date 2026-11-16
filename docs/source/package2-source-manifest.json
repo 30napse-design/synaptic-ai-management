@@ -878,6 +878,11 @@
       "sha256": "e09cea90550c305a43a9694da6eb8d9a6fd5732e7c62b201abc94138aeb58cd9"
     },
     {
+      "path": "docs/source/package2-source-preservation-completion.md",
+      "bytes": 6180,
+      "sha256": "df1f25ffa7dbbe4112b159fe4a2bf243f9b63d9fb03dc011244c0e885d836267"
+    },
+    {
       "path": "docs/work-codex-integration-2026-11-15.md",
       "bytes": 2732,
       "sha256": "3ab55099b2a2cb627cc03874f29a6b06d0731c927620bc4a59d4455884205b30"
