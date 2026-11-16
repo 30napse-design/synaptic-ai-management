@@ -1,4 +1,16 @@
-# vinext-starter
+# SYNAPSE | AI MANAGEMENT
+
+مرجع بازسازی سورس، وابستگی‌های میزبان و پیکربندی مستقل:
+[راهنمای اجرای مستقل](docs/independent-runtime-fa.md)،
+[تنظیمات نمونه بدون Secret](.env.example)،
+[شناسنامه بسته دوم](docs/source/package2-release.json)،
+[فهرست کامل فایل‌ها و checksum](docs/source/package2-source-manifest.json).
+
+برای بررسی صحت سورس استخراج‌شده، از ریشه پروژه اجرا کنید:
+`node scripts/verify-source-manifest.mjs`.
+این بررسی هیچ سرویس خارجی، نصب، Migration یا انتشار اجرا نمی‌کند.
+
+## راهنمای موجود بستر ساخت
 
 A clean full-stack starter running on [vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and Drizzle support.
 

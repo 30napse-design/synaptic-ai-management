@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "package": 2,
+  "version_name": "synapse-package2-v43-source-2026-11-16",
+  "recorded_on": "2026-11-16",
+  "repository": "30napse-design/synapse-ai-management",
+  "source_branch": "feature/package2-source-preservation-2026-11-16",
+  "source_commit_resolution": "Use the Git commit containing this file; no self-referential hash is embedded.",
+  "runtime_base_commit": "eebc281b9863b85ada374553245e79b8258d2fbb",
+  "published": {
+    "version": 43,
+    "commit": "eebc281b9863b85ada374553245e79b8258d2fbb",
+    "url": "https://synapse.ekramiihamid.chatgpt.site",
+    "deployment_id": "appgdep_6afa5288eb6c8191ab118e906864179e",
+    "changed_by_this_delivery": false
+  },
+  "owner_acceptance": "pending; publication is not owner acceptance",
+  "previous_accepted_package": {
+    "package": 1,
+    "version": 40,
+    "commit": "2ec737fa7030687ff53f89ecdb81b0bba5da59e6"
+  },
+  "tag": {
+    "name": "synapse-package2-v43-source-2026-11-16",
+    "remote_status": "pending-capability-or-authenticated-owner-push",
+    "note": "Available GitHub connector can write commits and branches but does not expose tag creation; local CLI and browser are not authenticated. See independent-runtime-fa.md."
+  },
+  "verification": {
+    "runtime_changes": false,
+    "build": "Inherited successful build of runtime eebc281; no application or build configuration changes in this documentation-only snapshot.",
+    "prior_live_core_scenarios": "22/22 on version 41; persistence readback 22/22 on published version 43",
+    "browser_logout_login": "not completed; previous browser run was cancelled",
+    "source_integrity": "Run node scripts/verify-source-manifest.mjs",
+    "migration_executed_by_this_delivery": false
+  },
+  "source_manifest": "docs/source/package2-source-manifest.json",
+  "configuration_example": ".env.example",
+  "independent_runtime_guide": "docs/independent-runtime-fa.md",
+  "next_package_started": false
+}
