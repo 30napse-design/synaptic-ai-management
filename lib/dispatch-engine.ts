@@ -1,3 +1,5 @@
+import {dispatchSchemaReady as dispatchReady} from './dispatch-schema';
+export {dispatchSchemaReady as dispatchReady} from './dispatch-schema';
 import {visible} from './staff-policy';
 import {canReadLabJob} from './lab-execution-policy';
 import {canFinance} from './finance-policy';
@@ -17,7 +19,6 @@ const now=()=>new Date().toISOString(),uid=()=>crypto.randomUUID(),short=(v:any,
 const legacyState=(v:string)=>['closed','done'].includes(v)?'closed':v==='doing'?'doing':v.startsWith('waiting_')?'waiting':['ready','triage','exception','awaiting_assignment','incomplete'].includes(v)?'review':'open';
 const phoneKey=(v:any)=>short(v,80).replace(/[۰-۹٠-٩]/g,c=>String(c.charCodeAt(0)-(c>='۰'?1776:1632))).replace(/[\s()\-]/g,'');
 const date=(v:string)=>!v||/^\d{4}-\d{2}-\d{2}$/.test(v)&&Number.isFinite(Date.parse(v+'T00:00:00Z'))&&new Date(v+'T00:00:00Z').toISOString().slice(0,10)===v;
-export async function dispatchReady(){return !!await db().prepare("SELECT name FROM pragma_table_info('ops_items') WHERE name='routing'").first()}
 async function position(role:string){const p=await db().prepare('SELECT id FROM workflow_positions WHERE code=? AND active=1').bind(role).first<any>();const r=p?await resolveWorkflowOwner(p.id):null;return {id:p?.id||'',member:r?.owner?.id||OWNER,missing:!r?.owner,revision:r?.assignment_revision??0};}
 async function event(request:string,u:any,action:string,body:any,conditional=false){return conditional?db().prepare('INSERT INTO staff_events(id,record_id,actor,action,body,created_at) SELECT ?,?,?,?,?,? WHERE changes()=1').bind(uid(),request,u.email,action,JSON.stringify(body),now()):eventStmt(request,u.email,action,JSON.stringify(body))}
 async function tasks(request:string){return (await db().prepare("SELECT r.*,w.details FROM staff_records r JOIN staff_work_details w ON w.record_id=r.id WHERE json_extract(w.details,'$.dispatchRequest')=?").bind(request).all()).results as any[]}
