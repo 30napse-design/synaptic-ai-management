@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "release": "operational-activation-2026-11-16",
+  "repository": "30napse-design/synapse-ai-management",
+  "branch": "fix/operational-activation-2026-11-16",
+  "source_base_commit": "893aefa19dea5909997b8f56071db886210f291f",
+  "previous_publication": {
+    "version": 46,
+    "commit": "893aefa19dea5909997b8f56071db886210f291f"
+  },
+  "source_commit_resolution": "Containing Git commit; live pilot and scheduler run proof recorded after publication in private handoff report.",
+  "source_manifest": "docs/source/operational-activation-source-manifest.json",
+  "handoff": "docs/operational-activation-2026-11-16.md",
+  "hostinger_inventory": "docs/hostinger-operational-inventory.md",
+  "tests": {
+    "adapter_checks": 12,
+    "http_checks": 25,
+    "typecheck": "passed",
+    "build": "passed",
+    "previous_126_suite_repeated": false,
+    "real_source_access_read_verified": {
+      "gmail_accounts": 4,
+      "native_call_sheet": true,
+      "legacy_xlsx": true
+    },
+    "live_pilot_at_source_commit": "pending post-publication",
+    "scheduler_run_at_source_commit": "pending post-publication"
+  },
+  "migration_required": false,
+  "accounts_changed": false,
+  "paid_ai_enabled": false,
+  "external_messages_sent": false,
+  "host_migration_performed": false
+}
