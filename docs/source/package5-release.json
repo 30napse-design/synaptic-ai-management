@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "package": 5,
+  "version_name": "synapse-package5-command-center-2026-11-16",
+  "date": "2026-11-16",
+  "repository": "30napse-design/synapse-ai-management",
+  "branch": "feature/package5-command-center",
+  "source_base_commit": "90d6819bffe6f2c6cb8e41c385309b86331ba14a",
+  "previous_publication": {
+    "version": 45,
+    "commit": "90d6819bffe6f2c6cb8e41c385309b86331ba14a"
+  },
+  "source_commit_resolution": "Containing Git commit. Native publication proof is recorded after deployment in the private delivery report and SYNAPSE-LATEST.json.",
+  "source_manifest": "docs/source/package5-source-manifest.json",
+  "handoff": "docs/package5-command-center.md",
+  "deployment_contracts": "docs/package5-independent-connectors.md",
+  "tests": {
+    "command": "node scripts/test-finance-runtime.mjs package5-command-center-runtime.mjs --package5-fixtures",
+    "passed": true,
+    "http_checks": 126,
+    "typecheck": "passed",
+    "build": "passed",
+    "environment": "Real compiled HTTP APIs with temporary D1/R2, synthetic identities and explicit Google provider fixtures",
+    "previous_package_suites_repeated": false,
+    "live_external_connections_tested": false,
+    "browser_visual_tested": false
+  },
+  "migration_required": false,
+  "operational_data_changed_for_testing": false,
+  "new_server_secret_names": [
+    "SYNAPSE_INTEGRATION_KEY"
+  ],
+  "external_paid_service_enabled": false,
+  "scheduler_enabled": false,
+  "automatic_outbound_enabled": false,
+  "real_inbound_sources_enabled": false,
+  "fully_autonomous_acceptance_criterion_met": false,
+  "blockers": [
+    "Google Cloud OAuth client credentials and account-specific consent",
+    "Native valid Sheets schema/source authorization; reference tariff sheet import remains inactive",
+    "Provider-specific approved social/IMAP/SMTP/telephony bridges",
+    "Authorized scheduler runtime/token and source activation approval",
+    "Paid AI API key/model/owner cost settings if desired"
+  ]
+}

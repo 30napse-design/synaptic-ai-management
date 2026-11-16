@@ -2,7 +2,7 @@ import {hasAccess} from './auth-policy.ts';
 export const assistantModes={staff:'راهنمای کارکنان',science:'دستیار علمی',quote:'پیشنهاد پیش‌فاکتور',customer:'راهنمای خدمات مشتری',management:'دستیار مدیریت'};
 export type AssistantMode=keyof typeof assistantModes;
 export function allowedModes(u:any):AssistantMode[]{return (Object.keys(assistantModes) as AssistantMode[]).filter(m=>m==='management'?u.manager:m==='quote'?!u.laboratory&&(u.manager||hasAccess(u,'finance_ops')||hasAccess(u,'quote_ops')):m==='science'?!u.laboratory&&hasAccess(u,'science'):true)}
-export type KnowledgeChunk={id:string,document:string,version:string,category:AssistantMode,scope:string,title:string,text:string,href:string,approved:boolean};
+export type KnowledgeChunk={id:string,document:string,version:string,category:AssistantMode,scope:string,title:string,text:string,href:string,approved:boolean;externalAllowed?:boolean};
 // Curated product guidance, not scientific evidence or an authoritative price list.
 export const knowledge:KnowledgeChunk[]=[
 {id:'account-1',document:'synapse-account-guide',version:'1',category:'staff',scope:'staff',title:'راهنمای حساب و امنیت',text:'مشخصات و تصویر خود را در تنظیمات حساب من تکمیل کنید. تغییر رمز نیازمند رمز فعلی است. تعویض حساب ابتدا نشست فعلی را می‌بندد و ورود جدید نیازمند احراز هویت است.',href:'/account',approved:true},
