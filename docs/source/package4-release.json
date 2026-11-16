@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "package": 4,
+  "version_name": "synapse-package4-laboratory-workflow-2026-11-16",
+  "date": "2026-11-16",
+  "repository": "30napse-design/synapse-ai-management",
+  "branch": "feature/package4-laboratory-workflow",
+  "source_base_commit": "430b9c936c5c3eeb9e6f82cc198155a8fbf12843",
+  "previous_publication": {
+    "version": 44,
+    "commit": "430b9c936c5c3eeb9e6f82cc198155a8fbf12843"
+  },
+  "source_commit_resolution": "The Git commit containing this file; native publication proof recorded in private delivery report and SYNAPSE-LATEST.json.",
+  "source_manifest": "docs/source/package4-source-manifest.json",
+  "handoff": "docs/package4-laboratory-workflow.md",
+  "tests": {
+    "command": "node scripts/test-finance-runtime.mjs package4-laboratory-runtime.mjs",
+    "passed": true,
+    "http_checks": 91,
+    "environment": "Compiled real HTTP APIs with isolated temporary D1/R2 and synthetic role identities",
+    "typecheck": "passed",
+    "build": "passed",
+    "previous_financial_tests_repeated": false,
+    "real_browser_login_tested": false,
+    "real_external_delivery_tested": false
+  },
+  "migration_required": false,
+  "new_secrets_required": false,
+  "operational_data_changed_for_testing": false,
+  "automatic_outbound_service_enabled": false,
+  "next_package_started": false
+}

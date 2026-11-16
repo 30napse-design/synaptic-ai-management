@@ -1,6 +1,6 @@
 import {hasAccess,hasDataAccess} from './auth-policy.ts';
 export const executionStatuses:Record<string,string>={received:'ابلاغ سفارش',doing:'در حال اجرا',paused:'نیازمند هماهنگی / متوقف',ready:'گزارش تحویل پژوهشکده شد',delivered:'دریافت توسط عملیات'};
-export const sampleStatuses:Record<string,string>={prepared:'آماده ارسال',sent:'ارسال‌شده',received:'دریافت‌شده',issue:'مغایرت نمونه',consumed:'مصرف‌شده',returned:'برگشت‌داده‌شده'};
+export const sampleStatuses:Record<string,string>={prepared:'آماده ارسال',sent:'ارسال‌شده',received:'دریافت‌شده',issue:'مغایرت نمونه',consumed:'مصرف‌شده',returned:'برگشت‌داده‌شده',retained:'نگهداری با مهلت مصوب',disposed:'امحای مستند'};
 export const inquiryStatuses:Record<string,string>={open:'منتظر پیشنهاد',quoted:'پیشنهاد دریافت شد',declined:'عدم پذیرش',selected:'انتخاب‌شده',closed:'بسته‌شده'};
 export const statementStatuses:Record<string,string>={submitted:'ارسال‌شده',reviewed:'بررسی عملیات',approved:'تأیید مدیریت',settled:'تسویه ثبت‌شده مدیریت'};
 export const canCoordinate=(u:any)=>!!u&&!u.laboratory&&(u.manager||hasAccess(u,'lab_operations'));
