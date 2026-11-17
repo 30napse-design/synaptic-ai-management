@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "snapshot": "synapse-package5-completion-gmail-result-alias-2026-11-17",
+  "snapshot": "synapse-integrated-operations-mission1-2026-11-17",
   "runtime_base_commit": "66df78f2a1867c6aff3be34f62436284587e66a7",
   "source_commit_resolution": "Containing Git commit; development only, no publication authorization",
   "algorithm": "sha256",
@@ -225,8 +225,8 @@
     },
     {
       "path": "app/api/operations/route.ts",
-      "bytes": 10187,
-      "sha256": "3efcae716a81a689a659e77db8e5215ab4cbba30b6b60ca43a4326de46ef7e7d"
+      "bytes": 10859,
+      "sha256": "8020ad64de111efa0f992b4d6a0203594c41b58f220094d156f89aa6bec7befa"
     },
     {
       "path": "app/api/ops/import/route.ts",
@@ -915,13 +915,13 @@
     },
     {
       "path": "docs/package5-completion-handoff.md",
-      "bytes": 8546,
-      "sha256": "3e22e568cd161f95dbdbd3a531af20de862e68a01d2c04a02bd9c249cfa37cb2"
+      "bytes": 9196,
+      "sha256": "b37e85a03e6152dcb304c0028206210918bb34dd8b52d86287423a90767ccbd3"
     },
     {
       "path": "docs/package5-independent-connectors.md",
-      "bytes": 22400,
-      "sha256": "a839ef692ad9fd396f8ea8191e5f3ecaddfb92fc54226fc99233442cc44d691a"
+      "bytes": 26709,
+      "sha256": "24f4989d85f00ded0a53d095de15e5e6f78ef6f92bf96cb30ebb072b4565a2ad"
     },
     {
       "path": "docs/petty-cash-handoff.md",
@@ -1255,8 +1255,8 @@
     },
     {
       "path": "lib/account-handover.ts",
-      "bytes": 20609,
-      "sha256": "0a6bda8ca82014b5857a420509e22089b78f9b7571501d2065180f03863b753c"
+      "bytes": 20682,
+      "sha256": "e560c996b8d32f4cc9b71c94ed9780380e95e5215a02175b1da21267b63b58a3"
     },
     {
       "path": "lib/assistant-policy.ts",
@@ -1329,9 +1329,14 @@
       "sha256": "497cdaf933efb1ae6947941df01a3ad611c7922c0082d27ea3364e15951d28eb"
     },
     {
+      "path": "lib/dispatch-assignment.ts",
+      "bytes": 11196,
+      "sha256": "8f3593436315e09027dc26861dbc72cd0ca9730096ba43b8020dcee337106c09"
+    },
+    {
       "path": "lib/dispatch-engine.ts",
-      "bytes": 47214,
-      "sha256": "2501d906d7e628788440b80403b34e1ef90c2136234d84f75ed3b52f2e644009"
+      "bytes": 47381,
+      "sha256": "f723edae031b0bbec9afc7e303c30ab8a325ef604bf8efac5f8809abab56932a"
     },
     {
       "path": "lib/dispatch-policy.ts",
@@ -1884,6 +1889,11 @@
       "sha256": "6da99286e0eb7905595ca851e68983bedf94a0f93814819d61f2b1f3a0342ba2"
     },
     {
+      "path": "scripts/verify-operational-backup.py",
+      "bytes": 3022,
+      "sha256": "9ea1846e65d6a2559db6bc39ebfbdaf5ad5babd7c084533464b760415433016a"
+    },
+    {
       "path": "scripts/verify-source-manifest.mjs",
       "bytes": 1700,
       "sha256": "ee8ea520d72bd9b85cdf50880f83996df7fda7f25c7062ce444d75d8ec916a6a"
@@ -1932,6 +1942,11 @@
       "path": "tests/deletion-policy.test.mjs",
       "bytes": 1033,
       "sha256": "ac25a312088f19010a3fefee915a6f86e154434803e0409719f4157b5a0484ed"
+    },
+    {
+      "path": "tests/dispatch-assignment-runtime.mjs",
+      "bytes": 6480,
+      "sha256": "0c06077625c7d77f06a15734706e29890c5084dd5dade5bd1edcd93c63bbbd4f"
     },
     {
       "path": "tests/eight-org-accounts-runtime.mjs",
@@ -1997,6 +2012,11 @@
       "path": "tests/navigation.test.mjs",
       "bytes": 2860,
       "sha256": "dc43ba9e12790bbda82891f47eb58454f7442b5af0246566fc6f48200ecb4512"
+    },
+    {
+      "path": "tests/operational-backup.test.py",
+      "bytes": 1767,
+      "sha256": "2c52c937dba166abc566c97204ca55dc2690986a33b830452218370e048de948"
     },
     {
       "path": "tests/ops-policy.test.mjs",
@@ -2174,5 +2194,5 @@
       "sha256": "a0a10229cdda6f5fdb32234e3539007412233bb4938a671866c9295a44a3bdb6"
     }
   ],
-  "development_base_commit": "0d1a0a7c0d0bda3d335a1b31050fd04e070f5aa9"
+  "development_base_commit": "6451533ecebf0fc9d69068c5a6668025474d7e9b"
 }

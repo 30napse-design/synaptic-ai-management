@@ -120,3 +120,28 @@ Use the real message ID and matching allowed category/subtype. Retry with the sa
 Four unit scenarios check alias validity, byte-for-byte old prefixes/provider IDs, invalid input rejection and unchanged prior account discovery. Eleven synthetic MCP/OAuth HTTP checks exercise the actual importer, dotted/hyphen replay, same request/task IDs, preserved human status/note/due, invalid namespace rejection and cross-path deduplication. TypeScript and Build pass; the earlier 99-check completion suite and broad finance/lab suites are not rerun.
 
 The newly observed Work branch `docs/operations-assignment-2026-11-17` changes only `docs/operations/assignment-policy.md` and `docs/operations/assignment-execution-report.md`. Neither file is edited or merged by this patch. No code-path conflict was observed. Work must keep its own actual-data review/assignment process; Codex makes no assignment call, live sync, migration or bulk repair. Source manifest is refreshed for the same package-five branch so the new helper/tests/docs remain recoverable from GitHub.
+
+## Owner-approved staged assignment API — mission 1, 2026-11-17
+
+No live assignment is performed by this development delivery. Work remains the executor after owner approval/release. The existing `/api/operations` now supports:
+
+- `POST {"action":"dispatch_bulk_dry_run","batch_id":"OWNER_STABLE_BATCH_ID","ids":["ORIGINAL_OPERATION_ID"],"decisions":[]}`. Owner only, 1–100 exact original IDs; no housekeeping, events, task writes or source writes. Returns classification family/roles, active responsible assignment, ambiguity/conflicts, missing dates, ready/skipped state and a snapshot-bound confirmation token. Optional decisions are `{id,family,reason}` and explicitly resolve a reviewed ambiguity; executable/unsafe attachment review is not bypassed.
+- `dispatch_bulk_preflight`: existing activation-preflight fields plus `backup_resources:["D1","R2"]`, `restore_verified:true`, private backup Manifest reference/SHA-256, restore evidence and the target environment commit. The account preflight's historical without-backup exception is **not** accepted for this API.
+- `dispatch_bulk_execute`: same batch/IDs/decisions, confirmation token, `preflight_id`, `confirm:true` and reason. Requires a current owner restore attestation. Roles are resolved through existing positions/appointments, not fixed employees. Already assigned/closed/missing/ambiguous cases are skipped; no source body, resolution, status, due date or prior action is rewritten. Existing tasks, including completed tasks, are preserved. New tasks/notifications use existing deterministic dispatch IDs.
+- `GET ?view=assignment_batch&id=OWNER_STABLE_BATCH_ID`: owner-only persisted results. Success receipts are atomic with the source/task change. A crash before batch-state update recovers from the receipt; retries skip successful items. A source/role/task snapshot conflict is reported per item, requires reviewed fresh planning when data changed, and does not roll back successful independent items. One expiring owner batch lease plus canonical event leases prevent duplicate simultaneous execution. Persisted result state and receipts use existing settings/events, with no new schema or parallel routing engine.
+
+Dry Run/execute do not pick a default person when a required role has no eligible responsible member. No record count is hard-coded and no automatic sweep of historical/unassigned records is added. Changes in Work's two `docs/operations/` files are not merged or edited.
+
+### Private backup and offline rehearsal
+
+The application cannot manufacture a complete production D1/R2 export from its read-only source tooling. Before live assignment, owner must obtain a consistent official D1 export and complete R2 bytes/object-key/MIME/metadata inventory, encrypt the private bundle, preserve auth/encryption secrets separately and restore in an isolated environment. See the existing migration guide for export authorization and Workers/host dependencies. A source manifest or a few database rows is not a backup.
+
+`python scripts/verify-operational-backup.py /PRIVATE/RESTORED_BUNDLE` is offline/read-only. The directory contains `manifest.json`, restored standalone SQLite and object files. Manifest format:
+
+```json
+{"schema_version":1,"database":{"file":"database.sqlite","sha256":"SHA256"},"objects":[{"key":"private/example","file":"objects/example.bin","sha256":"SHA256","size":123,"mime":"application/octet-stream","metadata":{}}]}
+```
+
+It verifies checksums, SQLite integrity/foreign keys, safe file paths, duplicate object keys, size/MIME and file references in DB and versioned knowledge. It never reads production, migrates or prints database contents. It proves only the supplied bundle; original remote completeness, snapshot consistency, encryption and secret custody still need owner evidence. Restore with exactly the same stable IDs/object keys; do not reset the live database or rerun migrations blindly.
+
+Focused validation: 15 synthetic HTTP cases for owner authorization, write-free planning, snapshot conflict, ambiguity/missing/already-assigned rows, original human state, backup gating, duplicate safety and partial retry; one offline copied SQLite+R2 rehearsal with corruption/missing-object rejection. TypeScript and Build pass. These are not real production backup or account-login claims.
