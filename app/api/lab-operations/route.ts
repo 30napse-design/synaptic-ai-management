@@ -1,12 +1,13 @@
+import {readMother,writeMother,motherFile} from '../../../lib/laboratory-mother';
 import {identity,db,json,mutationAllowed} from '../../../lib/staff-server';
 import {hasAccess} from '../../../lib/auth-policy';
 import {readLabData} from '../../../lib/lab-data';
 import {canCoordinate} from '../../../lib/lab-execution-policy';
 import {writeLabWorkspace,LabError} from '../../../lib/lab-execution-write';
-export async function GET(req:Request){const u=await identity();if(!u||u.laboratory||!hasAccess(u,'lab'))return json({error:'دسترسی ندارید'},403);if(new URL(req.url).searchParams.get('finance')==='1')return json({error:'مرجع دریافت و پرداخت، بخش مالی و قراردادها است.'},409);return json(await readLabData(u))}
+export async function GET(req:Request){const u=await identity();if(new URL(req.url).searchParams.get('view')==='mother'){try{return new URL(req.url).searchParams.has('file')?await motherFile(req,u):json(await readMother(u,new URL(req.url).searchParams))}catch(e:any){return json({error:e.status?e.message:'خواندن پروژه ممکن نشد.'},e.status||500)}}if(!u||u.laboratory||!hasAccess(u,'lab'))return json({error:'دسترسی ندارید'},403);if(new URL(req.url).searchParams.get('finance')==='1')return json({error:'مرجع دریافت و پرداخت، بخش مالی و قراردادها است.'},409);return json(await readLabData(u))}
 // Compatibility route delegates to the same writer; legacy monetary/status edits cannot bypass it.
 export async function POST(req:Request){
- if(!mutationAllowed(req))return json({error:'درخواست نامعتبر'},403);const u=await identity();if(!canCoordinate(u))return json({error:'نقش هماهنگی اجرا لازم است.'},403);
+ if(!mutationAllowed(req)&&!(req.headers.get('origin')===new URL(req.url).origin&&req.headers.get('content-type')?.startsWith('multipart/form-data')))return json({error:'درخواست نامعتبر'},403);const u=await identity();if(req.headers.get('content-type')?.startsWith('multipart/form-data')){try{return json(await motherFile(req,u))}catch(e:any){return json({error:e.status?e.message:'مدرک ذخیره نشد.'},e.status||500)}}const candidate:any=await req.clone().json().catch(()=>({}));if(String(candidate.action).startsWith('mother_')){try{return json(await writeMother(u,candidate,new URL(req.url).origin))}catch(e:any){return json({error:e.status?e.message:'پروژه ذخیره نشد.'},e.status||500)}}if(!canCoordinate(u))return json({error:'نقش هماهنگی اجرا لازم است.'},403);
  try{
   const b:any=await req.json();if(!['create','update'].includes(b.action))return json({error:'عملیات معتبر نیست.'},400);
   const old=b.action==='update'?await db().prepare('SELECT * FROM laboratory_jobs WHERE id=?').bind(String(b.id||'')).first<any>():null;
