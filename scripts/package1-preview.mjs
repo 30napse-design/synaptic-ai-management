@@ -33,6 +33,12 @@ try{
   await db.prepare('INSERT INTO staff_work_notifications(id,recipient,record_id,body,created_at) VALUES(?,?,?,?,?)').bind('notice-'+id,member,id,'آزمایشی — کار جدید در کارتابل شما',now).run();
   await db.prepare('INSERT INTO staff_records(id,kind,title,body,assignee,reviewer,due,status,created_by,updated_at) VALUES(?,?,?,?,?,?,?,?,?,?)').bind('mail-'+id,'correspondence','آزمایشی — پیام داخلی '+title,'پیام مصنوعی متصل به کارتابل همین حساب',member,owner,today,'todo',owner,now).run();
  }
+ if(process.argv.includes('--sample-intake-fixture')){
+  const customerLogin=await api('/api/auth/login',{username:'customer',password:credentials.get('customer')},{}),customerHeaders={Cookie:customerLogin.r.headers.get('set-cookie').split(';')[0]};
+  const mother=(await api('/api/lab-operations',{action:'mother_create',invoice_number:'TEST-INTAKE-583',title:'آزمایشی — پذیرش نمونه محققین',customer_name:'محقق کاملاً ساختگی',department:'پاتولوژی'},customerHeaders)).d;
+  const lab=(await api('/api/laboratories',{action:'lab_save',type:'internal',name:'مجری آزمایشی بافت‌شناسی',areas:['بافت‌شناسی و پاتولوژی']})).d;
+  await api('/api/lab-operations',{action:'mother_job_create',id:mother.id,revision:mother.revision,key:'preview-intake-work-order',department:'پاتولوژی',laboratory_id:lab.id,services:[{description:'بافت آزمایشی',quantity:10,unit:'قطعه'}]});
+ }
  const types={'.js':'text/javascript','.css':'text/css','.png':'image/png','.jpeg':'image/jpeg','.svg':'image/svg+xml','.woff2':'font/woff2','.json':'application/json'};
  const banner='<aside style="position:sticky;top:0;z-index:99999;background:#132c4b;color:white;padding:10px;font:13px sans-serif;text-align:center" dir="rtl">پیش‌نمایش بسته اول — فقط داده آزمایشی، مستقل از سایت زنده · انتخاب حساب: '+roles.map(([n])=>'<a style="color:#aeeaff;margin:5px;display:inline-block" href="/_preview/role/'+n+'">'+n+'</a>').join('')+'</aside>';
  server=http.createServer(async(req,res)=>{try{

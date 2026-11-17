@@ -1,0 +1,4 @@
+import {identity,json,mutationAllowed} from '../../../lib/staff-server';
+import {readResearchIntake,writeResearchIntake,researchIntakeFile} from '../../../lib/researcher-sample-intake';
+export async function GET(req:Request){try{const u=await identity(),p=new URL(req.url).searchParams;return p.has('file')?await researchIntakeFile(req,u):json(await readResearchIntake(u,p));}catch(e:any){return json({error:e.status?e.message:'خواندن پذیرش ممکن نشد.'},e.status||500);}}
+export async function POST(req:Request){const multipart=req.headers.get('content-type')?.startsWith('multipart/form-data');if(!mutationAllowed(req)&&!(multipart&&req.headers.get('origin')===new URL(req.url).origin))return json({error:'درخواست نامعتبر.'},403);try{const u=await identity();return json(multipart?await researchIntakeFile(req,u):await writeResearchIntake(u,await req.json(),new URL(req.url).origin));}catch(e:any){return json({error:e.status?e.message:'پذیرش ذخیره نشد.'},e.status||500);}}
