@@ -1,0 +1,42 @@
+# Work final operational closure — 2026-11-17
+
+## Provenance and scope
+- Live baseline confirmed through Sites: version 51, `3bbdb2c1b328e241ded003bc4e7b57f66f76c152`.
+- GitHub parent: `ef70e5e05b6bf2b980426eec722915975fb46a14`, the subsequent v51 publication record. It changes documentation only.
+- Work branch: `feature/work-final-operational-closure-2026-11-17`.
+- This delivery changes code and isolated fixtures only. No production record, employee account, secret, schema migration, source import, live assignment or deployment was performed. GitHub main and concurrent Codex branches remain unchanged.
+
+## Executed fixes
+1. Explicit owner-only `owner_accept` in the existing operations API/UI records immutable acceptance. The existing approved, active assignee receives the existing cartable projection; retries do not duplicate tasks or reset human status/date. Missing/inactive assignees remain in the assignment queue, and approved manual assignment clears that queue marker. Acceptance is not bank or scientific approval.
+2. A mother project, its exact financial-document ID and child laboratory jobs now participate in the existing typed workflow graph. A manager can attach the mother project to an existing, identity-verified central order. No automatic researcher, order, invoice or parallel CRM is created. Existing order/invoice/delivery selectors keep internal IDs and revisions out of the main forms.
+3. Finance can explicitly match an existing invoice with exactly the same normalized invoice number. Conflicting central-order ownership is rejected; revision guards preserve concurrent changes. Existing payment data is not confirmed or rewritten.
+4. Child work-order issuance routes a stable source through the existing dispatch engine into the Research Specialist cartable. Retry uses the same communication key and existing task IDs; routing failures are reported as pending rather than success.
+5. Delivery financial checks resolve the exact invoice attached through central-order/project links when no direct legacy financial link exists. Multiple possible invoices remain blocked; a receipt upload still never means verified bank funds.
+6. Consumption/documented manager-authorized disposition no longer invalidates scientific approval of unchanged received data. New receipt quantities or unresolved discrepancies still change the scientific basis. Disposal requires reason and HTTPS evidence; balances cannot go negative.
+7. `mother_close` requires a closed, documented A09 delivery for the same central order, current financial/scientific approval, all child jobs covered by the approved report, all dependent child cartable tasks completed, and all laboratory remnants resolved. Closed mother projects reject edits/files/execution changes until documented managerial reopening. Closing/reopening history is preserved.
+8. Fixed an actual browser crash on the Owner cartable: the legacy management position was being added alongside the canonical Institute Director definition and had no duties array. The canonical owner role now appears once. This does not grant or change permissions.
+9. Updated the existing isolated preview harness to use the nine approved login names instead of attempting new legacy scientific/admin account names.
+10. Added an offline SQL/SQLite restore and object-manifest verifier. It checks integrity, foreign keys, table counts, file hashes, unique keys and DB object references. It does not export production storage or certify completeness against live infrastructure.
+
+## Successful verification
+- Production Build and TypeScript passed on the application changes.
+- `final-operational-closure-runtime.mjs`: 200 compiled HTTP checks passed against isolated temporary D1/R2. The scenario links one researcher/order/mother invoice to three laboratory jobs and role cartables, performs staged sample/material custody, protocol approval, result/QC/exact-version scientific approval, verified synthetic accounting fixtures, documented synthetic delivery, request/mother closure, denied post-closure edits and controlled reopening. The existing scientific and financial gates are not bypassed.
+- `package3-finance-runtime.mjs`: 113 checks passed for approved services, multi-service quotation, approval, issue/amendment/documented synthetic send, advance/staged payments, bank mismatch, exact financial minimum, settlement/refund, ledger and central linkage. Its old fixture was corrected to provide actual synthetic sample custody before expecting execution; application sample gates were not weakened.
+- `package4-laboratory-runtime.mjs`: 91 checks passed for receipt discrepancies, privacy, laboratory execution, result files, Specialist/Research routing, QC/QA, independent exact-version approval, gated delivery and sample disposition.
+- `portable-backup.test.mjs`: offline restore/checksum/linkage success and corruption/missing-object/count rejection passed using synthetic files only.
+- Browser through the official local preview: all nine synthetic role cartables opened; the Owner crash was reproduced and fixed; a mother project and an unattached payment declaration were submitted through real forms, reloaded and reopened with persisted data. Payment remained pending reconciliation. The preview contains no production credentials/data. Browser success is not real employee acceptance or production activation.
+
+## Read-only live observation
+One `get_operations_sync_status` call returned 996 operations, 513 Gmail records, 461 incoming calls and 569 unassigned operations (422 calls, 147 Gmail). No historical allocation/import was executed. The API reported zero financial documents/transactions and zero scientific cases. This is an observation at this execution, not proof that live financial or scientific workflows have been accepted by staff. These business data remain untouched.
+
+## Required owner acceptance after Codex integration/publication
+1. Securely log into the nine existing accounts; verify permitted views and denied financial/scientific actions. Do not send passwords/cookies in chat.
+2. Use clearly marked synthetic records: accept one request as Owner, verify its designated employee cartable/today/notification, save follow-up, logout/login and verify persistence; check the unassigned queue path.
+3. Use one identity-verified central customer/order and a uniquely numbered synthetic mother project: link the existing invoice, issue multiple laboratory jobs, record partial receipts/results, complete protocol/QC/independent approval and authorized financial review, document the synthetic delivery and close/reopen the project. Do not confirm real money, send real external messages or dispose real material as a test.
+
+## Unresolved activation / migration boundaries
+- No safe application Owner/employee session was supplied for production acceptance. Source-hosting privileges are not an application session; no forged employee identity was used against production. The local fixture login helper is never part of the application production route.
+- No connector exposed a full consistent D1 export or complete R2 download with metadata. A full live backup and restoration rehearsal therefore remain unavailable; the offline verifier is not a substitute. Obtain official exports and secure pepper transfer through the hosting provider/authorized Cloudflare account.
+- OAuth scopes, four Gmail intake, independent cron and external delivery were not activated or attested by this code task. Existing adapters/configurations are preserved; these need their real provider authorization and a separately observed run. No paid AI/model or bulk historical sync was started.
+- Hostinger shared PHP/ordinary Node is not yet a verified destination for `cloudflare:workers`, D1 batch semantics and R2 object bindings. Destination runtime/adapters, TLS, OAuth callbacks, scheduler, private object storage and secure secret delivery must be configured and tested before migration. See the updated existing `docs/independent-runtime-fa.md`.
+- Codex must review/integrate this branch and deploy the exact reviewed commit. No release-ready claim overrides the above operational acceptance/backup limitations.

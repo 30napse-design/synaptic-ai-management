@@ -41,6 +41,8 @@ export async function workflowGraph(initial:WorkflowReference[]){
     else if(type==='finance_version'||type==='payment')add('finance_document',r.document_id);
     else if(type==='sample'||type==='lab_result')add('lab_job',r.job_id);
     else if(type==='science_case'){const p=JSON.parse(r.payload);for(const id of p.job_ids||[])add('lab_job',id);add('task',r.source_task_id);add('operation',r.source_operation_id);add('project',p.project_id)}
+    else if(type==='project'){const m=JSON.parse(r.details||'{}').mother;if(m)add('finance_document',m.invoice_id)}
+    else if(type==='lab_job'){let m:any={};try{m=JSON.parse(r.notes||'{}')}catch{}add('project',m.mother_project)}
     else if(type==='science_result')add('science_case',r.case_id);
    }
    const ids=rows.map(r=>r.id);if(!ids.length)continue;
@@ -48,6 +50,7 @@ export async function workflowGraph(initial:WorkflowReference[]){
     UNION ALL SELECT 'finance_version',id FROM finance_versions WHERE document_id IN (SELECT value FROM json_each(?1))
     UNION ALL SELECT 'payment',id FROM finance_transactions WHERE document_id IN (SELECT value FROM json_each(?1)) AND kind IN ('receipt','refund')
     UNION ALL SELECT CASE WHEN type LIKE 'lab-line:%' THEN 'lab_job' WHEN type='scientific' THEN 'task' ELSE 'operation' END,reference_id FROM finance_links WHERE document_id IN (SELECT value FROM json_each(?1)) AND (type LIKE 'lab-line:%' OR type='scientific' OR type='operation:'||reference_id)`,ids);
+   else if(type==='project')queue("SELECT 'lab_job' type,id FROM laboratory_jobs WHERE json_extract(CASE WHEN json_valid(notes) THEN notes ELSE '{}' END,'$.mother_project') IN (SELECT value FROM json_each(?1))",ids);
    else if(type==='lab_job')queue(`SELECT 'finance_document' type,document_id id FROM finance_links WHERE reference_id IN (SELECT value FROM json_each(?1)) AND type LIKE 'lab-line:%'
     UNION ALL SELECT CASE kind WHEN 'sample' THEN 'sample' ELSE 'lab_result' END,id FROM laboratory_records WHERE job_id IN (SELECT value FROM json_each(?1)) AND kind IN ('sample','result')
     UNION ALL SELECT 'science_case',c.id FROM science_cases c JOIN json_each(c.payload,'$.job_ids') j WHERE j.value IN (SELECT value FROM json_each(?1))
@@ -76,7 +79,7 @@ export async function readableWorkflowNode(u:any,n:WorkflowNode,graph:Map<string
 }
 export function workflowNodeSummary(n:WorkflowNode){const r=n.row;let payload:any={};if(r.payload)payload=JSON.parse(r.payload);
  const result:any={type:n.type,id:n.id,title:r.title||r.number||r.work_code||payload.title||r.service||payload.code||n.type,status:r.status||payload.status||'',version:r.version||r.work_version||null};
- const paths:Record<string,string>={operation:'/operations?id='+encodeURIComponent(r.id),finance_document:'/finance/'+(r.kind==='quote'?'pricing':r.kind==='contract'?'contracts':'invoices'),lab_job:'/laboratories/'+(r.laboratory_type||'internal'),project:'/work/projects',task:'/staff?view=all',correspondence:'/work/mail',science_case:'/work/science?case='+encodeURIComponent(r.id)};
+ const paths:Record<string,string>={operation:'/operations?id='+encodeURIComponent(r.id),finance_document:'/finance/'+(r.kind==='quote'?'pricing':r.kind==='contract'?'contracts':'invoices'),lab_job:'/laboratories/'+(r.laboratory_type||'internal'),project:JSON.parse(r.details||'{}').mother?'/laboratories?id='+encodeURIComponent(r.id):'/work/projects',task:'/staff?view=all',correspondence:'/work/mail',science_case:'/work/science?case='+encodeURIComponent(r.id)};
  if(paths[n.type])result.url=paths[n.type];
  if(n.type==='payment')Object.assign(result,{document_id:r.document_id,kind:r.kind,amount_rial:r.amount_rial,verified:r.status==='verified'});
  if(n.type==='finance_version')Object.assign(result,{document_id:r.document_id,version:r.version});

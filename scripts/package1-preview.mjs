@@ -21,7 +21,7 @@ try{
  const pre=(await api('/api/auth/accounts',{action:'activation_preflight',environment_commit:'f'.repeat(40),backup_reference:'synthetic://preview-fixture-only',backup_sha256:'a'.repeat(64),restore_verified:true,restore_evidence:'Isolated synthetic data; not a production backup',confirm_environment:true})).d.id;
  const now=new Date().toISOString(),today=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Dubai',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
  for(const [username,role,title] of roles){
-  const initial=password(),final=password(),source=username==='scientific'?'mazaheri':username==='admin'?'shakiba':username;
+  const initial=password(),final=password(),source=username;
   if(username==='owner')await api('/api/auth/accounts',{action:'owner_login',password:initial,preflight_id:pre,confirm_owner_login:true,reason:'Synthetic preview owner only'});
   else await api('/api/auth/accounts',{action:'create',username:source,name:'آزمایشی — '+title,password:initial,roles:[role]});
   if(source!==username)await api('/api/auth/accounts',{action:'edit',username:source,new_username:username,name:'آزمایشی — '+title,confirm_identity:true,preflight_id:pre});

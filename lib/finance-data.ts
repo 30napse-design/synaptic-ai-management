@@ -1,3 +1,4 @@
+import {workflowReady} from './workflow-records';
 import {approvedTariffServices} from './tariff-bank';
 import sourceCatalog from './finance-source-catalog.json';
 import {db} from './staff-server';
@@ -14,7 +15,11 @@ return {tariffServices:approvedTariffServices(),files,sourceCatalog,user:{email:
 export async function operationPayments(ids:string[]){
  if(!ids.length)return new Map<string,any>();
  const rows=(await db().prepare(`SELECT l.reference_id operation_id,d.id,d.kind,d.status,d.version,d.payload,${verifiedNetSQL('d.id')} paid_rial FROM finance_links l JOIN finance_documents d ON d.id=l.document_id AND d.version=l.document_version WHERE l.type='operation:'||l.reference_id AND l.reference_id IN (${ids.map(()=>'?').join(',')}) AND d.kind IN ('quote','invoice') AND d.status!='cancelled'`).bind(...ids).all()).results as any[];
- const result=new Map<string,any>();for(const id of ids){const matches=rows.filter(r=>r.operation_id===id);if(matches.length!==1)continue;const d=matches[0],total=calculateDocument(JSON.parse(d.payload)).total*10,paid=Math.max(0,d.paid_rial);result.set(id,{document_id:d.id,version:d.version,paid_rial:paid,total_rial:total,balance_rial:Math.max(0,total-paid),status:paid===0?'unpaid':paid<total?'partial':'settled'})}return result;
+ const indirect:any[]=[];if(await workflowReady()){
+  const missing=ids.filter(id=>!rows.some(r=>r.operation_id===id));
+  if(missing.length)indirect.push(...(await db().prepare(`SELECT DISTINCT op.id operation_id,d.id,d.kind,d.status,d.version,d.payload,${verifiedNetSQL('d.id')} paid_rial FROM ops_items op JOIN workflow_order_links l ON l.order_id=json_extract(op.routing,'$.orderId') AND l.retired_at='' LEFT JOIN staff_work_details w ON l.target_type='project' AND w.record_id=l.target_id JOIN finance_documents d ON d.id=CASE WHEN l.target_type='finance_document' THEN l.target_id WHEN l.target_type='project' THEN json_extract(w.details,'$.mother.invoice_id') ELSE NULL END WHERE op.id IN (SELECT value FROM json_each(?)) AND d.kind='invoice' AND d.status='issued'`).bind(JSON.stringify(missing)).all()).results);
+ }
+ const result=new Map<string,any>();for(const id of ids){const matches=[...rows,...indirect].filter(r=>r.operation_id===id);if(matches.length!==1)continue;const d=matches[0],total=calculateDocument(JSON.parse(d.payload)).total*10,paid=Math.max(0,d.paid_rial);result.set(id,{document_id:d.id,version:d.version,paid_rial:paid,total_rial:total,balance_rial:Math.max(0,total-paid),status:paid===0?'unpaid':paid<total?'partial':'settled'})}return result;
 }
 export async function labFinancialPermit(documentId:string,lineId:string){
  const d=await db().prepare(`SELECT d.*,${verifiedNetSQL('d.id')} paid_rial FROM finance_documents d WHERE d.id=? AND d.kind='invoice' AND d.status='issued'`).bind(documentId).first<any>();
