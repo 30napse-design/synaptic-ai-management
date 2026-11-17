@@ -37,7 +37,7 @@ The financial handoff references existing CSV tariff sources. No standalone .csv
 | Sample/result/history | Existing order-specific records; mother-project roll-up derives through links, not copied files |
 | Existing tasks/notifications | Reuse stable relationships and routing; no new cartable/parallel task engine |
 
-Do not identify projects by customer name or invoice number alone. One customer can have independent projects; duplicate-looking invoice numbers need issuer/version/context checks. Financial documents and uploads stay canonical, with role-filtered references. Laboratory users must not receive the full customer invoice, sales prices, payment evidence, private customer data or other executors' prices merely because all orders share a project.
+The invoice number is the owner's required shared user-facing project reference and primary search key. Do not identify projects by customer name alone. Resolve that displayed number to the existing canonical document/project IDs internally; if duplicate-looking invoice numbers exist in legacy data, require context selection without changing any number or merging projects. Financial documents and uploads stay canonical, with role-filtered references. Laboratory users must not receive the full customer invoice, sales prices, payment evidence, private customer data or other executors' prices merely because all orders share a project.
 
 ## 3. Required staff interface and project form
 
@@ -71,7 +71,7 @@ No authenticated form was validated by Work. Under the no-live-data-change limit
 
 All specialties reuse dashboard, work orders, service/tariff or authorized quote view, samples, data/results, communications and performance views. The tariff/quote view must distinguish customer sales prices from executor cooperation terms.
 
-Each sample links to a child work order and thus mother project; retain sender, receiver, time, count, condition and discrepancy history. Any shared sample across services requires explicit existing transfer/allocation records, not duplicate physical samples.
+Each delivery line is shown under the mother project's invoice number and references its existing project and relevant work-order IDs internally. No separately generated sample identifier is a mandatory user-facing field. Retain sender, receiver, time, count, condition and discrepancy history. Any shared sample across services requires explicit existing transfer/allocation records, not duplicate physical samples.
 Results upload requires a specific work order and version; the mother dashboard aggregates authorized references. Laboratory technical completion is separate from institute scientific approval.
 Attach incoming email/call/site/support records through existing case/order links after identity/context matching. Mid-cycle inquiries reuse the project; intake can initiate a new project when confirmed. The separate 569-input allocation mission must not wait for this form.
 
@@ -85,3 +85,43 @@ Attach incoming email/call/site/support records through existing case/order link
 6. Deliver a reviewable code commit. No merge, migration or publication is authorized by this specification. After owner-approved deployment, demonstrate the form and links before declaring staff readiness.
 
 Work delivery: evidence review and executable handoff only; no live configuration applied. Build and repeated historical tests intentionally omitted for this documentation-only change. No confidential data, actual backup or secret is included; no Google Drive archive was created.
+
+
+## 7. Owner amendment: invoice-centered samples and staged handover
+
+Approved instruction received 2026-11-17. This amendment governs the sample/delivery form; it must not stop or restart the existing project-page and form implementation. Work has updated the specification only; no live UI or database implementation is claimed.
+
+### Identification and shared case
+
+- Display and search by the existing invoice number as the primary shared reference for the researcher, samples, medicines/materials, documents, deposit receipts, work orders, handovers and results. Example: invoice 583 may include 10 tissue samples and 3 medicines across pathology, cellular and other selected laboratories.
+- Fetch researcher details from the existing mother project instead of repeating them for each delivery or laboratory.
+- Preserve technical IDs, foreign keys, version links and history internally. Do not require staff to invent or enter a separate sample code. Optional labels already in use can remain optional.
+- Never renumber invoices, merge cases by invoice text alone, delete old records or create one project/invoice per laboratory. Resolve ambiguous legacy invoice references to the correct existing case before saving.
+- Invoice visibility is not permission to see customer prices or full financial evidence. Executors receive only the authorized invoice reference and their scoped work/materials.
+
+### Mother-project form: نمونه‌ها و تحویل
+
+Support dynamically addable rows without an arbitrary fixed UI row count; paginate/save in bounded batches as necessary without dropping rows. Each row contains:
+1. Item type: sample, medicine, material or other.
+2. Name/description.
+3. Quantity and unit.
+4. Conditions and notes.
+5. Destination laboratory.
+6. Handover date and responsible person.
+7. Receipt status.
+
+Keep item descriptions distinct even if their types match. Reuse existing sample/order records and extend them minimally only where necessary; no parallel sample database or replacement of historical records.
+
+### Specialist laboratory view
+
+Each laboratory sees only its own rows grouped under the invoice number. For each item display/record expected quantity, received quantity, receipt/discrepancy status, remaining quantity, next handover and destination, notes and receiver. Remaining quantities must be derived from the item's documented movements and disposition, in the same unit; distinguish not-yet-received from physically remaining stock. Do not subtract laboratory transfers twice or duplicate a physical item when several laboratories use it.
+
+Link each next-stage movement to the original item and relevant existing work orders. Sender, receiver, date, quantity, condition and discrepancies remain traceable. Cross-laboratory transfers expose only authorized transfer details. The mother project shows the complete permitted history and current totals through shared references, without copied result files or parallel records.
+
+### Multi-stage receipt
+
+Record every partial delivery under the same invoice and project. Each event keeps its own date, quantity, responsible person and receiver. A later delivery appends history rather than overwriting the first receipt. Preserve existing unit/quantity validation, discrepancy handling, concurrency/revision checks and idempotency so retries do not increase received totals twice.
+
+### Focused acceptance cases for Codex
+
+Use isolated synthetic fixtures, not live case creation: invoice 583 with tissue and medicine rows; partial deliveries across two dates; scoped pathology/cellular visibility; next-laboratory transfer and remaining-quantity calculation; replay without duplicate receipt; immediate mother-project roll-up; preservation of legacy internal IDs and invoice number. These are required cases, not tests executed by Work. No repeat of unrelated successful suites is requested.
