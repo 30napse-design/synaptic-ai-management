@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "snapshot": "synapse-integrated-operations-mission2-2026-11-17",
+  "snapshot": "synapse-integrated-operations-mission3-2026-11-17",
   "runtime_base_commit": "66df78f2a1867c6aff3be34f62436284587e66a7",
   "source_commit_resolution": "Containing Git commit; development only, no publication authorization",
   "algorithm": "sha256",
@@ -125,8 +125,8 @@
     },
     {
       "path": "app/api/assistant/route.ts",
-      "bytes": 4504,
-      "sha256": "506701ca51d0bf71e300188e7a0cb7710c8d9f43efea67ce5c694cc9cc51bff5"
+      "bytes": 4536,
+      "sha256": "1d0f56a3fd0d90392a8d99d1a44e29d3f3df9d5902987baa974f37a6e3c22379"
     },
     {
       "path": "app/api/auth/accounts/route.ts",
@@ -720,8 +720,8 @@
     },
     {
       "path": "components/workspace/assistant-panel.tsx",
-      "bytes": 6752,
-      "sha256": "7c916ed5e0835c8eaf5b8d956a900e6b5b21898d87a30b52ab5d2ec3aef70f4d"
+      "bytes": 10789,
+      "sha256": "598f31b8061977841a3bbb5c22c91b7ef0333409e20c2e323e6199336f4ec9b8"
     },
     {
       "path": "components/workspace/communication-engine.tsx",
@@ -860,8 +860,8 @@
     },
     {
       "path": "docs/independent-runtime-fa.md",
-      "bytes": 22261,
-      "sha256": "ca1a2b87eed784b4df6bbce0062aa9f47dbe41a7acb5e79246939e5bc30dc676"
+      "bytes": 24673,
+      "sha256": "2715b61a21bec8ecae89e5ccfa315d6941f4a785ef4908b968bb730df254a683"
     },
     {
       "path": "docs/laboratory-handoff.md",
@@ -915,13 +915,13 @@
     },
     {
       "path": "docs/package5-completion-handoff.md",
-      "bytes": 10060,
-      "sha256": "7a3580660ef0d01c3597e599570d1c25c3929215690f22af27357b590c2a5d12"
+      "bytes": 12630,
+      "sha256": "57e4150a1fb4cca18b72c0be908c89927c4f3749878f15885c5d5b1db603aace"
     },
     {
       "path": "docs/package5-independent-connectors.md",
-      "bytes": 30025,
-      "sha256": "e6c16170f9f75efea74ebf1d8971cb7705b8e5645a4c03fbb582247a540d2cf0"
+      "bytes": 37068,
+      "sha256": "d7e873f5712743c06bb312902eed93ec9cc2236f581b2129c350f460ec48ce7d"
     },
     {
       "path": "docs/petty-cash-handoff.md",
@@ -1259,19 +1259,29 @@
       "sha256": "e560c996b8d32f4cc9b71c94ed9780380e95e5215a02175b1da21267b63b58a3"
     },
     {
+      "path": "lib/assistant-operations.ts",
+      "bytes": 12540,
+      "sha256": "bae5b6553b5a58b58ee112187af508742a68f7b00785f4f824b3f5f358f49d18"
+    },
+    {
       "path": "lib/assistant-policy.ts",
       "bytes": 5144,
       "sha256": "76c2f81e8e109abfdfc533deb4678b1a9111dceeef92905a948f661e7db58d5f"
     },
     {
       "path": "lib/assistant-provider.ts",
-      "bytes": 1653,
-      "sha256": "b339f852de89f92bbf28adb90c74a2f76b33ba30fc6c8d0a9d9e9058d4345fa5"
+      "bytes": 2049,
+      "sha256": "2e100ae286c18101a943a0c781b8e6f58967efcf43fed779e104471ee8f8be12"
     },
     {
       "path": "lib/assistant-tariffs.ts",
       "bytes": 566,
       "sha256": "d2ec99c182b7e7a641f40b32d66c90d8dbb0f567b045faf6ce8202778d95603c"
+    },
+    {
+      "path": "lib/assistant-usage.ts",
+      "bytes": 2173,
+      "sha256": "8d898d51fd2f7496e676b0fe3fa98d460f337d2f95f3eea164c5c961d9bbb700"
     },
     {
       "path": "lib/assistant-work-context.ts",
@@ -1335,8 +1345,8 @@
     },
     {
       "path": "lib/dispatch-engine.ts",
-      "bytes": 47925,
-      "sha256": "5986eccded2e278f037033e18c5873cd04b7e02785fd5c98028666cedd108de9"
+      "bytes": 47965,
+      "sha256": "4f3400452147cf249767b77576c4b6bc43939d4d2ed0779819e1fd36e9ecd490"
     },
     {
       "path": "lib/dispatch-policy.ts",
@@ -1550,8 +1560,8 @@
     },
     {
       "path": "lib/payment-notice.ts",
-      "bytes": 14728,
-      "sha256": "f3b3ff9208e1b45fdaaf5441cfbdbfec5b67aaf6a3178e7118428706b80a2e1f"
+      "bytes": 14950,
+      "sha256": "c121200c16258df7044d90172ca96841875b7b4498b28806292dacbf3101c16e"
     },
     {
       "path": "lib/petty-policy.ts",
@@ -1650,8 +1660,8 @@
     },
     {
       "path": "lib/workflow-core.ts",
-      "bytes": 23626,
-      "sha256": "4e7e1b808d5355fe5e2b541e3701b8b15b82c83f9247f9acee8db8ed8051b6e3"
+      "bytes": 23633,
+      "sha256": "3c6a1da0575d73ad9a5bf3b3d86a61a45580680d761d0bd4e05ab5f5604b7bf8"
     },
     {
       "path": "lib/workflow-policy.ts",
@@ -1825,8 +1835,8 @@
     },
     {
       "path": "scripts/test-finance-runtime.mjs",
-      "bytes": 2399,
-      "sha256": "41621c5cece3c8fd201fdb2e9bec685b62cdfb9fc21cc1fdd228568e7e69112a"
+      "bytes": 2473,
+      "sha256": "356fff5d2ba358859c27ef70f607444dfbaf96498debfd6ce4d7bdbef7c32a4d"
     },
     {
       "path": "scripts/test-home-browser.mjs",
@@ -1942,6 +1952,11 @@
       "path": "tests/activation-runtime.mjs",
       "bytes": 7842,
       "sha256": "1c549a54a493d86a48775f22deec9df9106359f5c615286f857bbdbf5bad0dcf"
+    },
+    {
+      "path": "tests/assistant-operations-runtime.mjs",
+      "bytes": 9284,
+      "sha256": "965047c6274b8e13e5e0b914d4163e2005dc1e445165810bc742c5663407da06"
     },
     {
       "path": "tests/auth-policy.test.mjs",
@@ -2070,8 +2085,8 @@
     },
     {
       "path": "tests/package5-completion-provider-fixtures.mjs",
-      "bytes": 3335,
-      "sha256": "301a7002f1cc6b4c72fc25d067f54897d7b80a17e18f5572dd1177ce7b39cbd1"
+      "bytes": 3957,
+      "sha256": "d37097d41e1bba7904d8dc118021bbc3389520db94b7ff65ba78d162ed27a6eb"
     },
     {
       "path": "tests/package5-completion-runtime.mjs",
@@ -2085,8 +2100,8 @@
     },
     {
       "path": "tests/payment-notice-runtime.mjs",
-      "bytes": 7687,
-      "sha256": "5734847ec073cce564ee1e66fe32a0e1332a60a7f0e8458164008c54c9122eb2"
+      "bytes": 7759,
+      "sha256": "5503a727d78d4a3ff06c2e2b2e9573e61394371370cd114c4b8c512e8ff26102"
     },
     {
       "path": "tests/petty-runtime.mjs",
