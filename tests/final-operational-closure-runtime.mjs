@@ -85,6 +85,21 @@ await api('/api/operations',{action:'manual_assign',assignee:'staff:customer',it
 assert.ok(!(await api('/api/operations?followup=unassigned',null,owner)).items.some(x=>x.id==='closure-missing'));
 assert.ok(await db.prepare("SELECT id FROM staff_records WHERE id='ops-work:closure-missing' AND assignee='staff:customer'").first());
 
+// An existing task must not leave a reactivated assignee permanently in the review queue.
+await db.prepare("INSERT INTO ops_items(id,source_key,category,subtype,title,source_type,assignee,created_by,created_at,updated_at) VALUES('closure-reactivated','calls:synthetic:reactivated','customers','ثبت سفارش','Synthetic reactivated assignment','incoming','staff:customer',?,'then','then')").bind(OWNER).run();
+let reactivated=await db.prepare("SELECT revision FROM ops_items WHERE id='closure-reactivated'").first();
+await api('/api/operations',{action:'manual_assign',assignee:'staff:customer',items:[{id:'closure-reactivated',revision:reactivated.revision}]},owner);
+await db.prepare("UPDATE staff_members SET active=0 WHERE email='staff:customer'").run();
+reactivated=await db.prepare("SELECT revision FROM ops_items WHERE id='closure-reactivated'").first();
+assert.equal((await api('/api/operations',{action:'owner_accept',id:'closure-reactivated',revision:reactivated.revision},owner)).needs_assignment,true);
+await db.prepare("UPDATE staff_members SET active=1 WHERE email='staff:customer'").run();
+assert.ok((await api('/api/operations?followup=unassigned',null,owner)).items.some(x=>x.id==='closure-reactivated'));
+reactivated=await db.prepare("SELECT revision FROM ops_items WHERE id='closure-reactivated'").first();
+const taskCountBeforeReassign=(await db.prepare('SELECT COUNT(*) n FROM staff_records').first()).n;
+await api('/api/operations',{action:'manual_assign',assignee:'staff:customer',items:[{id:'closure-reactivated',revision:reactivated.revision}]},owner);
+assert.ok(!(await api('/api/operations?followup=unassigned',null,owner)).items.some(x=>x.id==='closure-reactivated'),'Explicit approved reassignment must clear the review marker even when the same task already exists');
+assert.equal((await db.prepare('SELECT COUNT(*) n FROM staff_records').first()).n,taskCountBeforeReassign);
+
 // Close the actual multi-laboratory mother/CRM/science/release seam on isolated APIs.
 const fid='closure-invoice',fp={client:'Synthetic central researcher',contact:'synthetic@example.invalid',lines:[{id:'closure-line',description:'Synthetic contracted services',area:'مولکولی و پروتئینی',quantity:1,repeats:1,unit:'بسته',unit_price:300,cost_total:0}],execution_min:0,due:'2026-12-01',installments:[]};
 await db.prepare("INSERT INTO finance_documents(id,number,kind,status,payload,created_by,created_at,updated_at) VALUES(?,?,'invoice','issued',?,?,?,?)").bind(fid,b.invoice_number,JSON.stringify(fp),OWNER,new Date().toISOString(),new Date().toISOString()).run();
