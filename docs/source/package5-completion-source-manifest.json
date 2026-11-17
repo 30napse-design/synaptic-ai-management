@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "snapshot": "synapse-integrated-operations-mission1-2026-11-17",
+  "snapshot": "synapse-integrated-operations-mission2-2026-11-17",
   "runtime_base_commit": "66df78f2a1867c6aff3be34f62436284587e66a7",
   "source_commit_resolution": "Containing Git commit; development only, no publication authorization",
   "algorithm": "sha256",
@@ -170,8 +170,8 @@
     },
     {
       "path": "app/api/finance/route.ts",
-      "bytes": 1598,
-      "sha256": "c7ec0448f0c32ddbf5cb5b0d9a38671525acc84b8ff2189ae9d55e905b66ca59"
+      "bytes": 1931,
+      "sha256": "154600e13425ffa7d4091425db0b9379581a7a788c8dfeb7096e69ce4e81ba81"
     },
     {
       "path": "app/api/header/messages/route.ts",
@@ -395,8 +395,8 @@
     },
     {
       "path": "components/laboratory/laboratory-workspace.tsx",
-      "bytes": 46511,
-      "sha256": "72a0caf205a3e38d9481935292519dd08e4ffe25b1d506c3aa12a136847383e4"
+      "bytes": 46534,
+      "sha256": "c7348f7d8e135933ec01f52c1e8aea9eea331c77215e23b061b205d337bf373d"
     },
     {
       "path": "components/science/science-workspace.tsx",
@@ -915,13 +915,13 @@
     },
     {
       "path": "docs/package5-completion-handoff.md",
-      "bytes": 9196,
-      "sha256": "b37e85a03e6152dcb304c0028206210918bb34dd8b52d86287423a90767ccbd3"
+      "bytes": 10060,
+      "sha256": "7a3580660ef0d01c3597e599570d1c25c3929215690f22af27357b590c2a5d12"
     },
     {
       "path": "docs/package5-independent-connectors.md",
-      "bytes": 26709,
-      "sha256": "24f4989d85f00ded0a53d095de15e5e6f78ef6f92bf96cb30ebb072b4565a2ad"
+      "bytes": 30025,
+      "sha256": "e6c16170f9f75efea74ebf1d8971cb7705b8e5645a4c03fbb582247a540d2cf0"
     },
     {
       "path": "docs/petty-cash-handoff.md",
@@ -1335,8 +1335,8 @@
     },
     {
       "path": "lib/dispatch-engine.ts",
-      "bytes": 47381,
-      "sha256": "f723edae031b0bbec9afc7e303c30ab8a325ef604bf8efac5f8809abab56932a"
+      "bytes": 47925,
+      "sha256": "5986eccded2e278f037033e18c5873cd04b7e02785fd5c98028666cedd108de9"
     },
     {
       "path": "lib/dispatch-policy.ts",
@@ -1360,8 +1360,8 @@
     },
     {
       "path": "lib/finance-data.ts",
-      "bytes": 8425,
-      "sha256": "b73abf7603ac2d9443be88595cf5e3a2cca6a704f1c3d1299277e6f15c28c9fe"
+      "bytes": 8918,
+      "sha256": "659537f0bac8fea94f45467a7358c2be6470be5e40d2e1a4232295dfd79e7f40"
     },
     {
       "path": "lib/finance-policy.ts",
@@ -1375,8 +1375,8 @@
     },
     {
       "path": "lib/finance-write.ts",
-      "bytes": 38193,
-      "sha256": "132702105c09a0779b1f2a569da231b4452848579f9e528c458082e26121833e"
+      "bytes": 38424,
+      "sha256": "bb91e3a2f386f312b0fcffe9bac44381dfcee57e2b6414f2c619c5febf46ac8c"
     },
     {
       "path": "lib/global-search.ts",
@@ -1415,8 +1415,8 @@
     },
     {
       "path": "lib/input-sources.ts",
-      "bytes": 14647,
-      "sha256": "cbb6ff8542ae9b8c82bcdfef464dfda2f24510078011e31ff344c554278e23a3"
+      "bytes": 14737,
+      "sha256": "92048d28f8c2ddf84ea115112c3357722a369e0992cf6d00763f1b2fdc9b1ce0"
     },
     {
       "path": "lib/intake-policy.ts",
@@ -1455,8 +1455,8 @@
     },
     {
       "path": "lib/lab-execution-write.ts",
-      "bytes": 23289,
-      "sha256": "358b00542da99bd2c0e3855a39f201c6903af29f0fb14de213a2f51ce52b6686"
+      "bytes": 23290,
+      "sha256": "9a704f733af79ee00a9d382fbb3c60e004f00b4a03cda149a3f00142e4e34558"
     },
     {
       "path": "lib/lab-policy.ts",
@@ -1542,6 +1542,16 @@
       "path": "lib/package1-activation.ts",
       "bytes": 15843,
       "sha256": "4edc9c8788f91ee7acd8597059ba2a3cad931478b0857f357beed1fb8e460553"
+    },
+    {
+      "path": "lib/payment-notice-policy.ts",
+      "bytes": 1258,
+      "sha256": "139e613531ffe0fa74e4ffed8f5abd56a7fc1979dd700c1209f5e76afb7c3bff"
+    },
+    {
+      "path": "lib/payment-notice.ts",
+      "bytes": 14728,
+      "sha256": "f3b3ff9208e1b45fdaaf5441cfbdbfec5b67aaf6a3178e7118428706b80a2e1f"
     },
     {
       "path": "lib/petty-policy.ts",
@@ -2072,6 +2082,11 @@
       "path": "tests/package5-provider-fixtures.mjs",
       "bytes": 1784,
       "sha256": "c8b60f6b9774389cdeca30dc660ad171c59798d0dc93941d1fadd2fdf8065bf6"
+    },
+    {
+      "path": "tests/payment-notice-runtime.mjs",
+      "bytes": 7687,
+      "sha256": "5734847ec073cce564ee1e66fe32a0e1332a60a7f0e8458164008c54c9122eb2"
     },
     {
       "path": "tests/petty-runtime.mjs",
