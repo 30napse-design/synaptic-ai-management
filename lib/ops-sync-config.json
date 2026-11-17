@@ -223,7 +223,7 @@
   },
   "rules": [
     "Read sources only; never send/delete/archive/label emails or edit a source workbook. Operational imports and internal followup notifications are owner-authorized.",
-    "Gmail sourceKey uses the exact source_prefix of the selected gmail_accounts entry followed by provider message_id. A mailbox must not reuse another mailbox prefix.",
+    "Gmail sourceKey uses the exact source_prefix of the selected gmail_accounts entry followed by provider message_id. A mailbox must not reuse another mailbox prefix. Entries in gmail_source_aliases additionally accept accepted_prefix and normalize only that alias to canonical_prefix; preserve the provider message_id and never mint another key on retry.",
     "Incoming sourceKey: calls:incoming:<sheet>:<Jalali YYYY/MM/DD marker>:<sequence>:<first16 SHA256(JSON.stringify([NFKC normalized trimmed whitespace-collapsed name, normalized phone digits with spaces parentheses hyphens removed]))>. Original xlsx and primary Sheet share this key; date-only/undated/ambiguous bare-day sections must not be imported.",
     "Scheduled reads are bounded by activation.start_at and a rolling two-day overlap. At most five new operational messages per run; preserve backlog and report when more remain. Never import historical source rows outside the window. Pilot is restricted to two specifically inspected messages in the recorded pilot window.",
     "Mailbox attachment contents are not imported; names and IDs may be included as metadata. Do not claim bank payment verified from a label or screenshot.",
@@ -270,5 +270,6 @@
       "source_prefix": "gmail:ekramiihamid:",
       "automatic_api_oauth": false
     }
-  ]
+  ],
+  "gmail_source_aliases": [{"email":"histogene.result@gmail.com","accepted_prefix":"gmail:histogene.result:","canonical_prefix":"gmail:histogene-result:","automatic_api_oauth":false}]
 }

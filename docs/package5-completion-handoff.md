@@ -75,3 +75,11 @@ A short Word handoff is archived in the existing private Codex Drive folder; no 
 - `scripts/verify-source-manifest.mjs`
 - `tests/package5-completion-provider-fixtures.mjs`
 - `tests/package5-completion-runtime.mjs`
+
+## Follow-up: result-prefix alias — 2026-11-17
+
+The containing package-five branch now accepts the caller spelling `gmail:histogene.result:` as an alias of the existing stored `gmail:histogene-result:` namespace. No existing keys/accounts are renamed and no live transfer occurs. The same importer/validator and event lock are used; dispatch/workspace/role and database-schema files are unchanged. See the dated result-mailbox section in `docs/package5-independent-connectors.md` for the exact wire example, Google/Cron/AI prerequisites and explicit remaining Sites/host dependencies.
+
+This follow-up ran only four source-key unit scenarios, eleven focused synthetic MCP/OAuth HTTP checks, TypeScript and a required updated-worker Build. Prior 99 completion checks remain historical results from the preceding delivery, not a rerun claim for this correction. Work's two assignment documents and its live-data mission are untouched, with no merge. Owner reference counts 996/513/461 and 569/422/147 are informational; no live inventory or allocation is performed here. The 87 messages remain for the separately approved ChatGPT transfer after owner-approved publication.
+
+Changed paths for this correction: `lib/operations-source-key.ts`, `lib/ops-policy.ts`, `lib/ops-server.ts`, `lib/ops-sync-config.json`, `tests/gmail-result-prefix.test.mjs`, `tests/gmail-result-prefix-runtime.mjs`, this handoff, `docs/package5-independent-connectors.md` and the existing `docs/source/package5-completion-source-manifest.json`.

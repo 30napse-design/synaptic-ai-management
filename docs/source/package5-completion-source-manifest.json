@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "snapshot": "synapse-package5-completion-2026-11-16",
+  "snapshot": "synapse-package5-completion-gmail-result-alias-2026-11-17",
   "runtime_base_commit": "66df78f2a1867c6aff3be34f62436284587e66a7",
   "source_commit_resolution": "Containing Git commit; development only, no publication authorization",
   "algorithm": "sha256",
@@ -915,13 +915,13 @@
     },
     {
       "path": "docs/package5-completion-handoff.md",
-      "bytes": 7027,
-      "sha256": "e6d1a00c5c41bf4701a0262d8dd8b9a4683faefc0883770a62a915b1003aa13d"
+      "bytes": 8546,
+      "sha256": "3e22e568cd161f95dbdbd3a531af20de862e68a01d2c04a02bd9c249cfa37cb2"
     },
     {
       "path": "docs/package5-independent-connectors.md",
-      "bytes": 15626,
-      "sha256": "a366e67d3fe6eee0d82fdc3bae7f7e6ce05eacb312bf11d5e6c86003135c2d82"
+      "bytes": 22400,
+      "sha256": "a839ef692ad9fd396f8ea8191e5f3ecaddfb92fc54226fc99233442cc44d691a"
     },
     {
       "path": "docs/petty-cash-handoff.md",
@@ -1484,19 +1484,24 @@
       "sha256": "361b9e4046bf08700f7835d450cbadd5a2a9ba63c9ffe3a7255233c7b19b4b9f"
     },
     {
+      "path": "lib/operations-source-key.ts",
+      "bytes": 503,
+      "sha256": "b2523fcaea4c40629240a2e96e64b42c3b02a14a1fb4b84fc7998427cdaa2231"
+    },
+    {
       "path": "lib/ops-policy.ts",
-      "bytes": 7166,
-      "sha256": "fd97981bfd496f13d67117cb24ccc96b4da7fe48699b4969591ef0352a2a0140"
+      "bytes": 7232,
+      "sha256": "134ad3dea52f8f8ae8bd6877c3893945ca219559b85dc8873733ca7f3f693a58"
     },
     {
       "path": "lib/ops-server.ts",
-      "bytes": 6540,
-      "sha256": "bdb26a96b1bae026262cb68f2afeb5db0926c21a8a08a258a59e830680031e09"
+      "bytes": 6592,
+      "sha256": "295c7e66ef13803ec9177115bcbb264fcb32d67ef3fc5eddf4f54b07c0945494"
     },
     {
       "path": "lib/ops-sync-config.json",
-      "bytes": 11343,
-      "sha256": "6ff17389386cb4b08659d62605a6aff154623a1797e4b20ac3e4fd928a2973d3"
+      "bytes": 11717,
+      "sha256": "63e394af09d0e96a61a6a71d42270d73464099093a6e186b3fb87c3f6a011e56"
     },
     {
       "path": "lib/org-access.ts",
@@ -1949,6 +1954,16 @@
       "sha256": "ef1e37c48d120e6a07de67e65ecc23207161ed6c556da7b7f3bd2476d82a5ea9"
     },
     {
+      "path": "tests/gmail-result-prefix-runtime.mjs",
+      "bytes": 4529,
+      "sha256": "782ac1d36f77f0efa588d8f78abaf1c7fafe0720bf43ca6d5b29221d858f9a9f"
+    },
+    {
+      "path": "tests/gmail-result-prefix.test.mjs",
+      "bytes": 1950,
+      "sha256": "4d60d298e60bc9575a2b11aaeceb2a0eb94ab9d3a17ae19c4e89bc510487ab19"
+    },
+    {
       "path": "tests/home-dashboard.test.mjs",
       "bytes": 2694,
       "sha256": "546a6a026a4505b479431a40ed50390a35a349908dfa9910ada70ddda88b55d6"
@@ -2158,5 +2173,6 @@
       "bytes": 1303,
       "sha256": "a0a10229cdda6f5fdb32234e3539007412233bb4938a671866c9295a44a3bdb6"
     }
-  ]
+  ],
+  "development_base_commit": "0d1a0a7c0d0bda3d335a1b31050fd04e070f5aa9"
 }
