@@ -70,7 +70,7 @@ let executable=await db.prepare('SELECT * FROM laboratory_jobs WHERE id=?').bind
 await call('/api/laboratories',{action:'sample_create',job_id:job,...custody});
 for(const status of ['sent','received']){const sm=await db.prepare("SELECT id,revision FROM laboratory_records WHERE job_id=? AND kind='sample' ORDER BY version DESC LIMIT 1").bind(job).first();await call('/api/laboratories',{action:'sample_update',job_id:job,id:sm.id,revision:sm.revision,...custody,status,received_quantity:2,remaining_quantity:2});}
 executable=await db.prepare('SELECT * FROM laboratory_jobs WHERE id=?').bind(job).first();await call('/api/laboratories',{action:'progress',job_id:job,revision:executable.revision,status:'doing',progress:1,progress_notes:'SYNTHETIC ONLY: permitted start after approved financial minimum'},users.specialist);
-await fin({action:'invoice_amend',id:amended,revision:(await document(amended)).revision,reason:'Must not cancel confirmed receipts'},users.finance,400);
+await fin({action:'invoice_amend',id:amended,revision:(await document(amended)).revision,reason:'Must not cancel confirmed receipts'},users.finance,409);
 const last=await receipt(remainder),lastRow=await bankRow(remainder,'stage-2');await fin({action:'transaction_verify',id:last,revision:0,bank_row_id:lastRow,verification_note:'Synthetic stage 2 exact reconciliation'},users.finance);
 assert.equal((await document(amended)).balance_rial,0);
 const extra=await receipt(1);await fin({action:'transaction_verify',id:extra,revision:0,bank_row_id:oneRow,verification_note:'Duplicate bank row'},users.finance,400);
