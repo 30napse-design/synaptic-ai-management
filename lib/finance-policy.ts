@@ -4,9 +4,9 @@ export const canFinance=(u:any)=>financePermission(u,'finance_ops');
 export const canApproveFinance=(u:any)=>canFinance(u)&&financePermission(u,'finance_approve');
 export const documentKinds:Record<string,string>={quote:'پیش‌فاکتور و برآورد',invoice:'فاکتور داخلی',contract:'قرارداد'};
 export const documentStatuses:Record<string,string>={draft:'پیش‌نویس',review:'منتظر تأیید',approved:'تأیید داخلی',sent:'ارسال ثبت‌شده',accepted:'تأیید مشتری ثبت‌شده',issued:'صادرشده داخلی',cancelled:'لغوشده'};
-export const transactionKinds:Record<string,string>={receipt:'دریافت مشتری',payment:'پرداخت مجری',expense:'هزینه مستقیم حساب',refund:'استرداد وجه مشتری'};
+export const transactionKinds:Record<string,string>={receipt:'دریافت مشتری',payment:'پرداخت مجری',expense:'هزینه مستقیم حساب',refund:'استرداد وجه مشتری',payment_return:'برگشت پرداخت خروجی',repayment:'بازپرداخت مساعده / وام',transfer:'انتقال داخلی',payroll_deduction:'کسور مستند حقوق — بدون انتقال وجه'};
 export const transactionStatuses:Record<string,string>={reported:'ثبت‌شده / منتظر تطبیق',verified:'تأییدشده مالی',void:'ابطال ثبت'};
-export const financeAccounts:Record<string,string>={bank:'بانک / وجوه',receivable:'دریافتنی مشتریان',deposit:'پیش‌دریافت مشتریان',payable:'پرداختنی مجریان',revenue:'درآمد خدمات',expense:'هزینه‌ها',vat:'مالیات و عوارض ثبت‌شده'};
+export const financeAccounts:Record<string,string>={bank:'بانک / وجوه',receivable:'دریافتنی مشتریان',deposit:'پیش‌دریافت مشتریان',payable:'پرداختنی مجریان',revenue:'درآمد خدمات',expense:'هزینه‌ها',vat:'مالیات و عوارض ثبت‌شده',employee_receivable:'مطالبات کارکنان',asset:'دارایی',petty_fund:'وجوه نزد تنخواه‌دار',loan_liability:'تسهیلات پرداختنی',deposit_asset:'سپرده و ودیعه',transfer_clearing:'واسط انتقال داخلی',funding_commitment:'تعهد تخصیص وجه — حساب کنترلی'};
 export const defaults={minimum_order:0,minimum_margin_bps:0,default_tax_bps:0};
 export function integer(v:any,min=0,max=900000000000000){return Number.isSafeInteger(v)&&v>=min&&v<=max}
 export const str=(v:any,max:number,required=false)=>typeof v==='string'&&v.length<=max&&(!required||v.trim().length>0);
@@ -21,5 +21,5 @@ export const T03Comparison=[{area:'قیمت‌گذاری',before:'بانک تع�
 // Trusted SQL expression only; all external identifiers are bound by callers.
 export const verifiedNetSQL=(documentExpression:string)=>`COALESCE((SELECT SUM(CASE kind WHEN 'receipt' THEN amount_rial WHEN 'refund' THEN -amount_rial ELSE 0 END) FROM finance_transactions WHERE document_id=${documentExpression} AND status='verified'),0)`;
 
-export const canQuote=(u:any)=>!!u&&!u.laboratory&&(canFinance(u)||hasAccess(u,'quote_ops'));
+export const canQuote=(u:any)=>!!u&&!u.laboratory&&(canFinance(u)||financePermission(u,'quote_ops'));
 export const quoteOnly=(u:any)=>canQuote(u)&&!canFinance(u);

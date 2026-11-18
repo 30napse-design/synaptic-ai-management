@@ -1,6 +1,7 @@
+import {canFinance,canApproveFinance} from './finance-policy';
 import {hasAccess} from './auth-policy.ts';
-export const canPetty=(u:any)=>!!u&&!u.laboratory&&(u.manager||hasAccess(u,'petty_cash')||hasAccess(u,'finance_ops'));
-export const approvePetty=(u:any)=>canPetty(u)&&(u.manager||hasAccess(u,'finance_ops')&&hasAccess(u,'finance_approve'));
+export const canPetty=(u:any)=>!!u&&!u.laboratory&&(canFinance(u)||(u.dataPermissions??u.permissions??[]).includes('petty_cash'));
+export const approvePetty=(u:any)=>canPetty(u)&&canApproveFinance(u);
 export const pettyCategories=['ایاب‌وذهاب','مواد مصرفی','لوازم','تعمیرات ساختمان','خدمات و قبوض','خرید اینترنتی','پذیرایی','هزینه اداری','سایر'];
 export const pettyStatuses:Record<string,string>={draft:'پیش‌نویس',submitted:'منتظر بررسی مالی',approved:'تأیید مالی',rejected:'برگشت برای اصلاح',void:'ابطال‌شده',legacy:'سابقه منتقل‌شده'};
 export function moneyInteger(v:any){return Number.isSafeInteger(v)&&v>0&&v<=100000000000000}

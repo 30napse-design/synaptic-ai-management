@@ -24,7 +24,7 @@ useEffect(()=>{const p=new URLSearchParams(window.location.search);if(p.get('id'
 const docs=data.documents,findDoc=(id:string)=>docs.find((d:any)=>d.id===id),detail=findDoc(selected),matches=(r:any)=>!search||JSON.stringify(r).toLowerCase().includes(search.toLowerCase());
 async function refresh(){const r=await fetch('/api/finance'+(section==='receipts'?'?view=receipts':''),{cache:'no-store'}),d:any=await r.json();if(!r.ok)throw Error(d.error);setData(d)}
 async function act(body:any){if(busy)return;setBusy(true);setError('');setSuccess('');try{const r=await fetch('/api/finance',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}),d:any=await r.json();if(!r.ok)throw Error(d.error);await refresh();setSuccess('ثبت شد.');setModal(null);if(['document_save','invoice_amend'].includes(body.action)){setEdit(null);setSelected(d.id)}return d}catch(e:any){setError(e.message);return null}finally{setBusy(false)}}
-function ask(title:string,body:any,fields:any[]=[]){setModal({title,body,fields,values:{}})}
+function ask(title:string,body:any,fields:any[]=[]){if(body.action==='payable_create'&&!body.lab_record_id||body.action==='transaction_create'&&body.kind==='expense'){window.location.assign('/finance/payables?view=my&new=expense');return;}setModal({title,body,fields,values:{}})}
 const text=(name:string,label:string,value:any='',required=false,type='text')=>({name,label,value,required,type});
 const choose=(name:string,label:string,options:any[],required=true)=>({name,label,type:'select',options,required});
 const documentOptions=docs.filter((d:any)=>d.status!=='cancelled').map((d:any)=>({value:d.id,label:d.number+' · '+d.payload.client+' · '+documentKinds[d.kind]}));
