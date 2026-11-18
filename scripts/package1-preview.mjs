@@ -39,6 +39,11 @@ try{
   const lab=(await api('/api/laboratories',{action:'lab_save',type:'internal',name:'مجری آزمایشی بافت‌شناسی',areas:['بافت‌شناسی و پاتولوژی']})).d;
   await api('/api/lab-operations',{action:'mother_job_create',id:mother.id,revision:mother.revision,key:'preview-intake-work-order',department:'پاتولوژی',laboratory_id:lab.id,services:[{description:'بافت آزمایشی',quantity:10,unit:'قطعه'}]});
  }
+ // Opt-in regression fixture for historical plain-text notes; local Miniflare only.
+ if(process.argv.includes('--laboratory-center-legacy-fixture')){
+  const domains=[['animal','مطالعات حیوانی'],['histology','بافت‌شناسی و پاتولوژی'],['cell-molecular','تکنیک‌های سلولی'],['protein-biochemistry','بیوشیمی'],['microbiology','میکروب‌شناسی'],['other','سایر خدمات تخصصی']];
+  for(const [domain,area]of domains){const lab=(await api('/api/laboratories',{action:'lab_save',type:'internal',name:'مجری آزمایشی — '+domain,areas:[area]})).d.id;await db.prepare('INSERT INTO laboratory_jobs(id,reference,area,client,service,quantity,assignee,notes,laboratory_id,created_by,created_at,updated_at) VALUES(?,?,?,?,?,1,?,?,?,?,?,?)').bind('legacy-fixture-'+domain,'TEST-LEGACY-'+domain,area,'محقق کاملاً ساختگی','خدمت آزمایشی — '+domain,members.get('specialist'),'Historical free-text notes; not JSON',lab,owner,now,now).run();}
+ }
  const types={'.js':'text/javascript','.css':'text/css','.png':'image/png','.jpeg':'image/jpeg','.svg':'image/svg+xml','.woff2':'font/woff2','.json':'application/json'};
  const banner='<aside style="position:sticky;top:0;z-index:99999;background:#132c4b;color:white;padding:10px;font:13px sans-serif;text-align:center" dir="rtl">پیش‌نمایش بسته اول — فقط داده آزمایشی، مستقل از سایت زنده · انتخاب حساب: '+roles.map(([n])=>'<a style="color:#aeeaff;margin:5px;display:inline-block" href="/_preview/role/'+n+'">'+n+'</a>').join('')+'</aside>';
  server=http.createServer(async(req,res)=>{try{
