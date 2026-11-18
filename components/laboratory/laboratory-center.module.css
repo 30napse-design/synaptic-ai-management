@@ -1,1 +1,46 @@
 .center{direction:rtl;min-width:0;display:grid;gap:20px}.heading,.actions,.tabs{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.heading{justify-content:space-between}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.stat{background:linear-gradient(135deg,#edf8ff,#f7f8ff);border:1px solid #d8e5f4;border-radius:14px;padding:18px;color:#17375a}.stat strong{font-size:27px;display:block}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.grid label{display:grid;gap:7px}.grid input,.grid select,.grid textarea{min-width:0;width:100%}.wide{grid-column:1/-1}.table{max-width:100%;overflow:auto;border:1px solid #dce3ed;border-radius:12px}.table table{width:100%;border-collapse:collapse;min-width:650px}.table th,.table td{text-align:right;padding:13px;border-bottom:1px solid #e7edf4;white-space:normal;overflow-wrap:anywhere}.table th{background:#edf4fc;color:#233f65}.tabs{padding:10px 0;border-bottom:1px solid #e3e8ef}.notice{background:#edf6ff;padding:14px;border-radius:12px;color:#1d4674}.dialog{position:fixed;inset:0;background:#0c1b3380;z-index:100;display:flex;align-items:flex-start;justify-content:center;padding:4vh 16px;overflow:auto}.dialog article{background:white;border-radius:18px;padding:24px;width:min(1100px,100%);min-width:0;box-shadow:0 20px 70px #0b203b40}.message{border:1px solid #d7e3f0;border-right:4px solid #448ac9;padding:14px;border-radius:12px;margin:10px 0}.center button,.center a{overflow-wrap:anywhere}.center fieldset{min-width:0}.center h1,.center h2,.center p{overflow-wrap:anywhere}.files{display:grid;gap:8px}@media(max-width:800px){.grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.dialog{padding:10px}.dialog article{padding:15px}.center h1{font-size:23px}}@media(max-width:420px){.stats{grid-template-columns:1fr}.actions>*{flex:1}}
+
+
+/* UX compact pass: shared by all six laboratory domains and the mother-case page. */
+.center{gap:10px;align-content:start}
+.heading{gap:8px;margin-bottom:0}
+.heading h1{font-size:clamp(20px,1.5vw,25px);line-height:1.35;margin:0}
+.heading p{margin:3px 0 0;line-height:1.5;color:#526477}
+.stats{gap:8px}
+.stat{padding:10px 12px;border-radius:10px;min-height:62px;font-size:12px;line-height:1.5}
+.stat strong{font-size:22px;line-height:1.2;margin-bottom:3px}
+.grid{gap:9px}
+.grid label{gap:4px}
+.grid :global(input),.grid :global(select),.grid :global(textarea){max-width:100%;min-height:36px}
+.grid :global(textarea){min-height:58px;resize:vertical}
+.center :global(.panel){padding:12px 14px;margin:0;min-width:0}
+.center :global(.panel) h2,.center :global(.panel) h3{margin:0 0 8px;line-height:1.45}
+.center :global(.panel) p{margin:4px 0 7px;line-height:1.55}
+.center :global(fieldset){border:0;padding:0;margin:0;min-width:0}
+.center :global(fieldset) > :global(button){margin-top:10px}
+.actions{gap:7px;align-items:end}
+.actions label,.center > label{display:grid;gap:4px;min-width:150px;font-size:12px}
+.actions input,.actions select,.center > label input,.center > label select{min-height:36px;padding:6px 9px}
+.tabs{gap:5px;padding:5px 0;margin:0}
+.tabs button{padding:7px 10px;min-height:33px;font-size:12px;line-height:1.4}
+.table th,.table td{padding:7px 9px;vertical-align:middle;font-size:12px;line-height:1.6}
+.table th{white-space:nowrap}
+.table table{min-width:650px}
+.table :global(button){padding:5px 8px;min-height:30px}
+.notice{padding:8px 11px;border-radius:9px;font-size:12px;line-height:1.6;margin:0}
+.dialog{padding:2vh 12px;align-items:flex-start}
+.dialog article{width:min(880px,100%);border-radius:13px;padding:15px 18px;max-height:94vh;overflow-y:auto}
+.dialog .heading{position:sticky;top:-15px;z-index:2;background:#fff;padding:4px 0 9px;border-bottom:1px solid #e3e8ef}
+.dialog .tabs{position:sticky;top:40px;background:white;z-index:1}
+.message{padding:9px 11px;margin:6px 0;border-radius:8px}
+/* Collapsed laboratory choices use 3-column compact grid; expanded assignments occupy whole row. */
+.center .wide:has(> section:global(.panel)){display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;align-items:start}
+.center .wide:has(> section:global(.panel)) > p{grid-column:1/-1}
+.center .wide > section:global(.panel){padding:8px 10px;border-radius:10px}
+.center .wide > section:global(.panel) > label{display:flex;gap:7px;align-items:center;font-weight:600}
+.center .wide > section:global(.panel) > label input[type=checkbox]{width:16px;height:16px;min-height:16px;flex-shrink:0}
+.center .wide > section:global(.panel):has(input[type=checkbox]:checked){grid-column:1/-1}
+.center .wide > section:global(.panel) > .grid{margin-top:9px}
+@media(max-width:1100px){.center .wide:has(> section:global(.panel)){grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:800px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.center .wide:has(> section:global(.panel)){grid-template-columns:1fr}.heading h1{font-size:20px}.dialog article{padding:12px}}
+@media(max-width:420px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.stat{padding:8px}.stat strong{font-size:20px}.actions>*{flex:1 1 100%}.tabs button{font-size:11px}}
