@@ -1,0 +1,2 @@
+export function bankToman(n:number){const value=BigInt(n),negative=value<BigInt(0),v=negative?-value:value;return (negative?'-':'')+(v/BigInt(10)).toString()+(v%BigInt(10)?'.'+(v%BigInt(10)).toString():'');}
+export function bankMoney(n:number){const value=BigInt(n),negative=value<BigInt(0),v=negative?-value:value;return (negative?'−':'')+(v/BigInt(10)).toLocaleString('fa-IR')+(v%BigInt(10)?'٫'+(v%BigInt(10)).toLocaleString('fa-IR'):'')+' تومان';}
