@@ -1,6 +1,7 @@
 import {hasAccess} from './auth-policy.ts';
-export const canFinance=(u:any)=>!!u&&!u.laboratory&&(u.manager||hasAccess(u,'finance_ops'));
-export const canApproveFinance=(u:any)=>canFinance(u)&&(u.manager||hasAccess(u,'finance_approve'));
+const financePermission=(u:any,p:string)=>!!u&&!u.laboratory&&((u.email==='ekramiihamid@gmail.com'&&u.manager)||(u.dataPermissions??u.permissions??[]).includes(p));
+export const canFinance=(u:any)=>financePermission(u,'finance_ops');
+export const canApproveFinance=(u:any)=>canFinance(u)&&financePermission(u,'finance_approve');
 export const documentKinds:Record<string,string>={quote:'پیش‌فاکتور و برآورد',invoice:'فاکتور داخلی',contract:'قرارداد'};
 export const documentStatuses:Record<string,string>={draft:'پیش‌نویس',review:'منتظر تأیید',approved:'تأیید داخلی',sent:'ارسال ثبت‌شده',accepted:'تأیید مشتری ثبت‌شده',issued:'صادرشده داخلی',cancelled:'لغوشده'};
 export const transactionKinds:Record<string,string>={receipt:'دریافت مشتری',payment:'پرداخت مجری',expense:'هزینه مستقیم حساب',refund:'استرداد وجه مشتری'};
