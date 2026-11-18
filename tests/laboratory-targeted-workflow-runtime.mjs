@@ -46,7 +46,7 @@ await api('/api/laboratory-center',{action:'sample_move',key:'target-receive',id
 d=await read();assert.equal(d.jobs.find(j=>j.id===ja).readiness.submit_blockers.length,0);
 const submit={action:'dataset_submit',key:'target-submit',job_id:ja,draft_id:complete.id};await api('/api/laboratory-center',submit,providerA);assert.equal((await api('/api/laboratory-center',submit,providerA)).replayed,true);
 const persisted=await read();assert.equal(persisted.records.filter(r=>r.job_id===ja&&r.kind==='result').length,1);assert.equal((await db.prepare('SELECT COUNT(*) n FROM finance_transactions').first()).n,0);
-assert.ok(persisted.services.filter(s=>s.tariff_id.startsWith('EL:')).every(s=>s.domain==='protein-biochemistry'&&s.method!=='در مرجع فعلی ثبت نشده'));
+assert.equal(persisted.services.filter(s=>s.tariff_id.startsWith('EL:')).length,58);assert.ok(persisted.services.filter(s=>s.tariff_id.startsWith('EL:')).every(s=>s.domain==='protein-biochemistry'&&s.method!=='در مرجع فعلی ثبت نشده'));
 assert.ok(!JSON.stringify(persisted).includes('unitPriceToman'));
 await api('/api/sample-intake?id='+id,null,providerA,403);
 console.log('Targeted laboratory workflow: '+checks+' isolated HTTP checks passed; partial/rejected intake, actor/version/permit gates, draft and documented result send/replay; no production writes.');
