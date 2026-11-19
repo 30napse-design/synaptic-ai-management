@@ -248,7 +248,7 @@
     "financeEnabled": false,
     "technicalApproval": "در انتظار تأیید",
     "relatedCode": null,
-    "validationRule": "سری زمانی مشخص شود آیا سنجش نقاط زمانی داخل بسته رشد است",
+    "validationRule": "مشخص شود آیا سنجش نقاط زمانی داخل بسته رشد است",
     "methodScope": "تعیین روش و شرایط نمونه در زمان پذیرش"
   },
   {
