@@ -1,0 +1,247 @@
+{
+  "name": "نمای مشترک تصاویر",
+  "source": "SYNAPSE_LAB03_to_LAB07_MASTER_FINAL_REVIEW(2).xlsx / نمای مشترک تصاویر",
+  "policy": "Reference-only cross-lab view: one owner, one original code and one tariff. Do not create a new service, price or invoice line for this view.",
+  "references": [
+    {
+      "code": "CEL-082",
+      "ownerDomain": "cell-molecular",
+      "sourceBank": "خدمات سلولی",
+      "independentService": false,
+      "independentTariff": false,
+      "billByOwnerCodeOnly": true
+    },
+    {
+      "code": "CEL-083",
+      "ownerDomain": "cell-molecular",
+      "sourceBank": "خدمات سلولی",
+      "independentService": false,
+      "independentTariff": false,
+      "billByOwnerCodeOnly": true
+    },
+    {
+      "code": "CEL-084",
+      "ownerDomain": "cell-molecular",
+      "sourceBank": "خدمات سلولی",
+      "independentService": false,
+      "independentTariff": false,
+      "billByOwnerCodeOnly": true
+    },
+    {
+      "code": "CEL-085",
+      "ownerDomain": "cell-molecular",
+      "sourceBank": "خدمات سلولی",
+      "independentService": false,
+      "independentTariff": false,
+      "billByOwnerCodeOnly": true
+    },
+    {
+      "code": "CEL-086",
+      "ownerDomain": "cell-molecular",
+      "sourceBank": "خدمات سلولی",
+      "independentService": false,
+      "independentTariff": false,
+      "billByOwnerCodeOnly": true
+    },
+    {
+      "code": "CEL-087",
+      "ownerDomain": "cell-molecular",
+      "sourceBank": "خدمات سلولی",
+      "independentService": false,
+      "independentTariff": false,
+      "billByOwnerCodeOnly": true
+    },
+    {
+      "code": "CEL-088",
+      "ownerDomain": "cell-molecular",
+      "sourceBank": "خدمات سلولی",
+      "independentService": false,
+      "independentTariff": false,
+      "billByOwnerCodeOnly": true
+    },
+    {
+      "code": "CEL-089",
+      "ownerDomain": "cell-molecular",
+      "sourceBank": "خدمات سلولی",
+      "independentService": false,
+      "independentTariff": false,
+      "billByOwnerCodeOnly": true
+    },
+    {
+      "code": "HP-081",
+      "ownerDomain": "histology",
+      "sourceBank": "پاتولوژی و هیستولوژی",
+      "independentService": false,
+      "independentTariff": false,
+      "billByOwnerCodeOnly": true
+    },
+    {
+      "code": "HP-082",
+      "ownerDomain": "histology",
+      "sourceBank": "پاتولوژی و هیستولوژی",
+      "independentService": false,
+      "independentTariff": false,
+      "billByOwnerCodeOnly": true
+    },
+    {
+      "code": "HP-083",
+      "ownerDomain": "histology",
+      "sourceBank": "پاتولوژی و هیستولوژی",
+      "independentService": false,
+      "independentTariff": false,
+      "billByOwnerCodeOnly": true
+    },
+    {
+      "code": "HP-084",
+      "ownerDomain": "histology",
+      "sourceBank": "پاتولوژی و هیستولوژی",
+      "independentService": false,
+      "independentTariff": false,
+      "billByOwnerCodeOnly": true
+    },
+    {
+      "code": "HP-085",
+      "ownerDomain": "histology",
+      "sourceBank": "پاتولوژی و هیستولوژی",
+      "independentService": false,
+      "independentTariff": false,
+      "billByOwnerCodeOnly": true
+    },
+    {
+      "code": "HP-086",
+      "ownerDomain": "histology",
+      "sourceBank": "پاتولوژی و هیستولوژی",
+      "independentService": false,
+      "independentTariff": false,
+      "billByOwnerCodeOnly": true
+    },
+    {
+      "code": "HP-087",
+      "ownerDomain": "histology",
+      "sourceBank": "پاتولوژی و هیستولوژی",
+      "independentService": false,
+      "independentTariff": false,
+      "billByOwnerCodeOnly": true
+    },
+    {
+      "code": "HP-088",
+      "ownerDomain": "histology",
+      "sourceBank": "پاتولوژی و هیستولوژی",
+      "independentService": false,
+      "independentTariff": false,
+      "billByOwnerCodeOnly": true
+    },
+    {
+      "code": "HP-089",
+      "ownerDomain": "histology",
+      "sourceBank": "پاتولوژی و هیستولوژی",
+      "independentService": false,
+      "independentTariff": false,
+      "billByOwnerCodeOnly": true
+    },
+    {
+      "code": "HP-090",
+      "ownerDomain": "histology",
+      "sourceBank": "پاتولوژی و هیستولوژی",
+      "independentService": false,
+      "independentTariff": false,
+      "billByOwnerCodeOnly": true
+    },
+    {
+      "code": "HP-091",
+      "ownerDomain": "histology",
+      "sourceBank": "پاتولوژی و هیستولوژی",
+      "independentService": false,
+      "independentTariff": false,
+      "billByOwnerCodeOnly": true
+    },
+    {
+      "code": "HP-092",
+      "ownerDomain": "histology",
+      "sourceBank": "پاتولوژی و هیستولوژی",
+      "independentService": false,
+      "independentTariff": false,
+      "billByOwnerCodeOnly": true
+    },
+    {
+      "code": "HP-093",
+      "ownerDomain": "histology",
+      "sourceBank": "پاتولوژی و هیستولوژی",
+      "independentService": false,
+      "independentTariff": false,
+      "billByOwnerCodeOnly": true
+    },
+    {
+      "code": "HP-094",
+      "ownerDomain": "histology",
+      "sourceBank": "پاتولوژی و هیستولوژی",
+      "independentService": false,
+      "independentTariff": false,
+      "billByOwnerCodeOnly": true
+    },
+    {
+      "code": "HP-095",
+      "ownerDomain": "histology",
+      "sourceBank": "پاتولوژی و هیستولوژی",
+      "independentService": false,
+      "independentTariff": false,
+      "billByOwnerCodeOnly": true
+    },
+    {
+      "code": "HP-096",
+      "ownerDomain": "histology",
+      "sourceBank": "پاتولوژی و هیستولوژی",
+      "independentService": false,
+      "independentTariff": false,
+      "billByOwnerCodeOnly": true
+    },
+    {
+      "code": "HP-097",
+      "ownerDomain": "histology",
+      "sourceBank": "پاتولوژی و هیستولوژی",
+      "independentService": false,
+      "independentTariff": false,
+      "billByOwnerCodeOnly": true
+    },
+    {
+      "code": "HP-098",
+      "ownerDomain": "histology",
+      "sourceBank": "پاتولوژی و هیستولوژی",
+      "independentService": false,
+      "independentTariff": false,
+      "billByOwnerCodeOnly": true
+    },
+    {
+      "code": "HP-099",
+      "ownerDomain": "histology",
+      "sourceBank": "پاتولوژی و هیستولوژی",
+      "independentService": false,
+      "independentTariff": false,
+      "billByOwnerCodeOnly": true
+    },
+    {
+      "code": "HP-100",
+      "ownerDomain": "histology",
+      "sourceBank": "پاتولوژی و هیستولوژی",
+      "independentService": false,
+      "independentTariff": false,
+      "billByOwnerCodeOnly": true
+    },
+    {
+      "code": "HP-101",
+      "ownerDomain": "histology",
+      "sourceBank": "پاتولوژی و هیستولوژی",
+      "independentService": false,
+      "independentTariff": false,
+      "billByOwnerCodeOnly": true
+    },
+    {
+      "code": "HP-102",
+      "ownerDomain": "histology",
+      "sourceBank": "پاتولوژی و هیستولوژی",
+      "independentService": false,
+      "independentTariff": false,
+      "billByOwnerCodeOnly": true
+    }
+  ]
+}

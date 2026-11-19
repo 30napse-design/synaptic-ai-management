@@ -5,15 +5,19 @@ import animalReviewed from './animal-services-reviewed.json';
 const reviewedAnimalTitles=new Map(animalReviewed.map(row=>[row.code,row.title]));
 import pathologyReviewed from './pathology-services-reviewed.json';
 import cellularReviewed from './cellular-services-reviewed.json';
+import geneReviewed from './gene-expression-services-reviewed.json';
 import westernReviewed from './western-services-reviewed.json';
 import elisaReviewed from './elisa-services-reviewed.json';
+import microbiologyDraft from './microbiology-services-draft.json';
+const microbiologyDraftByTitle=new Map(microbiologyDraft.map(row=>[row.title,row.code]));
 const reviewedWesternTitles=new Map(westernReviewed.map(row=>[row.code,row.title]));
 const reviewedElisaTitles=new Map(elisaReviewed.map(row=>[row.code,row.title]));
+const reviewedGeneTitles=new Map(geneReviewed.map(row=>[row.code,row.title]));
 const reviewedPathologyTitles=new Map(pathologyReviewed.map(row=>[row.code,row.title]));
 export function tariffCSV(text:string){const rows:string[][]=[];let row:string[]=[],v='',quoted=false;for(let i=0;i<text.length;i++){const c=text[i];if(c==='"'){if(quoted&&text[i+1]==='"'){v+='"';i++}else quoted=!quoted}else if(!quoted&&(c===','||c==='\n'||c==='\r')){row.push(v);v='';if(c!==','){if(c==='\r'&&text[i+1]==='\n')i++;if(row.some(Boolean))rows.push(row);row=[]}}else v+=c}row.push(v);if(row.some(Boolean))rows.push(row);return rows}
 export function approvedTariffServices(script=legacy['tariffs-data.js']){const result:any[]=[];for(const bank of readTariffBanks(script)){const [header,...rows]=tariffCSV(bank.catalog||'');if(!header)continue;const code=header.findIndex(h=>h==='شناسه خدمت'||h==='کد'),description=header.findIndex(h=>['عنوان خدمت','خدمت','نام فارسی'].includes(h)),unit=header.findIndex(h=>h.includes('واحد')),price=header.findIndex(h=>/تعرفه|قیمت/.test(h)),status=header.findIndex(h=>h.includes('وضعیت'));if([code,description,price,status].some(x=>x<0))continue;
  const area=bank.code==='WB'?'وسترن بلات و آزمایش‌های پروتئینی':bank.code==='EL'?'ELISA و سنجش بیومارکرها':bank.code==='GE'?'ژنتیک و بیان ژن':/حیوانی/.test(bank.name)?'مطالعات حیوانی':/پاتولوژی|بافت/.test(bank.name)?'بافت‌شناسی و پاتولوژی':/سلولی/.test(bank.name)?'تکنیک‌های سلولی':/بیوشیمی/.test(bank.name)?'بیوشیمی':'مولکولی و پروتئینی';
- for(const row of rows){const amount=String(row[price]||'').replace(/[۰-۹٠-٩]/g,c=>String(c.charCodeAt(0)-(c>='۰'?1776:1632))).replace(/[,٬\s]/g,'');if(row[status]?.trim()!=='مصوب'||!/^\d+$/.test(amount)||!Number.isSafeInteger(Number(amount))||Number(amount)<=0||!row[code]||!row[description])continue;result.push({tariff_id:String(bank.code)+':'+row[code],code:row[code],description:(bank.code==='AN'&&reviewedAnimalTitles.get(row[code]))||(bank.code==='HP'&&reviewedPathologyTitles.get(row[code]))||(bank.code==='WB'&&reviewedWesternTitles.get(row[code]))||(bank.code==='EL'&&reviewedElisaTitles.get(row[code]))||row[description],area,unit:row[unit]||'خدمت',unitPriceToman:Number(amount),version:String(bank.updated||'snapshot-e3048ed'),source:bank.name,href:'/manage/tariffs'});}}
+ for(const row of rows){const amount=String(row[price]||'').replace(/[۰-۹٠-٩]/g,c=>String(c.charCodeAt(0)-(c>='۰'?1776:1632))).replace(/[,٬\s]/g,'');if(row[status]?.trim()!=='مصوب'||!/^\d+$/.test(amount)||!Number.isSafeInteger(Number(amount))||Number(amount)<=0||!row[code]||!row[description])continue;result.push({tariff_id:String(bank.code)+':'+row[code],code:row[code],description:(bank.code==='AN'&&reviewedAnimalTitles.get(row[code]))||(bank.code==='HP'&&reviewedPathologyTitles.get(row[code]))||(bank.code==='GE'&&reviewedGeneTitles.get(row[code]))||(bank.code==='WB'&&reviewedWesternTitles.get(row[code]))||(bank.code==='EL'&&reviewedElisaTitles.get(row[code]))||row[description],area,unit:row[unit]||'خدمت',unitPriceToman:Number(amount),version:String(bank.updated||'snapshot-e3048ed'),source:bank.name,href:'/manage/tariffs'});}}
  // The attached CRM source explicitly approves 47 WB and 7 EL tariffs.
  // Never promote prior/conditional/under-review rows to an automatic price.
  const observed=new Set(result.map((r:any)=>r.tariff_id));
@@ -31,7 +35,10 @@ export function approvedTariffServices(script=legacy['tariffs-data.js']){const r
  }
  const counts=new Map<string,number>();for(const r of result)counts.set(r.tariff_id,(counts.get(r.tariff_id)||0)+1);return result.filter(r=>counts.get(r.tariff_id)===1);
 }
-export async function selectedTariffLines(lines:any[],scientificOnly:boolean,oldLines:any[]=[],companyId=''){if(!Array.isArray(lines))return lines;const bank=await currentTariffServices(companyId);return lines.map(l=>{const old=oldLines.find(x=>x.id===l.id);const same=old&&['tariff_id','tariff_version','description','area','unit','unit_price'].every(k=>(old[k]??'')===(l[k]??''));if(same)return {...l};
+export async function selectedTariffLines(lines:any[],scientificOnly:boolean,oldLines:any[]=[],companyId=''){if(!Array.isArray(lines))return lines;const bank=await currentTariffServices(companyId);return lines.map(l=>{const old=oldLines.find(x=>x.id===l.id);const same=old&&['tariff_id','tariff_version','description','area','unit','unit_price'].every(k=>(old[k]??'')===(l[k]??'')); const micCode=String(l.tariff_id||l.rate_source||'').match(/\bMIC-\d{3}\b/)?.[0]||microbiologyDraftByTitle.get(String(l.description||'').trim())||'';
+ if(micCode)throw Error('خدمت میکروبیولوژی پیشنهادی است و تا تأیید مسئول فنی و تصویب تعرفه در فاکتور قابل ثبت نیست.');
+ if(same)return {...l};
+
  const candidate=String(l.tariff_id||l.rate_source||'').match(/\b(WB|EL)-\d{3}\b/)?.[0]||'';
  const wb=westernReviewed.find(r=>r.code===candidate||r.title===String(l.description||'').trim());
  const el=elisaReviewed.find(r=>r.code===candidate||r.title===String(l.description||'').trim());
@@ -49,16 +56,16 @@ export function quotationServiceCatalog(rates=approvedTariffServices()){
   ...animalReviewed.map((r:any)=>({code:r.code,title:r.title,unit:r.unit,area:'مطالعات حیوانی',status:r.tariffStatus||'',group:r.group||'',reference:''})),
   ...pathologyReviewed.map((r:any)=>({code:r.code,title:r.title,unit:r.unit,area:'بافت‌شناسی و پاتولوژی',status:'قیمت فقط در صورت تطبیق با تعرفه مصوب',group:'',reference:''})),
   ...cellularReviewed.map((r:any)=>({code:r.code,title:r.title,unit:r.unit,area:'خدمات سلولی و کشت سلول',status:r.rateStatus,group:r.group,reference:r.reference||''})),
-  ...readTariffBanks(legacy['tariffs-data.js']).filter(b=>b.code==='GE').flatMap(b=>{const [h,...rs]=tariffCSV(b.catalog||'');if(!h)return [];const c=h.findIndex(x=>['شناسه خدمت','کد'].includes(x)),t=h.findIndex(x=>['عنوان خدمت','خدمت','نام فارسی'].includes(x)),u=h.findIndex(x=>x.includes('واحد'));return rs.filter(r=>r[c]&&r[t]).map(r=>({code:r[c],title:r[t],unit:r[u]||'خدمت',area:'ژنتیک و بیان ژن',status:'قیمت فقط از تعرفه مصوب',group:'',reference:'',domain:'GE'}));}),
+  ...geneReviewed.map((r:any)=>({code:r.code,title:r.title,unit:r.unit,area:'ژنتیک و بیان ژن',status:r.rateStatus,group:r.group,reference:r.reference||''})),
   ...westernReviewed.map((r:any)=>({code:r.code,title:r.title,unit:r.unit,area:'وسترن بلات و آزمایش‌های پروتئینی',status:r.rateStatus,group:r.group,reference:r.reference||''})),
   ...elisaReviewed.map((r:any)=>({code:r.code,title:r.title,unit:r.unit,area:'ELISA و سنجش بیومارکرها',status:r.rateStatus,group:r.group,reference:'',requiresKitReview:r.requiresKitReview}))
  ];
  const reviewed=sources.map((r:any)=>{
-  const id=r.code+''; const domain=r.domain==='GE'?'GE':id.startsWith('AN-')?'AN':id.startsWith('HP-')?'HP':id.startsWith('CEL-')?'CEL':id.startsWith('GE-')?'GE':id.startsWith('WB-')?'WB':'EL';
+  const id=r.code+''; const domain=id.startsWith('AN-')?'AN':id.startsWith('HP-')?'HP':id.startsWith('CEL-')?'CEL':id.startsWith('GE-')?'GE':id.startsWith('WB-')?'WB':'EL';
   const tariff_id=domain+':'+id;
   const rate:any=approved.get(tariff_id);
-  const financeApproved=String(rate?.version||'').startsWith('fin08:');
   // HP-069 has no sourced numerical rate; HP-070 is a cross-lab referral.
+  const financeApproved=String(rate?.version||'').startsWith('fin08:');
   const referral=id==='HP-070'||(domain==='CEL'&&!!r.reference)||(domain==='GE'&&!!r.reference)||id==='GE-070'||(domain==='WB'&&!!r.reference)||r.status==='در خدمت پایه',priceInquiry=(id==='HP-069'&&!String(rate?.version||'').startsWith('fin08:'))||(!financeApproved&&(r.status==='استعلام'||r.status==='جدید پیشنهادی'||r.status==='پیشنهادی'))||('requiresKitReview' in r && r.requiresKitReview===true)||(!financeApproved&&(r.status==='مصوب قبلی'||r.status==='معادل نرخ پایه'||r.status==='اصلاح‌شده توسط کارفرما'));
   return {code:id,tariff_id,description:r.title,area:r.area,unit:rate?.unit||r.unit||'خدمت',group:r.group,
     approved:!!rate&&!referral&&!priceInquiry&&(domain!=='CEL'||financeApproved)&&(domain!=='GE'||r.domain==='GE'||r.status==='مصوب'||financeApproved)&&(domain!=='WB'||r.status.startsWith('مصوب — تأیید')||financeApproved)&&(domain!=='EL'||!r.requiresKitReview),referral,priceInquiry,
@@ -67,8 +74,14 @@ export function quotationServiceCatalog(rates=approvedTariffServices()){
     status:referral?'ارجاع/شامل خدمت پایه؛ بدون ردیف تکراری':priceInquiry?'استعلام یا تأیید قیمت ضروری':rate&&(domain!=='CEL'||financeApproved)&&(domain!=='GE'||r.domain==='GE'||r.status==='مصوب'||financeApproved)&&(domain!=='WB'||r.status.startsWith('مصوب — تأیید')||financeApproved)&&(domain!=='EL'||!r.requiresKitReview)?'تعرفه مصوب':r.status||'نیازمند بازبینی قیمت'};
  });
  const seen=new Set(reviewed.map(r=>r.tariff_id));
- const otherApproved=rates.filter((r:any)=>!seen.has(r.tariff_id)).map((r:any)=>({code:r.code,tariff_id:r.tariff_id,description:r.description,area:r.area,unit:r.unit||'خدمت',group:r.area,approved:true,referral:false,priceInquiry:false,unitPriceToman:r.unitPriceToman,version:r.version,source:r.source,status:'تعرفه مصوب'}));
- return [...reviewed,...otherApproved];
+ const otherApproved=rates.filter((r:any)=>!seen.has(r.tariff_id)&&!r.tariff_id.startsWith('MIC:')).map((r:any)=>({code:r.code,tariff_id:r.tariff_id,description:r.description,area:r.area,unit:r.unit||'خدمت',group:r.area,approved:true,referral:false,priceInquiry:false,unitPriceToman:r.unitPriceToman,version:r.version,source:r.source,status:'تعرفه مصوب'}));
+ const microReferences=microbiologyDraft.map(r=>({
+  code:r.code,tariff_id:'MIC:'+r.code,description:r.title,area:'میکروبیولوژی',
+  unit:r.unit,group:r.group,approved:false,referral:false,priceInquiry:true,
+  financeEnabled:false,unitPriceToman:null,version:'draft-lab08-2026-11-19',
+  source:'پیش‌نویس علمی؛ بدون تعرفه مصوب',status:'استعلام / در انتظار تأیید مسئول فنی و مالی'
+ }));
+ return [...reviewed,...otherApproved,...microReferences];
 }
 
 // Approved dated extensions of the existing bank; draft proposals never override reference prices.
