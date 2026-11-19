@@ -62,7 +62,7 @@ function catalog(){const result:any[]=[];for(const bank of readTariffBanks(legac
  const wbElIds=new Set(wbEl.map(r=>r.code.split('-')[0]+':'+r.code));
  const merged=retained.filter((r:any)=>!wbElIds.has(r.tariff_id));
  for(const r of wbEl){const id=r.code.split('-')[0]+':'+r.code;const old:any=oldById.get(id)||{};
-  merged.push({...old,tariff_id:id,code:r.code,title:r.title,description:r.title,unit:old.unit||'خدمت',
+  merged.push({...old,tariff_id:id,code:r.code,title:r.title,description:r.title,unit:r.unit||old.unit||'خدمت',
     domain:'protein-biochemistry',subdivision:r.subdivision,category:r.area,subcategory:r.group,
     version:old.version||'reviewed-wb-el-2026-11-19',source:old.source||'SYNAPSE reviewed CRM',
     status:r.rateStatus,tariff_review_required:r.requiresKitReview||r.rateStatus==='در خدمت پایه',
