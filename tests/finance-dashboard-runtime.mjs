@@ -21,7 +21,7 @@ await api('/api/internal-tickets',{action:'note',id:t.id,revision:t.revision,key
 await db.prepare("INSERT INTO ops_communications(id,request_id,source_key,direction,channel,sender,recipient,body,metadata,created_by,created_at) VALUES('private-draft',?,'fixture-private-draft','outbound','manual','staff:finance','',?,?,'staff:finance',?)").bind(ticket.id,'CONFIDENTIAL_DRAFT',JSON.stringify({allowedRoles:['finance_manager']}),today).run();
 assert.ok(!(await api('/api/internal-tickets',null,sessions.customer)).messages.some(m=>m.body==='CONFIDENTIAL_DRAFT'));
 assert.ok(!(await api('/api/laboratory-center',null,sessions.customer)).messages.some(m=>m.body==='CONFIDENTIAL_DRAFT'));
-const unmatched=await api('/api/lab-operations',{action:'mother_create',invoice_number:'UNMATCHED-FIXTURE',title:'پرونده مادر بدون سند مالی',customer_name:'محقق ساختگی بدون تطبیق',department:'بیوشیمی',notes:'Synthetic only'},sessions.customer);
+const unmatched=await api('/api/lab-operations',{action:'mother_create',customer_phone:'+989000000000',customer_email:'synthetic@example.invalid',invoice_number:'UNMATCHED-FIXTURE',title:'پرونده مادر بدون سند مالی',customer_name:'محقق ساختگی بدون تطبیق',department:'بیوشیمی',notes:'Synthetic only'},sessions.customer);
 assert.ok((await get()).unmatchedCases.some(c=>c.id===unmatched.id&&c.total===null));
 const bank={action:'bank_import',account:'Synthetic statement',rows:[{date:today,reference:'SYNTHETIC-BANK-001',amount_rial:1000,description:'Fixture only'}]};
 await api('/api/finance',bank,sessions.finance);await api('/api/finance',bank,sessions.finance);assert.equal((await db.prepare('SELECT COUNT(*) n FROM finance_bank_rows').first()).n,1);

@@ -58,3 +58,72 @@ One `get_operations_sync_status` call returned 996 operations, 513 Gmail records
 - Post-publication actual read-only counts match the pre-publication observation: 996 operations, 513 Gmail, 461 calls, 569 unassigned, nine laboratory jobs. Matching totals are not proof of complete row-by-row recovery or contents.
 - Live HTTP smoke: `/login` 200/password form; `/work/lab` redirects unauthenticated visitors to login; mother API 403 and operations API 401 without an employee session. Protected-route denials do not establish employee login success or a functional defect.
 - Actual staff acceptance, external OAuth/cron/model activation and full production-data backup/restore remain pending valid secure owner/provider access. Existing v51 archive is retained for code rollback; no live restore was rehearsed. No redundant Drive archive was generated for this incremental change.
+
+## Unified FIN-01–FIN-07 and laboratory release candidate — 2026-11-19
+
+### Scope and provenance
+
+Owner authorized integration and deployment on the existing SYNAPSE Site **after successful validation and a valid recoverable backup**. This instruction does not waive the backup condition. No new FIN-08 page/module, accounting engine or database was implemented. Existing central ledger functions, legacy routes/navigation and access are preserved as dependencies of the seven financial sections.
+
+Development branch: `integration/finance01-07-laboratory-final-2026-11-19`.
+
+Inputs retained as actual Git ancestors:
+
+- FIN-07: `5a1c5cd6179076308e77053579ebc149635a6d9f` (includes FIN-01 through FIN-06 source).
+- Final31 laboratory workflow: `5ecb4d827f19af37e5add9fc6953b663ee1e8c3b`.
+- Latest reviewed animal-catalog integration: `075683a5ef6b5349d744c3fb850023473ca246ed` (retains `AN-001` through `AN-203` without approving new prices).
+- Laboratory v58: `559e2a899d3dfdc62b30f1e342c84b9af38584c0` remains an ancestor.
+
+Merge `48f1af0` retains FIN-07 financial implementations wherever final31 had only copied the older FIN-06 content, and retains final31's newer laboratory, intake, archive/restore, navigation and staff-workspace behavior. Merge `9c1b1d5` adds the reviewed catalog without losing the newer scientific metadata fields. No existing financial source was replaced by an older copy. No real records were allocated, reimported, removed or rewritten. Header/account/AI work was not rebuilt.
+
+The seven existing routes are `/finance/dashboard`, `/finance/invoices`, `/finance/pricing`, `/finance/receipts`, `/finance/payables`, `/finance/bank`, and `/finance/petty-cash`. Shared documents, customers, mother cases, laboratory orders, journal and private attachments keep their original IDs and engines. FIN-08 is outside this release's development scope; retaining the legacy ledger is not an assertion that the proposed FIN-08 specification was implemented.
+
+### Actual verification on the unified source
+
+- TypeScript and production Build: passed after conflicts were resolved. No dependency change or new package was needed.
+- FIN-07: 51 named scenarios / 310 isolated HTTP checks.
+- FIN-06: 35 scenarios / 305 isolated HTTP checks.
+- FIN-05: 304 isolated HTTP checks.
+- FIN-04: 157 isolated HTTP checks.
+- Financial dashboard: 60 isolated HTTP checks.
+- Finance core: 113 isolated HTTP checks.
+- Final31 laboratory lifecycle: 153 isolated HTTP checks.
+- Total above: **1,402 isolated HTTP checks**, not production acceptance.
+- Combined laboratory policy, petty-calculation, workbook and PDF/bidi tests: **15 passed**.
+- Migration 0022, 0023 and 0024 preservation tests: **3 passed**, one each. Runtime harnesses also apply the complete migration sequence to independent temporary D1 databases, with temporary R2 buckets.
+- Legacy petty provisioning/import, synthetic login/password change, private receipt, history and correction regressions: passed.
+- Older financial fixtures now supply the contact fields required by final31 validation; no production validation was loosened. The catalog assertion checks 620 unique references and every reviewed animal code, rather than the obsolete pre-catalog count of 619.
+- No real staff sessions, bank service, production recovery, authenticated live mutation or new browser/mobile acceptance was performed. SSR still reports Recharts container-dimension warnings; API/SSR success is not visual acceptance.
+
+Reproduction uses the existing commands:
+
+```sh
+node node_modules/typescript/bin/tsc --noEmit
+npm run build
+node scripts/test-finance-runtime.mjs finance-petty-workflow-runtime.mjs --package5-fixtures
+node scripts/test-finance-runtime.mjs finance-bank-runtime.mjs --package5-fixtures
+node scripts/test-finance-runtime.mjs finance-payments-runtime.mjs --package5-fixtures
+node scripts/test-finance-runtime.mjs finance-receipts-runtime.mjs
+node scripts/test-finance-runtime.mjs finance-dashboard-runtime.mjs
+node scripts/test-finance-runtime.mjs package3-finance-runtime.mjs
+node scripts/test-laboratory-center.mjs laboratory-final31-runtime.mjs
+node --test tests/laboratory-final31-policy.test.mjs tests/finance-petty-summary.test.mjs tests/finance-bank-bidi.test.mjs tests/bank-workbook.test.mjs
+python tests/finance-payments-migration.test.py
+python tests/finance-bank-migration.test.py
+python tests/finance-petty-workflow-migration.test.py
+node scripts/test-petty-runtime.mjs
+```
+
+Run each runtime harness on its own temporary database. Test fixtures are synthetic and never bind to production.
+
+### Live state and exact release blocker
+
+The existing Site is `appgprj_6af06be01a5481918c6578c73c9b888a`, URL `https://synapse.ekramiihamid.chatgpt.site`. Audience and credentials were not changed. Official Sites history showed saved v59 at `5ecb4d8` with no deployment ID. The known v58 deployment `appgdep_6afdf0a01570819197cbba15a3e39c97` was read back with status `succeeded`, source `559e2a8`. This is not evidence that the new integrated branch is live.
+
+The native live overview confirmed the `DB` binding and existing table names, without reading private account or financial rows. This is not a complete schema-history inspection or backup. Current Sites tools expose bounded table reads, not a consistent complete D1 export, a full R2 object inventory/content/metadata export or a data-restore operation. No valid production snapshot manifest was supplied; workspace archives are source deliveries, not D1/R2 backups. The offline verifier cannot obtain missing provider access.
+
+**Deployment was not attempted. No production migration, data/account mutation, runtime-secret change, bank connection, scheduler activation or real money operation was performed.** Sites applies pending migrations before Worker upload; therefore an older Worker archive alone cannot establish data rollback safety. In particular the unified code includes 0022–0024, which must not be applied to the live database before backup and a controlled restored-copy check.
+
+Required to proceed: obtain an authorized private D1 SQL/SQLite snapshot and all R2 objects with original keys/metadata, timestamp, checksums and complete manifest from official Cloudflare access or Sites support. Keep it encrypted and outside GitHub; secure secret recovery is separate. Check source completeness with the provider, run `node scripts/verify-portable-backup.mjs /absolute/private/export-directory`, restore to an isolated copy, verify integrity/foreign keys/counts/references and exercise pending migrations there. Then deploy this exact source through the official existing-Site workflow, preserving audience and bindings, and record the returned version/deployment. Complete secure live staff and controlled synthetic-record acceptance afterwards. No password, token or real financial export should be posted in chat.
+
+Remaining final31 product limits (already disclosed upstream) also remain explicit: verified researcher self-service identity, complete scientific metadata, correction of an already-executed individual service, real mobile acceptance and actual customer handover cannot be claimed complete by this integration. No such missing permission or business evidence was fabricated.
