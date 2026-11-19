@@ -12,3 +12,27 @@ export function approvedTariffServices(script=legacy['tariffs-data.js']){const r
  const counts=new Map<string,number>();for(const r of result)counts.set(r.tariff_id,(counts.get(r.tariff_id)||0)+1);return result.filter(r=>counts.get(r.tariff_id)===1);
 }
 export function selectedTariffLines(lines:any[],scientificOnly:boolean,oldLines:any[]=[]){if(!Array.isArray(lines))return lines;const bank=approvedTariffServices();return lines.map(l=>{const old=oldLines.find(x=>x.id===l.id);const same=old&&['tariff_id','tariff_version','description','area','unit','unit_price'].every(k=>(old[k]??'')===(l[k]??''));if(same)return {...l};if(!l.tariff_id){if(scientificOnly)throw Error('خدمت جدید یا قیمت تغییرکرده باید از تعرفه مصوب انتخاب شود؛ قیمت اختصاصی با واحد مالی است.');return {...l};}const rate=bank.find(r=>r.tariff_id===l.tariff_id&&r.version===l.tariff_version);if(!rate||l.unit_price!==rate.unitPriceToman||l.description!==rate.description||l.area!==rate.area||l.unit!==rate.unit)throw Error('تعرفه، نسخه یا قیمت خدمت با بانک مصوب تطابق ندارد؛ خدمت را دوباره انتخاب کنید.');return {...l,rate_source:rate.source+' / '+rate.code+' / '+rate.version};});}
+
+/** All reviewed animal/pathology service references for quote and invoice pickers.
+ * Only rates explicitly approved in the current financial tariff snapshot may be autofilled.
+ * Other services are reference-only until Finance approves an explicit price.
+ */
+export function quotationServiceCatalog(){
+ const approved=new Map(approvedTariffServices().map((r:any)=>[r.tariff_id,r]));
+ const sources=[
+  ...animalReviewed.map((r:any)=>({code:r.code,title:r.title,unit:r.unit,area:'مطالعات حیوانی',status:r.tariffStatus||'',group:r.group||''})),
+  ...pathologyReviewed.map((r:any)=>({code:r.code,title:r.title,unit:r.unit,area:'بافت‌شناسی و پاتولوژی',status:'قیمت فقط در صورت تطبیق با تعرفه مصوب',group:''}))
+ ];
+ return sources.map(r=>{
+  const id=r.code+''; const domain=id.startsWith('AN-')?'AN':'HP';
+  const tariff_id=domain+':'+id;
+  const rate:any=approved.get(tariff_id);
+  // HP-069 has no sourced numerical rate; HP-070 is a cross-lab referral.
+  const referral=id==='HP-070',priceInquiry=id==='HP-069';
+  return {code:id,tariff_id,description:r.title,area:r.area,unit:r.unit||'خدمت',group:r.group,
+    approved:!!rate&&!referral&&!priceInquiry,referral,priceInquiry,
+    unitPriceToman:rate&&!referral&&!priceInquiry?rate.unitPriceToman:null,
+    version:rate?.version||'',source:rate?.source||'کاتالوگ استاندارد آزمایشگاه',
+    status:referral?'ارجاع به آزمایشگاه سلولی؛ بدون ردیف تکراری':priceInquiry?'استعلام قیمت ضروری':rate?'تعرفه مصوب':'نیازمند قیمت‌گذاری و تأیید'};
+ });
+}
