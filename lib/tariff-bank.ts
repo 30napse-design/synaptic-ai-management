@@ -74,7 +74,7 @@ export function quotationServiceCatalog(rates=approvedTariffServices()){
     status:referral?'ارجاع/شامل خدمت پایه؛ بدون ردیف تکراری':priceInquiry?'استعلام یا تأیید قیمت ضروری':rate&&(domain!=='CEL'||financeApproved)&&(domain!=='GE'||r.domain==='GE'||r.status==='مصوب'||financeApproved)&&(domain!=='WB'||r.status.startsWith('مصوب — تأیید')||financeApproved)&&(domain!=='EL'||!r.requiresKitReview)?'تعرفه مصوب':r.status||'نیازمند بازبینی قیمت'};
  });
  const seen=new Set(reviewed.map(r=>r.tariff_id));
- const otherApproved=rates.filter((r:any)=>!seen.has(r.tariff_id)&&!r.tariff_id.startsWith('MIC:')).map((r:any)=>({code:r.code,tariff_id:r.tariff_id,description:r.description,area:r.area,unit:r.unit||'خدمت',group:r.area,approved:true,referral:false,priceInquiry:false,unitPriceToman:r.unitPriceToman,version:r.version,source:r.source,status:'تعرفه مصوب'}));
+ const otherApproved=rates.filter((r:any)=>!seen.has(r.tariff_id)&&!r.tariff_id.startsWith('MIC:')&&!r.tariff_id.startsWith('GE:MO-')).map((r:any)=>({code:r.code,tariff_id:r.tariff_id,description:r.description,area:r.area,unit:r.unit||'خدمت',group:r.area,approved:true,referral:false,priceInquiry:false,unitPriceToman:r.unitPriceToman,version:r.version,source:r.source,status:'تعرفه مصوب'}));
  const microReferences=microbiologyDraft.map(r=>({
   code:r.code,tariff_id:'MIC:'+r.code,description:r.title,area:'میکروبیولوژی',
   unit:r.unit,group:r.group,approved:false,referral:false,priceInquiry:true,
