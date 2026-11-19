@@ -24,7 +24,7 @@ export function approvedTariffServices(script=legacy['tariffs-data.js']){const r
   ['EL',elisaReviewed,'ELISA و سنجش بیومارکرها','SYNAPSE_EL_Approved_1405.xlsx']
  ] as const){
   for(const r of sourceRows){const id=domain+':'+r.code;
-   if(observed.has(id)||r.reference||!r.rateStatus.startsWith('مصوب — تأیید کارفرما')||
+   if(observed.has(id)||('reference' in r && !!r.reference)||!r.rateStatus.startsWith('مصوب — تأیید کارفرما')||
     !Number.isSafeInteger(r.sourcePriceToman)||!(Number(r.sourcePriceToman)>0))continue;
    result.push({tariff_id:id,code:r.code,description:r.title,area,unit:r.unit,
     unitPriceToman:Number(r.sourcePriceToman),version:'approved-source-1405-08-07',source:file,href:'/manage/tariffs'});
