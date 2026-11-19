@@ -4,6 +4,8 @@ import {readTariffBanks} from './shared-resources';
 import animalReviewed from './animal-services-reviewed.json';
 const reviewedAnimalTitles=new Map(animalReviewed.map(row=>[row.code,row.title]));
 import pathologyReviewed from './pathology-services-reviewed.json';
+import cellularReviewed from './cellular-services-reviewed.json';
+import geneReviewed from './gene-expression-services-reviewed.json';
 const reviewedPathologyTitles=new Map(pathologyReviewed.map(row=>[row.code,row.title]));
 export function tariffCSV(text:string){const rows:string[][]=[];let row:string[]=[],v='',quoted=false;for(let i=0;i<text.length;i++){const c=text[i];if(c==='"'){if(quoted&&text[i+1]==='"'){v+='"';i++}else quoted=!quoted}else if(!quoted&&(c===','||c==='\n'||c==='\r')){row.push(v);v='';if(c!==','){if(c==='\r'&&text[i+1]==='\n')i++;if(row.some(Boolean))rows.push(row);row=[]}}else v+=c}row.push(v);if(row.some(Boolean))rows.push(row);return rows}
 export function approvedTariffServices(script=legacy['tariffs-data.js']){const result:any[]=[];for(const bank of readTariffBanks(script)){const [header,...rows]=tariffCSV(bank.catalog||'');if(!header)continue;const code=header.findIndex(h=>h==='شناسه خدمت'||h==='کد'),description=header.findIndex(h=>['عنوان خدمت','خدمت','نام فارسی'].includes(h)),unit=header.findIndex(h=>h.includes('واحد')),price=header.findIndex(h=>/تعرفه|قیمت/.test(h)),status=header.findIndex(h=>h.includes('وضعیت'));if([code,description,price,status].some(x=>x<0))continue;
@@ -21,19 +23,21 @@ export function quotationServiceCatalog(){
  const approved=new Map(approvedTariffServices().map((r:any)=>[r.tariff_id,r]));
  const sources=[
   ...animalReviewed.map((r:any)=>({code:r.code,title:r.title,unit:r.unit,area:'مطالعات حیوانی',status:r.tariffStatus||'',group:r.group||''})),
-  ...pathologyReviewed.map((r:any)=>({code:r.code,title:r.title,unit:r.unit,area:'بافت‌شناسی و پاتولوژی',status:'قیمت فقط در صورت تطبیق با تعرفه مصوب',group:''}))
+  ...pathologyReviewed.map((r:any)=>({code:r.code,title:r.title,unit:r.unit,area:'بافت‌شناسی و پاتولوژی',status:'قیمت فقط در صورت تطبیق با تعرفه مصوب',group:''})),
+  ...cellularReviewed.map((r:any)=>({code:r.code,title:r.title,unit:r.unit,area:'خدمات سلولی و کشت سلول',status:r.rateStatus,group:r.group,reference:r.reference||''})),
+  ...geneReviewed.map((r:any)=>({code:r.code,title:r.title,unit:r.unit,area:'ژنتیک و بیان ژن',status:r.rateStatus,group:r.group,reference:r.reference||''}))
  ];
  const reviewed=sources.map(r=>{
-  const id=r.code+''; const domain=id.startsWith('AN-')?'AN':'HP';
+  const id=r.code+''; const domain=id.startsWith('AN-')?'AN':id.startsWith('HP-')?'HP':id.startsWith('CEL-')?'CEL':'GE';
   const tariff_id=domain+':'+id;
   const rate:any=approved.get(tariff_id);
   // HP-069 has no sourced numerical rate; HP-070 is a cross-lab referral.
-  const referral=id==='HP-070',priceInquiry=id==='HP-069';
+  const referral=id==='HP-070'||(domain==='CEL'&&!!r.reference)||(domain==='GE'&&!!r.reference)||id==='GE-070',priceInquiry=id==='HP-069'||r.status==='استعلام'||r.status==='جدید پیشنهادی'||r.status==='پیشنهادی';
   return {code:id,tariff_id,description:r.title,area:r.area,unit:rate?.unit||r.unit||'خدمت',group:r.group,
-    approved:!!rate&&!referral&&!priceInquiry,referral,priceInquiry,
-    unitPriceToman:rate&&!referral&&!priceInquiry?rate.unitPriceToman:null,
+    approved:!!rate&&!referral&&!priceInquiry&&(domain!=='CEL')&&(domain!=='GE'||r.status==='مصوب'),referral,priceInquiry,
+    unitPriceToman:rate&&!referral&&!priceInquiry&&domain!=='CEL'&&(domain!=='GE'||r.status==='مصوب')?rate.unitPriceToman:null,
     version:rate?.version||'',source:rate?.source||'کاتالوگ استاندارد آزمایشگاه',
-    status:referral?'ارجاع به آزمایشگاه سلولی؛ بدون ردیف تکراری':priceInquiry?'استعلام قیمت ضروری':rate?'تعرفه مصوب':'نیازمند قیمت‌گذاری و تأیید'};
+    status:referral?'ارجاع/شامل خدمت پایه؛ بدون ردیف تکراری':priceInquiry?'استعلام یا تأیید قیمت ضروری':rate&&domain!=='CEL'&&(domain!=='GE'||r.status==='مصوب')?'تعرفه مصوب':r.status||'نیازمند بازبینی قیمت'};
  });
  const seen=new Set(reviewed.map(r=>r.tariff_id));
  const otherApproved=approvedTariffServices().filter((r:any)=>!seen.has(r.tariff_id)).map((r:any)=>({code:r.code,tariff_id:r.tariff_id,description:r.description,area:r.area,unit:r.unit||'خدمت',group:r.area,approved:true,referral:false,priceInquiry:false,unitPriceToman:r.unitPriceToman,version:r.version,source:r.source,status:'تعرفه مصوب'}));
