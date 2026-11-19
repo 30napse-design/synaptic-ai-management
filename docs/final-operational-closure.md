@@ -143,3 +143,13 @@ After the blocked-release report above, the Owner instructed focusing on applyin
 - Real staff sessions, real-bank authentication and authenticated production create/assign/save/reload acceptance remain unverified. Read-only anonymous route checks do not substitute for those tests.
 
 This documentation-only record is committed separately after publication; it does not change the application source SHA served by version 60 or initiate another deployment.
+
+
+## WB / EL release integration — 2026-11-19
+
+- Requested source: `ce833d0fa589019fb4182e723813eaa42120e6d4`; actual live base: version 62, `35c39cd1e3bae345baaf08e4bcb71c8056635c4c`. These histories diverge; preserve the live FIN-08 implementation and dated company tariff lookup.
+- Integrate the two reviewed protein catalogs and common selectors: WB 76, EL 58. Keep original AN 203 / HP 102 / CEL 102 / GE 79 laboratory IDs and metadata. Do not replace existing GE:MO-* identities with a second GE:GE-* catalog; CEL/GE content changes outside this request are not applied.
+- Independent WB/EL subdivision filters and search use the same catalog for laboratory cases and shared financial estimate/quote/invoice entry. Reference-only and conditional EL rates remain unapproved; WB-069 is a referral to WB-014, blocked from separate invoicing. Existing finance documents and historical references are not rewritten.
+- Verification: TypeScript and production Build passed. `protein-biochemistry-services-runtime.mjs` passed 15 isolated compiled HTTP requests (counts/identity uniqueness, shared catalog, quote/invoice positive and rejected lines, two services in one linked laboratory order, idempotent approval, no execution permit or bank posting). `laboratory-service-reference-runtime.mjs` passed one isolated GET (620 catalog IDs, preserved EL methods, no fabricated scientific metadata or laboratory prices). Only related checks were run.
+- No schema, migration, dependency, API credential, account, live financial or customer-data changes are part of this integration. Isolated test writes use temporary Miniflare D1/R2 only.
+- Production deployment and authenticated UI verification are recorded separately after the actual result; a successful local test is not a live write test. Prior native version 62 is the application rollback point; no database rollback is claimed.
