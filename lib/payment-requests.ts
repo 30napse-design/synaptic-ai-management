@@ -1,3 +1,4 @@
+import {accountingPayableVisible} from './accounting-policy';
 import {bankCanonical} from './bank-matching';
 import {incomingISO} from './incoming-dates';
 import {pettyFundsReady,pettyRegistry,writePettyFund,periodId,pettyJSON,pettyPeriodLock,readPettyFund,decidePettyFund} from './petty-funds';
@@ -12,7 +13,7 @@ import {PaymentRequestError,requirePayment as must,parseRequest,isOwner,canReque
 const now=()=>new Date().toISOString();
 const rows=async(sql:string,...args:any[])=>(await db().prepare(sql).bind(...args).all()).results as any[];
 export async function paymentRequestsReady(){return (await rows('PRAGMA table_info(finance_payables)')).some(c=>c.name==='request_meta');}
-export async function paymentRequest(u:any,id:string){must(canRequest(u),'ورود حساب کارکنان لازم است.',403);const p=await db().prepare('SELECT * FROM finance_payables WHERE id=?').bind(id).first<any>();must(p&&canReadRequest(u,p),'درخواست پیدا نشد.',404);return p;}
+export async function paymentRequest(u:any,id:string){must(canRequest(u),'ورود حساب کارکنان لازم است.',403);const p=await db().prepare('SELECT * FROM finance_payables WHERE id=?').bind(id).first<any>();must(p&&canReadRequest(u,p)&&await accountingPayableVisible(u,p),'درخواست پیدا نشد.',404);return p;}
 function guard(id:string){return db().prepare("INSERT INTO finance_events(id,entity_id,action,body,actor,created_at) SELECT ?,NULL,'','','','' WHERE changes()!=1").bind(id);}
 function audit(id:string,p:string,action:string,body:any,u:any){return db().prepare('INSERT INTO finance_events(id,entity_id,action,body,actor,created_at) VALUES(?,?,?,?,?,?)').bind(id,p,'payment-request:'+action,JSON.stringify(body),u.email,now());}
 function journal(key:string,description:string,lines:any[],u:any){must(balanced(lines),'سند متوازن نیست.');return db().prepare('INSERT INTO finance_journal(id,source_key,date,description,lines,created_by,created_at) VALUES(?,?,?,?,?,?,?)').bind(crypto.randomUUID(),key,now().slice(0,10),description,JSON.stringify(lines),u.email,now());}
@@ -20,7 +21,8 @@ function accounting(account:string,n:number){return {account,debit:n>0?n:0,credi
 export async function readPaymentRequests(u:any,params=new URLSearchParams()){
  must(canRequest(u),'ورود کارکنان لازم است.',403);must(await paymentRequestsReady(),'Migration 0022 فقط در محیط مجاز اعمال شود؛ صفحه هنوز آماده نیست.',503);
  const bankRights=await bankRegistry(),privileged=privilegedRequest(u),view=privileged&&params.get('view')!=='my'&&params.get('scope')!=='my'?(isOwner(u)?'management':'finance'):'employee';
- const all=(await rows("SELECT p.*,m.name applicant_name FROM finance_payables p LEFT JOIN staff_members m ON m.email=p.created_by WHERE p.request_meta<>'' ORDER BY p.created_at DESC")).filter(p=>canReadRequest(u,p)&&(view!=='employee'||p.created_by===u.email||parseRequest(p).type==='petty'&&parseRequest(p).custodian===u.email||requestGrant(u,parseRequest(p),'fulfill')||requestGrant(u,parseRequest(p),'read')));
+ const visibleCandidates=(await rows("SELECT p.*,m.name applicant_name FROM finance_payables p LEFT JOIN staff_members m ON m.email=p.created_by WHERE p.request_meta<>'' ORDER BY p.created_at DESC")).filter(p=>canReadRequest(u,p)&&(view!=='employee'||p.created_by===u.email||parseRequest(p).type==='petty'&&parseRequest(p).custodian===u.email||requestGrant(u,parseRequest(p),'fulfill')||requestGrant(u,parseRequest(p),'read')));
+ const all=[];for(const p of visibleCandidates)if(await accountingPayableVisible(u,p))all.push(p);
  const allTx=await rows(paymentTransactionsSQL+" WHERE payable_id IN (SELECT id FROM finance_payables WHERE request_meta<>'')");
  const files=await rows("SELECT id,context,target_id,file_name,mime,size,created_by,created_at FROM finance_files WHERE context IN ('payment_request','payment_request_private')");
  const events=await rows("SELECT * FROM finance_events WHERE action LIKE 'payment-request:%' ORDER BY created_at DESC,rowid DESC");

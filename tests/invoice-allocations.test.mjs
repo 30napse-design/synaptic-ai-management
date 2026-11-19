@@ -1,0 +1,13 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import ts from 'typescript';
+const code=ts.transpileModule(readFileSync(new URL('../lib/invoice-allocations.ts',import.meta.url),'utf8'),{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText;
+const {receiptNet,receiptsForDocument}=await import('data:text/javascript;base64,'+Buffer.from(code).toString('base64'));
+const root={id:'r',kind:'receipt',status:'verified',document_id:'advance',amount_rial:1000},a={id:'a',action:'invoice-allocation',entity_id:'r',body:{from:'advance',to:'invoice',amount_rial:400}};
+test('one receipt preserves total cash across advance and invoice',()=>{assert.equal(receiptNet([root],[a],'advance'),600);assert.equal(receiptNet([root],[a],'invoice'),400);assert.equal(receiptNet([root],[a],'advance')+receiptNet([root],[a],'invoice'),1000);assert.equal(root.document_id,'advance')});
+test('reported or void original cannot turn allocation into verified money',()=>{for(const status of ['reported','void'])assert.equal(receiptNet([{...root,status}],[a],'invoice'),0)});
+test('documented reversal removes effect but preserves source and event',()=>{const reversed={id:'b',action:'invoice-allocation-reversed',body:{allocation_id:'a'}};assert.equal(receiptNet([root],[a,reversed],'invoice'),0);assert.equal(receiptNet([root],[a,reversed],'advance'),1000)});
+test('partial projections retain original receipt identity and full amount',()=>{const [p]=receiptsForDocument([root],[a],'invoice');assert.equal(p.id,'r');assert.equal(p.source_amount_rial,1000);assert.equal(p.amount_rial,400)});
+test('refund reduces the correct invoice independently',()=>{const refund={id:'rf',kind:'refund',status:'verified',document_id:'invoice',amount_rial:100};assert.equal(receiptNet([root,refund],[a],'invoice'),300);assert.equal(receiptNet([root,refund],[a],'advance'),600)});
+test('unsafe aggregate is rejected rather than rounded',()=>{assert.throws(()=>receiptNet([{...root,amount_rial:Number.MAX_SAFE_INTEGER},{...root,id:'x',amount_rial:1}],[],'advance'),/دقت امن/)});
