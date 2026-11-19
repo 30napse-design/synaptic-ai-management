@@ -8,6 +8,8 @@ import cellularReviewed from './cellular-services-reviewed.json';
 import geneReviewed from './gene-expression-services-reviewed.json';
 import westernReviewed from './western-services-reviewed.json';
 import elisaReviewed from './elisa-services-reviewed.json';
+import microbiologyDraft from './microbiology-services-draft.json';
+const microbiologyDraftByTitle=new Map(microbiologyDraft.map(row=>[row.title,row.code]));
 const reviewedWesternTitles=new Map(westernReviewed.map(row=>[row.code,row.title]));
 const reviewedElisaTitles=new Map(elisaReviewed.map(row=>[row.code,row.title]));
 const reviewedGeneTitles=new Map(geneReviewed.map(row=>[row.code,row.title]));
@@ -34,6 +36,8 @@ export function approvedTariffServices(script=legacy['tariffs-data.js']){const r
  const counts=new Map<string,number>();for(const r of result)counts.set(r.tariff_id,(counts.get(r.tariff_id)||0)+1);return result.filter(r=>counts.get(r.tariff_id)===1);
 }
 export function selectedTariffLines(lines:any[],scientificOnly:boolean,oldLines:any[]=[]){if(!Array.isArray(lines))return lines;const bank=approvedTariffServices();return lines.map(l=>{const old=oldLines.find(x=>x.id===l.id);const same=old&&['tariff_id','tariff_version','description','area','unit','unit_price'].every(k=>(old[k]??'')===(l[k]??''));if(same)return {...l};
+ const micCode=String(l.tariff_id||l.rate_source||'').match(/\bMIC-\d{3}\b/)?.[0]||microbiologyDraftByTitle.get(String(l.description||'').trim())||'';
+ if(micCode)throw Error('خدمت میکروبیولوژی پیشنهادی است و تا تأیید مسئول فنی و تصویب تعرفه در فاکتور قابل ثبت نیست.');
  const candidate=String(l.tariff_id||l.rate_source||'').match(/\b(WB|EL)-\d{3}\b/)?.[0]||'';
  const wb=westernReviewed.find(r=>r.code===candidate||r.title===String(l.description||'').trim());
  const el=elisaReviewed.find(r=>r.code===candidate||r.title===String(l.description||'').trim());
@@ -69,5 +73,11 @@ export function quotationServiceCatalog(){
  });
  const seen=new Set(reviewed.map(r=>r.tariff_id));
  const otherApproved=approvedTariffServices().filter((r:any)=>!seen.has(r.tariff_id)).map((r:any)=>({code:r.code,tariff_id:r.tariff_id,description:r.description,area:r.area,unit:r.unit||'خدمت',group:r.area,approved:true,referral:false,priceInquiry:false,unitPriceToman:r.unitPriceToman,version:r.version,source:r.source,status:'تعرفه مصوب'}));
- return [...reviewed,...otherApproved];
+ const microReferences=microbiologyDraft.map(r=>({
+  code:r.code,tariff_id:'MIC:'+r.code,description:r.title,area:'میکروبیولوژی',
+  unit:r.unit,group:r.group,approved:false,referral:false,priceInquiry:true,
+  financeEnabled:false,unitPriceToman:null,version:'draft-lab08-2026-11-19',
+  source:'پیش‌نویس علمی؛ بدون تعرفه مصوب',status:'استعلام / در انتظار تأیید مسئول فنی و مالی'
+ }));
+ return [...reviewed,...otherApproved,...microReferences];
 }
