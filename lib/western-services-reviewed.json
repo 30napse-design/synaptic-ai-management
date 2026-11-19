@@ -5,7 +5,9 @@
     "group": "دریافت و آماده‌سازی",
     "rateStatus": "مصوب — تأیید کارفرما ۱۴۰۵/۰۸/۰۷",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "نمونه",
+    "sourcePriceToman": 30000
   },
   {
     "code": "WB-002",
@@ -13,7 +15,9 @@
     "group": "دریافت و آماده‌سازی",
     "rateStatus": "مصوب — تأیید کارفرما ۱۴۰۵/۰۸/۰۷",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "نمونه",
+    "sourcePriceToman": 80000
   },
   {
     "code": "WB-003",
@@ -21,7 +25,9 @@
     "group": "دریافت و آماده‌سازی",
     "rateStatus": "مصوب — تأیید کارفرما ۱۴۰۵/۰۸/۰۷",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "نمونه",
+    "sourcePriceToman": 70000
   },
   {
     "code": "WB-004",
@@ -29,7 +35,9 @@
     "group": "دریافت و آماده‌سازی",
     "rateStatus": "مصوب — تأیید کارفرما ۱۴۰۵/۰۸/۰۷",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "نمونه",
+    "sourcePriceToman": 50000
   },
   {
     "code": "WB-005",
@@ -37,7 +45,9 @@
     "group": "دریافت و آماده‌سازی",
     "rateStatus": "مصوب — تأیید کارفرما ۱۴۰۵/۰۸/۰۷",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "نمونه",
+    "sourcePriceToman": 120000
   },
   {
     "code": "WB-006",
@@ -45,7 +55,9 @@
     "group": "استخراج پروتئین",
     "rateStatus": "مصوب قبلی",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "نمونه",
+    "sourcePriceToman": 160000
   },
   {
     "code": "WB-007",
@@ -53,7 +65,9 @@
     "group": "استخراج پروتئین",
     "rateStatus": "مصوب — تأیید کارفرما ۱۴۰۵/۰۸/۰۷",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "نمونه",
+    "sourcePriceToman": 180000
   },
   {
     "code": "WB-008",
@@ -61,7 +75,9 @@
     "group": "استخراج پروتئین",
     "rateStatus": "مصوب — تأیید کارفرما ۱۴۰۵/۰۸/۰۷",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "نمونه",
+    "sourcePriceToman": 280000
   },
   {
     "code": "WB-009",
@@ -69,7 +85,9 @@
     "group": "استخراج پروتئین",
     "rateStatus": "مصوب — تأیید کارفرما ۱۴۰۵/۰۸/۰۷",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "نمونه",
+    "sourcePriceToman": 380000
   },
   {
     "code": "WB-010",
@@ -77,7 +95,9 @@
     "group": "استخراج پروتئین",
     "rateStatus": "مصوب — تأیید کارفرما ۱۴۰۵/۰۸/۰۷",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "نمونه",
+    "sourcePriceToman": 260000
   },
   {
     "code": "WB-011",
@@ -85,7 +105,9 @@
     "group": "استخراج پروتئین",
     "rateStatus": "مصوب — تأیید کارفرما ۱۴۰۵/۰۸/۰۷",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "نمونه",
+    "sourcePriceToman": 420000
   },
   {
     "code": "WB-012",
@@ -93,7 +115,9 @@
     "group": "استخراج پروتئین",
     "rateStatus": "مصوب — تأیید کارفرما ۱۴۰۵/۰۸/۰۷",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "نمونه",
+    "sourcePriceToman": 450000
   },
   {
     "code": "WB-013",
@@ -101,7 +125,9 @@
     "group": "استخراج پروتئین",
     "rateStatus": "مصوب — تأیید کارفرما ۱۴۰۵/۰۸/۰۷",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "نمونه",
+    "sourcePriceToman": 60000
   },
   {
     "code": "WB-014",
@@ -109,7 +135,9 @@
     "group": "سنجش غلظت",
     "rateStatus": "مصوب قبلی",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "بچ",
+    "sourcePriceToman": 1800000
   },
   {
     "code": "WB-015",
@@ -117,7 +145,9 @@
     "group": "سنجش غلظت",
     "rateStatus": "مصوب — تأیید کارفرما ۱۴۰۵/۰۸/۰۷",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "بچ",
+    "sourcePriceToman": 2000000
   },
   {
     "code": "WB-016",
@@ -125,7 +155,9 @@
     "group": "سنجش غلظت",
     "rateStatus": "مصوب — تأیید کارفرما ۱۴۰۵/۰۸/۰۷",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "نمونه",
+    "sourcePriceToman": 120000
   },
   {
     "code": "WB-017",
@@ -133,7 +165,9 @@
     "group": "سنجش غلظت",
     "rateStatus": "مصوب — تأیید کارفرما ۱۴۰۵/۰۸/۰۷",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "سری",
+    "sourcePriceToman": 450000
   },
   {
     "code": "WB-018",
@@ -141,7 +175,9 @@
     "group": "الکتروفورز",
     "rateStatus": "مصوب — تأیید کارفرما ۱۴۰۵/۰۸/۰۷",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "نمونه",
+    "sourcePriceToman": 80000
   },
   {
     "code": "WB-019",
@@ -149,7 +185,9 @@
     "group": "الکتروفورز",
     "rateStatus": "مصوب — تأیید کارفرما ۱۴۰۵/۰۸/۰۷",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "ژل",
+    "sourcePriceToman": 1200000
   },
   {
     "code": "WB-020",
@@ -157,7 +195,9 @@
     "group": "الکتروفورز",
     "rateStatus": "اصلاح‌شده توسط کارفرما",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "ژل",
+    "sourcePriceToman": 4200000
   },
   {
     "code": "WB-021",
@@ -165,7 +205,9 @@
     "group": "الکتروفورز",
     "rateStatus": "اصلاح‌شده توسط کارفرما",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "ژل",
+    "sourcePriceToman": 2600000
   },
   {
     "code": "WB-022",
@@ -173,7 +215,9 @@
     "group": "الکتروفورز",
     "rateStatus": "اصلاح‌شده توسط کارفرما",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "ژل",
+    "sourcePriceToman": 3800000
   },
   {
     "code": "WB-023",
@@ -181,7 +225,9 @@
     "group": "الکتروفورز",
     "rateStatus": "اصلاح‌شده توسط کارفرما",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "ژل",
+    "sourcePriceToman": 1400000
   },
   {
     "code": "WB-024",
@@ -189,7 +235,9 @@
     "group": "الکتروفورز",
     "rateStatus": "اصلاح‌شده توسط کارفرما",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "ژل",
+    "sourcePriceToman": 1800000
   },
   {
     "code": "WB-025",
@@ -197,7 +245,9 @@
     "group": "انتقال به غشا",
     "rateStatus": "اصلاح‌شده توسط کارفرما",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "غشا",
+    "sourcePriceToman": 900000
   },
   {
     "code": "WB-026",
@@ -205,7 +255,9 @@
     "group": "انتقال به غشا",
     "rateStatus": "اصلاح‌شده توسط کارفرما",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "غشا",
+    "sourcePriceToman": 760000
   },
   {
     "code": "WB-027",
@@ -213,7 +265,9 @@
     "group": "انتقال به غشا",
     "rateStatus": "اصلاح‌شده توسط کارفرما",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "غشا",
+    "sourcePriceToman": 1200000
   },
   {
     "code": "WB-028",
@@ -221,7 +275,9 @@
     "group": "انتقال به غشا",
     "rateStatus": "مصوب — تأیید کارفرما ۱۴۰۵/۰۸/۰۷",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "غشا",
+    "sourcePriceToman": 950000
   },
   {
     "code": "WB-029",
@@ -229,7 +285,9 @@
     "group": "انتقال به غشا",
     "rateStatus": "مصوب — تأیید کارفرما ۱۴۰۵/۰۸/۰۷",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "غشا",
+    "sourcePriceToman": 320000
   },
   {
     "code": "WB-030",
@@ -237,7 +295,9 @@
     "group": "انتقال به غشا",
     "rateStatus": "مصوب — تأیید کارفرما ۱۴۰۵/۰۸/۰۷",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "غشا",
+    "sourcePriceToman": 450000
   },
   {
     "code": "WB-031",
@@ -245,7 +305,9 @@
     "group": "کنترل بارگذاری",
     "rateStatus": "مصوب قبلی",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "نمونه/پروتئین",
+    "sourcePriceToman": 850000
   },
   {
     "code": "WB-032",
@@ -253,7 +315,9 @@
     "group": "کنترل بارگذاری",
     "rateStatus": "مصوب قبلی",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "نمونه/پروتئین",
+    "sourcePriceToman": 850000
   },
   {
     "code": "WB-033",
@@ -261,7 +325,9 @@
     "group": "کنترل بارگذاری",
     "rateStatus": "مصوب — تأیید کارفرما ۱۴۰۵/۰۸/۰۷",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "نمونه/پروتئین",
+    "sourcePriceToman": 900000
   },
   {
     "code": "WB-034",
@@ -269,7 +335,9 @@
     "group": "کنترل بارگذاری",
     "rateStatus": "مصوب — تأیید کارفرما ۱۴۰۵/۰۸/۰۷",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "نمونه/پروتئین",
+    "sourcePriceToman": 900000
   },
   {
     "code": "WB-035",
@@ -277,7 +345,9 @@
     "group": "کنترل بارگذاری",
     "rateStatus": "مصوب — تأیید کارفرما ۱۴۰۵/۰۸/۰۷",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "نمونه/پروتئین",
+    "sourcePriceToman": 1000000
   },
   {
     "code": "WB-036",
@@ -285,7 +355,9 @@
     "group": "کنترل بارگذاری",
     "rateStatus": "مصوب — تأیید کارفرما ۱۴۰۵/۰۸/۰۷",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "نمونه/پروتئین",
+    "sourcePriceToman": 1000000
   },
   {
     "code": "WB-037",
@@ -293,7 +365,9 @@
     "group": "کنترل بارگذاری",
     "rateStatus": "مصوب — تأیید کارفرما ۱۴۰۵/۰۸/۰۷",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "نمونه/پروتئین",
+    "sourcePriceToman": 1100000
   },
   {
     "code": "WB-038",
@@ -301,7 +375,9 @@
     "group": "کنترل بارگذاری",
     "rateStatus": "مصوب — تأیید کارفرما ۱۴۰۵/۰۸/۰۷",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "نمونه",
+    "sourcePriceToman": 550000
   },
   {
     "code": "WB-039",
@@ -309,7 +385,9 @@
     "group": "پروتئین‌های هدف",
     "rateStatus": "مصوب قبلی",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "نمونه/پروتئین",
+    "sourcePriceToman": 1200000
   },
   {
     "code": "WB-040",
@@ -317,7 +395,9 @@
     "group": "پروتئین‌های هدف",
     "rateStatus": "مصوب قبلی",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "نمونه/پروتئین",
+    "sourcePriceToman": 1200000
   },
   {
     "code": "WB-041",
@@ -325,7 +405,9 @@
     "group": "پروتئین‌های هدف",
     "rateStatus": "مصوب قبلی",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "نمونه/پروتئین",
+    "sourcePriceToman": 1200000
   },
   {
     "code": "WB-042",
@@ -333,7 +415,9 @@
     "group": "پروتئین‌های هدف",
     "rateStatus": "مصوب قبلی",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "نمونه/پروتئین",
+    "sourcePriceToman": 1200000
   },
   {
     "code": "WB-043",
@@ -341,7 +425,9 @@
     "group": "پروتئین‌های هدف",
     "rateStatus": "مصوب قبلی",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "نمونه/پروتئین",
+    "sourcePriceToman": 1200000
   },
   {
     "code": "WB-044",
@@ -349,7 +435,9 @@
     "group": "پروتئین‌های هدف",
     "rateStatus": "مصوب قبلی",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "نمونه/پروتئین",
+    "sourcePriceToman": 1200000
   },
   {
     "code": "WB-045",
@@ -357,7 +445,9 @@
     "group": "پروتئین‌های هدف",
     "rateStatus": "مصوب قبلی",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "نمونه/پروتئین",
+    "sourcePriceToman": 1200000
   },
   {
     "code": "WB-046",
@@ -365,7 +455,9 @@
     "group": "پروتئین‌های تخصصی",
     "rateStatus": "مصوب — تأیید کارفرما ۱۴۰۵/۰۸/۰۷",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "نمونه/پروتئین",
+    "sourcePriceToman": 1400000
   },
   {
     "code": "WB-047",
@@ -373,7 +465,9 @@
     "group": "پروتئین‌های تخصصی",
     "rateStatus": "مصوب — تأیید کارفرما ۱۴۰۵/۰۸/۰۷",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "نمونه/پروتئین",
+    "sourcePriceToman": 1500000
   },
   {
     "code": "WB-048",
@@ -381,7 +475,9 @@
     "group": "پروتئین‌های تخصصی",
     "rateStatus": "مصوب — تأیید کارفرما ۱۴۰۵/۰۸/۰۷",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "نمونه/پروتئین",
+    "sourcePriceToman": 1600000
   },
   {
     "code": "WB-049",
@@ -389,7 +485,9 @@
     "group": "پروتئین‌های تخصصی",
     "rateStatus": "مصوب — تأیید کارفرما ۱۴۰۵/۰۸/۰۷",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "نمونه/پروتئین",
+    "sourcePriceToman": 1700000
   },
   {
     "code": "WB-050",
@@ -397,7 +495,9 @@
     "group": "پروتئین‌های تخصصی",
     "rateStatus": "مصوب — تأیید کارفرما ۱۴۰۵/۰۸/۰۷",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "نمونه/پروتئین",
+    "sourcePriceToman": 1800000
   },
   {
     "code": "WB-051",
@@ -405,7 +505,9 @@
     "group": "آشکارسازی و تصویر",
     "rateStatus": "مصوب — تأیید کارفرما ۱۴۰۵/۰۸/۰۷",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "غشا",
+    "sourcePriceToman": 450000
   },
   {
     "code": "WB-052",
@@ -413,7 +515,9 @@
     "group": "آشکارسازی و تصویر",
     "rateStatus": "مصوب — تأیید کارفرما ۱۴۰۵/۰۸/۰۷",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "غشا",
+    "sourcePriceToman": 350000
   },
   {
     "code": "WB-053",
@@ -421,7 +525,9 @@
     "group": "آشکارسازی و تصویر",
     "rateStatus": "مصوب — تأیید کارفرما ۱۴۰۵/۰۸/۰۷",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "غشا",
+    "sourcePriceToman": 650000
   },
   {
     "code": "WB-054",
@@ -429,7 +535,9 @@
     "group": "آشکارسازی و تصویر",
     "rateStatus": "مصوب — تأیید کارفرما ۱۴۰۵/۰۸/۰۷",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "غشا",
+    "sourcePriceToman": 850000
   },
   {
     "code": "WB-055",
@@ -437,7 +545,9 @@
     "group": "آشکارسازی و تصویر",
     "rateStatus": "مصوب — تأیید کارفرما ۱۴۰۵/۰۸/۰۷",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "غشا",
+    "sourcePriceToman": 120000
   },
   {
     "code": "WB-056",
@@ -445,7 +555,9 @@
     "group": "آشکارسازی و تصویر",
     "rateStatus": "مصوب — تأیید کارفرما ۱۴۰۵/۰۸/۰۷",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "پنل",
+    "sourcePriceToman": 250000
   },
   {
     "code": "WB-057",
@@ -453,7 +565,9 @@
     "group": "آنالیز کمی",
     "rateStatus": "مصوب قبلی",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "پروتئین",
+    "sourcePriceToman": 1150000
   },
   {
     "code": "WB-058",
@@ -461,7 +575,9 @@
     "group": "آنالیز کمی",
     "rateStatus": "اصلاح‌شده توسط کارفرما",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "پروتئین",
+    "sourcePriceToman": 400000
   },
   {
     "code": "WB-059",
@@ -469,7 +585,9 @@
     "group": "آنالیز کمی",
     "rateStatus": "اصلاح‌شده توسط کارفرما",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "پروتئین",
+    "sourcePriceToman": 30000
   },
   {
     "code": "WB-060",
@@ -477,7 +595,9 @@
     "group": "آنالیز کمی",
     "rateStatus": "در خدمت پایه",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "در ImageJ",
+    "sourcePriceToman": null
   },
   {
     "code": "WB-061",
@@ -485,7 +605,9 @@
     "group": "آنالیز کمی",
     "rateStatus": "مصوب — تأیید کارفرما ۱۴۰۵/۰۸/۰۷",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "جفت پروتئین",
+    "sourcePriceToman": 1400000
   },
   {
     "code": "WB-062",
@@ -493,7 +615,9 @@
     "group": "آنالیز کمی",
     "rateStatus": "مصوب — تأیید کارفرما ۱۴۰۵/۰۸/۰۷",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "پروتئین",
+    "sourcePriceToman": 1350000
   },
   {
     "code": "WB-063",
@@ -501,7 +625,9 @@
     "group": "آمار و گزارش",
     "rateStatus": "مصوب قبلی",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "پروتئین",
+    "sourcePriceToman": 950000
   },
   {
     "code": "WB-064",
@@ -509,7 +635,9 @@
     "group": "آمار و گزارش",
     "rateStatus": "در خدمت پایه",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "در تحلیل پایه",
+    "sourcePriceToman": null
   },
   {
     "code": "WB-065",
@@ -517,7 +645,9 @@
     "group": "آمار و گزارش",
     "rateStatus": "مصوب — تأیید کارفرما ۱۴۰۵/۰۸/۰۷",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "پروژه",
+    "sourcePriceToman": 1200000
   },
   {
     "code": "WB-066",
@@ -525,7 +655,9 @@
     "group": "آمار و گزارش",
     "rateStatus": "مصوب — تأیید کارفرما ۱۴۰۵/۰۸/۰۷",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "پنل",
+    "sourcePriceToman": 350000
   },
   {
     "code": "WB-067",
@@ -533,7 +665,9 @@
     "group": "آمار و گزارش",
     "rateStatus": "مصوب — تأیید کارفرما ۱۴۰۵/۰۸/۰۷",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "پروژه",
+    "sourcePriceToman": 1500000
   },
   {
     "code": "WB-068",
@@ -541,7 +675,9 @@
     "group": "زایموگرافی",
     "rateStatus": "مصوب قبلی",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "نمونه",
+    "sourcePriceToman": 160000
   },
   {
     "code": "WB-069",
@@ -549,7 +685,9 @@
     "group": "زایموگرافی",
     "rateStatus": "مصوب قبلی",
     "invoiceStatus": "ارجاع به خدمت مرجع؛ ممنوعیت فاکتور تکراری",
-    "reference": "WB-014"
+    "reference": "WB-014",
+    "unit": "بچ",
+    "sourcePriceToman": 1800000
   },
   {
     "code": "WB-070",
@@ -557,7 +695,9 @@
     "group": "زایموگرافی",
     "rateStatus": "مصوب — تأیید کارفرما ۱۴۰۵/۰۸/۰۷",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "ژل",
+    "sourcePriceToman": 1800000
   },
   {
     "code": "WB-071",
@@ -565,7 +705,9 @@
     "group": "زایموگرافی",
     "rateStatus": "مصوب — تأیید کارفرما ۱۴۰۵/۰۸/۰۷",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "ژل",
+    "sourcePriceToman": 650000
   },
   {
     "code": "WB-072",
@@ -573,7 +715,9 @@
     "group": "زایموگرافی",
     "rateStatus": "مصوب — تأیید کارفرما ۱۴۰۵/۰۸/۰۷",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "ژل",
+    "sourcePriceToman": 450000
   },
   {
     "code": "WB-073",
@@ -581,7 +725,9 @@
     "group": "زایموگرافی",
     "rateStatus": "معادل نرخ پایه",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "آنزیم/پروژه",
+    "sourcePriceToman": 1150000
   },
   {
     "code": "WB-074",
@@ -589,7 +735,9 @@
     "group": "زایموگرافی",
     "rateStatus": "معادل نرخ پایه",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "آنزیم/پروژه",
+    "sourcePriceToman": 950000
   },
   {
     "code": "WB-075",
@@ -597,7 +745,9 @@
     "group": "زایموگرافی",
     "rateStatus": "مصوب — تأیید کارفرما ۱۴۰۵/۰۸/۰۷",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "ژل",
+    "sourcePriceToman": 2000000
   },
   {
     "code": "WB-076",
@@ -605,6 +755,8 @@
     "group": "زایموگرافی",
     "rateStatus": "مصوب — تأیید کارفرما ۱۴۰۵/۰۸/۰۷",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "reference": ""
+    "reference": "",
+    "unit": "ژل",
+    "sourcePriceToman": 2200000
   }
 ]
