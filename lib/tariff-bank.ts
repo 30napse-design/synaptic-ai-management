@@ -23,16 +23,19 @@ export function quotationServiceCatalog(){
   ...animalReviewed.map((r:any)=>({code:r.code,title:r.title,unit:r.unit,area:'مطالعات حیوانی',status:r.tariffStatus||'',group:r.group||''})),
   ...pathologyReviewed.map((r:any)=>({code:r.code,title:r.title,unit:r.unit,area:'بافت‌شناسی و پاتولوژی',status:'قیمت فقط در صورت تطبیق با تعرفه مصوب',group:''}))
  ];
- return sources.map(r=>{
+ const reviewed=sources.map(r=>{
   const id=r.code+''; const domain=id.startsWith('AN-')?'AN':'HP';
   const tariff_id=domain+':'+id;
   const rate:any=approved.get(tariff_id);
   // HP-069 has no sourced numerical rate; HP-070 is a cross-lab referral.
   const referral=id==='HP-070',priceInquiry=id==='HP-069';
-  return {code:id,tariff_id,description:r.title,area:r.area,unit:r.unit||'خدمت',group:r.group,
+  return {code:id,tariff_id,description:r.title,area:r.area,unit:rate?.unit||r.unit||'خدمت',group:r.group,
     approved:!!rate&&!referral&&!priceInquiry,referral,priceInquiry,
     unitPriceToman:rate&&!referral&&!priceInquiry?rate.unitPriceToman:null,
     version:rate?.version||'',source:rate?.source||'کاتالوگ استاندارد آزمایشگاه',
     status:referral?'ارجاع به آزمایشگاه سلولی؛ بدون ردیف تکراری':priceInquiry?'استعلام قیمت ضروری':rate?'تعرفه مصوب':'نیازمند قیمت‌گذاری و تأیید'};
  });
+ const seen=new Set(reviewed.map(r=>r.tariff_id));
+ const otherApproved=approvedTariffServices().filter((r:any)=>!seen.has(r.tariff_id)).map((r:any)=>({code:r.code,tariff_id:r.tariff_id,description:r.description,area:r.area,unit:r.unit||'خدمت',group:r.area,approved:true,referral:false,priceInquiry:false,unitPriceToman:r.unitPriceToman,version:r.version,source:r.source,status:'تعرفه مصوب'}));
+ return [...reviewed,...otherApproved];
 }
