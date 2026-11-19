@@ -54,7 +54,7 @@ export function quotationServiceCatalog(){
   const tariff_id=domain+':'+id;
   const rate:any=approved.get(tariff_id);
   // HP-069 has no sourced numerical rate; HP-070 is a cross-lab referral.
-  const referral=id==='HP-070'||(domain==='CEL'&&!!r.reference)||(domain==='GE'&&!!r.reference)||id==='GE-070'||(domain==='WB'&&!!r.reference)||r.status==='در خدمت پایه',priceInquiry=id==='HP-069'||r.status==='استعلام'||r.status==='جدید پیشنهادی'||r.status==='پیشنهادی'||r.requiresKitReview===true||r.status==='مصوب قبلی'||r.status==='معادل نرخ پایه'||r.status==='اصلاح‌شده توسط کارفرما';
+  const referral=id==='HP-070'||(domain==='CEL'&&!!r.reference)||(domain==='GE'&&!!r.reference)||id==='GE-070'||(domain==='WB'&&!!r.reference)||r.status==='در خدمت پایه',priceInquiry=id==='HP-069'||r.status==='استعلام'||r.status==='جدید پیشنهادی'||r.status==='پیشنهادی'||('requiresKitReview' in r && r.requiresKitReview===true)||r.status==='مصوب قبلی'||r.status==='معادل نرخ پایه'||r.status==='اصلاح‌شده توسط کارفرما';
   return {code:id,tariff_id,description:r.title,area:r.area,unit:rate?.unit||r.unit||'خدمت',group:r.group,
     approved:!!rate&&!referral&&!priceInquiry&&(domain!=='CEL')&&(domain!=='GE'||r.status==='مصوب')&&(domain!=='WB'||r.status.startsWith('مصوب — تأیید'))&&(domain!=='EL'||!r.requiresKitReview),referral,priceInquiry,
     unitPriceToman:rate&&!referral&&!priceInquiry&&domain!=='CEL'&&(domain!=='GE'||r.status==='مصوب')&&(domain!=='WB'||r.status.startsWith('مصوب — تأیید'))&&(domain!=='EL'||!r.requiresKitReview)?rate.unitPriceToman:null,
