@@ -1,0 +1,18 @@
+'use client';
+import {Children,cloneElement,isValidElement} from 'react';
+import {Inbox,Info} from 'lucide-react';
+import FinancialModal from './financial-modal';
+import PersianDateInput from './persian-date-input';
+export function FinancialPageHeader({title,subtitle,children,meta}:any){return <header className="financial-header"><div><h1>{title}</h1>{subtitle&&<p>{subtitle}</p>}{meta&&<small>{meta}</small>}</div><div className="financial-actions">{children}</div></header>}
+export function FinancialStatusCard({label,value,onClick,icon:Icon,selected}:any){const Tag=onClick?'button':'div';return <Tag {...(onClick?{type:'button' as const,onClick}:{})} data-finance-card className={'financial-status-card '+(selected?'selected':'')}><span className="financial-card-icon">{Icon?<Icon size={20}/>:<Info size={20}/>}</span><span>{label}<strong>{value===null||value===undefined?'داده ناکامل':typeof value==='number'?value.toLocaleString('fa-IR'):value}</strong></span></Tag>}
+export function FinancialFilterBar({children,onSubmit}:any){return <form className="financial-filter-bar" onSubmit={onSubmit}>{children}</form>}
+export function FinancialDataTable({heads,children}:any){return <div className="financial-table-wrap fin-table-wrap"><table className="financial-table fin-table"><thead><tr>{heads.map((h:string)=><th key={h}>{h}</th>)}</tr></thead><tbody>{Children.map(children,(row:any)=>isValidElement<any>(row)&&row.type==='tr'?cloneElement(row,{},Children.map(row.props.children,(cell:any,i:number)=>isValidElement<any>(cell)?cloneElement(cell,{'data-label':heads[i]||''}):cell)):row)}</tbody></table></div>}
+export function FinancialStatusLabel({children,tone='neutral'}:any){return <span className={'financial-status-label '+tone}>{children}</span>}
+export function FinancialEmptyState({title='داده‌ای مطابق این فیلتر ثبت نشده است.',children}:any){return <div className="financial-empty"><Inbox size={30}/><p>{title}</p>{children}</div>}
+export function FinancialDateRangePicker({from,to,onChange}:any){return <div className="financial-date-range"><label>از تاریخ<PersianDateInput value={from} onChange={(v:string)=>onChange({...{from,to},from:v})}/></label><label>تا تاریخ<PersianDateInput value={to} onChange={(v:string)=>onChange({...{from,to},to:v})}/></label></div>}
+export function FinancialAccountSelector({companies,accounts,company,account,onChange}:any){return <><label>شرکت<select value={company} onChange={e=>onChange({company:e.target.value,account:''})}><option value="">همه شرکت‌های مجاز</option>{companies.map((c:any)=><option key={c.id} value={c.id}>{c.name}</option>)}</select></label><label>حساب<select value={account} onChange={e=>onChange({company,account:e.target.value})}><option value="">همه حساب‌های مجاز</option>{accounts.filter((a:any)=>!company||a.company_id===company).map((a:any)=><option key={a.id} value={a.id}>{a.label}{!a.active?' — غیرفعال':''}</option>)}</select></label></>}
+// This presentation boundary never replaces server authorization.
+export function FinancialAccessBoundary({allowed,children}:any){return allowed?children:<FinancialEmptyState title="این بخش به مجوز مستقل نیاز دارد."/>}
+export function FinancialReportPanel({children}:any){return <details className="financial-panel"><summary>گزارش‌ها و خروجی‌های مجاز</summary>{children}</details>}
+export function FinancialDecisionPanel({title='تصمیم صاحب اختیار',children}:any){return <section className="financial-decision-panel"><h3>{title}</h3>{children}</section>}
+export function FinancialDetailDrawer({title,onClose,children}:any){return <FinancialModal title={title} onClose={onClose} variant="drawer">{children}</FinancialModal>}

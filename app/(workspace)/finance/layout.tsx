@@ -1,0 +1,4 @@
+import '../../../components/finance/financial-theme.css';
+import {workspaceUser} from '../../../lib/workspace-user';
+import {canFinance,canQuote} from '../../../lib/finance-policy';
+export default async function FinanceLayout({children}:{children:React.ReactNode}){const u=await workspaceUser();return <div className="financial-area" dir="rtl">{children}{canQuote(u)&&<details className="financial-panel" style={{margin:'1rem 2rem'}}><summary>اسناد و ابزارهای تخصصی موجود</summary><div className="financial-secondary-links">{canFinance(u)&&<><a href="/finance/contracts">قراردادها و اصلاحیه‌ها</a><a href="/manage/tariffs">بانک تعرفه‌ها و کد خدمات</a><a href="/finance/compare">سوابق و سیاست‌های مالی</a><a href="/operations?category=billing">درخواست‌های مالی مشتریان</a><a href="/staff?view=invoices">بررسی فاکتورهای ارجاعی</a></>}<a href="/finance/pricing">برآورد و پیش‌فاکتور</a></div></details>}</div>}

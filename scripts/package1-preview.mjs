@@ -45,8 +45,16 @@ try{
   for(const [domain,area]of domains){const lab=(await api('/api/laboratories',{action:'lab_save',type:'internal',name:'مجری آزمایشی — '+domain,areas:[area]})).d.id;await db.prepare('INSERT INTO laboratory_jobs(id,reference,area,client,service,quantity,assignee,notes,laboratory_id,created_by,created_at,updated_at) VALUES(?,?,?,?,?,1,?,?,?,?,?,?)').bind('legacy-fixture-'+domain,'TEST-LEGACY-'+domain,area,'محقق کاملاً ساختگی','خدمت آزمایشی — '+domain,members.get('specialist'),'Historical free-text notes; not JSON',lab,owner,now,now).run();}
  }
  if(process.argv.includes('--laboratory-closure-fixture'))await api('/api/operations',{action:'dispatch_create',sourceKey:'preview-closure-operation',title:'آزمایشی — پذیرش نمونه برای پرونده مادر',sourceBody:'فقط داده ساختگی برای بررسی اتصال پذیرش به آزمایشگاه',family:'A05',channel:'manual',direction:'inbound',partyKind:'customer',clientName:'محقق کاملاً ساختگی',reference:'TEST-INTAKE-583'});
+ // Final31 opt-in fixture: no production binding, source import, payment or external send.
+ if(process.argv.includes('--laboratory-final31-fixture')){
+  const resources=(await api('/api/laboratory-center')).d;
+  const lab=(await api('/api/laboratories',{action:'lab_save',type:'internal',name:'مجری کاملاً آزمایشی مطالعات حیوانی',areas:['مطالعات حیوانی']})).d.id;
+  const services=resources.services.filter(s=>s.domain==='animal').slice(0,10).map(s=>({tariff_id:s.tariff_id,description:s.title,quantity:2,unit:s.unit,notes:'صرفاً دامنه آزمایشی؛ اطلاعات علمی ساختگی نیست'}));
+  const login=await api('/api/auth/login',{username:'customer',password:credentials.get('customer')},{}),h={Cookie:login.r.headers.get('set-cookie').split(';')[0]};
+  await api('/api/laboratory-center',{action:'case_create',key:'preview-final31-case',invoice_number:'TEST-PREVIEW-31',customer_name:'محقق کاملاً ساختگی',customer_phone:'00000000000',customer_email:'synthetic@example.invalid',title:'پرونده آزمایشی بررسی فرم نهایی',assignments:[{domain:'animal',laboratory_id:lab,services,due:today}]},h);
+ }
  const types={'.js':'text/javascript','.css':'text/css','.png':'image/png','.jpeg':'image/jpeg','.svg':'image/svg+xml','.woff2':'font/woff2','.json':'application/json'};
- const banner='<aside style="position:sticky;top:0;z-index:99999;background:#132c4b;color:white;padding:10px;font:13px sans-serif;text-align:center" dir="rtl">پیش‌نمایش بسته اول — فقط داده آزمایشی، مستقل از سایت زنده · انتخاب حساب: '+roles.map(([n])=>'<a style="color:#aeeaff;margin:5px;display:inline-block" href="/_preview/role/'+n+'">'+n+'</a>').join('')+'</aside>';
+ const banner='<aside style="position:sticky;top:0;z-index:99999;background:#132c4b;color:white;padding:10px;font:13px sans-serif;text-align:center" dir="rtl">پیش‌نمایش ایزوله SYNAPSE — فقط داده آزمایشی، مستقل از سایت زنده · انتخاب حساب: '+roles.map(([n])=>'<a style="color:#aeeaff;margin:5px;display:inline-block" href="/_preview/role/'+n+'">'+n+'</a>').join('')+'</aside>';
  server=http.createServer(async(req,res)=>{try{
   const url=new URL(req.url,origin);
   if(url.pathname.startsWith('/_preview/role/')){const username=url.pathname.slice('/_preview/role/'.length);if(!credentials.has(username)){res.writeHead(404);res.end();return}const {r}=await api('/api/auth/login',{username,password:credentials.get(username)},{});res.writeHead(303,{'Location':'/staff?view=overview','Set-Cookie':r.headers.get('set-cookie'),'Cache-Control':'no-store'});res.end();return}

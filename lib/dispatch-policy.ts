@@ -18,3 +18,7 @@ export function requestLegacyCategory(family:string){return ['A03','A04'].includ
 
 export function mayReadRequestSource(u:any,r:any){const m=requestRouting(r);if(!m)return true;if(u.manager&&u.email==='ekramiihamid@gmail.com'||r.created_by===u.email)return true;const role=organizationalCode(u.username||u.organizationalUsername||'');return !m.sensitive||(m.dataRoles||[m.ownerRole]).includes(role);}
 export function redactRequest(u:any,r:any){return mayReadRequestSource(u,r)?r:{...r,title:'اقدام مرتبط با درخواست '+r.id.slice(-8),source_body:'جزئیات محرمانه فقط در واحد مجاز نمایش داده می‌شود.',attachments:'[]',resolution:'',client_name:'',phone:'',email:'',intake_notes:''};}
+
+export function ticketNoteVisible(u:any,e:any){if(e.action!=='internal-ticket-note')return true;if(u?.manager&&u.email==='ekramiihamid@gmail.com')return true;try{return JSON.parse(e.body).role===organizationalCode(u?.username||u?.organizationalUsername||'')}catch{return false}}
+
+export function ticketCommunicationVisible(u:any,c:any){try{const m=JSON.parse(c.metadata||'{}');return u?.email==='ekramiihamid@gmail.com'||c.created_by===u?.email||!m.allowedRoles||m.allowedRoles.includes(organizationalCode(u?.username||u?.organizationalUsername||''))}catch{return false}}

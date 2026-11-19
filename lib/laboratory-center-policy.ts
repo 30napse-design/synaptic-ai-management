@@ -9,7 +9,7 @@ export const laboratoryDomains=[
 export const laboratoryTabs=['داشبورد','بانک خدمات','سفارش‌های کار','استعلام خدمات','مدیریت نمونه‌ها','داده‌ها و نتایج','تیکت‌ها و مکاتبات'];
 export const caseStates=['منتظر ارجاع','منتظر نمونه','منتظر دارو یا مواد','منتظر تأمین حیوان','در حال آماده‌سازی','در حال اجرا','تکمیل‌شده'];
 export const inquirySubjects=['امکان انجام خدمت','روش و الزامات علمی','شرایط نمونه و مواد','زمان تقریبی اجرا','سایر موارد'];
-export const ticketTargets:Record<string,string>={'پشتیبانی':'it_security_manager','مسئول فنی':'research_manager','مدیریت':'executive_director','هماهنگی مجریان و پیمانکاران':'research_specialist','پذیرش پژوهشکده':'customer_manager'};
+export const ticketTargets:Record<string,string>={'رئیس پژوهشکده':'management','مالی و قراردادها':'finance_manager','طراحی علمی':'scientific_manager','امور اداری':'administration_manager','پشتیبانی':'it_security_manager','مسئول فنی':'research_manager','مدیریت':'executive_director','هماهنگی مجریان و پیمانکاران':'research_specialist','پذیرش پژوهشکده':'customer_manager'};
 // Historical jobs use plain-text notes. Only explicit object metadata can supply links.
 // This adapter never rewrites notes, guesses a mother project, or grants access.
 export function jobMetadata(j:any){
