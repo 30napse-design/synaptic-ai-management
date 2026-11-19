@@ -127,3 +127,19 @@ The native live overview confirmed the `DB` binding and existing table names, wi
 Required to proceed: obtain an authorized private D1 SQL/SQLite snapshot and all R2 objects with original keys/metadata, timestamp, checksums and complete manifest from official Cloudflare access or Sites support. Keep it encrypted and outside GitHub; secure secret recovery is separate. Check source completeness with the provider, run `node scripts/verify-portable-backup.mjs /absolute/private/export-directory`, restore to an isolated copy, verify integrity/foreign keys/counts/references and exercise pending migrations there. Then deploy this exact source through the official existing-Site workflow, preserving audience and bindings, and record the returned version/deployment. Complete secure live staff and controlled synthetic-record acceptance afterwards. No password, token or real financial export should be posted in chat.
 
 Remaining final31 product limits (already disclosed upstream) also remain explicit: verified researcher self-service identity, complete scientific metadata, correction of an already-executed individual service, real mobile acceptance and actual customer handover cannot be claimed complete by this integration. No such missing permission or business evidence was fabricated.
+
+### Publication completed — version 60, 2026-11-19
+
+After the blocked-release report above, the Owner instructed focusing on applying the seven financial pages, then explicitly said «منتشر کن». Publication proceeded under that later instruction; no backup or recovery operation that was not performed is claimed. This note supersedes the earlier candidate's deployment status, not its historical test evidence or outstanding operational limits.
+
+- Same existing Site: `https://synapse.ekramiihamid.chatgpt.site`.
+- Published application source: `d576b826de653b73fa43ca676e30c1bbf5b2a382`.
+- Saved version: **60**, `appgprj_6af06be01a5481918c6578c73c9b888a~appgver_27711afcf30c819197babc352ce569a3`.
+- Official saved deployment archive: `sha256:65c0031a318cb0e02956a6ca997a03bf5b23ca2bc35bef755caf237a6c38e5c3`, 11,683,840 bytes / 330 files.
+- Deployment: `appgdep_6afeca31be048191b367e7a882104f35`, terminal status **succeeded**, read back at `2026-11-19T10:06:56.366208+00:00` (14:06 Dubai).
+- Existing public audience, Site identity, DB/BUCKET bindings and URL retained. No new Site, real-account/password edits, bulk operational assignments, historical import, paid AI or live scheduler activation.
+- The standard Sites publication path owns pending schema migration handling; no manual live SQL/data repair was run and no independent production migration-history export was obtained. The three additive migrations had already passed isolated preservation tests.
+- No recoverable production D1/R2 backup or restore rehearsal was performed; an application deployment archive is not such a backup. Previously saved versions remain available, but application rollback does not establish reversal of schema or subsequent legitimate business writes.
+- Real staff sessions, real-bank authentication and authenticated production create/assign/save/reload acceptance remain unverified. Read-only anonymous route checks do not substitute for those tests.
+
+This documentation-only record is committed separately after publication; it does not change the application source SHA served by version 60 or initiate another deployment.
