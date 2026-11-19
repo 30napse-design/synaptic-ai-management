@@ -30,6 +30,7 @@ import cellularReviewed from './cellular-services-reviewed.json';
 import geneReviewed from './gene-expression-services-reviewed.json';
 import westernReviewed from './western-services-reviewed.json';
 import elisaReviewed from './elisa-services-reviewed.json';
+import microbiologyDraft from './microbiology-services-draft.json';
 const pathologyReviewedByCode=new Map(pathologyReviewed.map(row=>[row.code,row]));
 const animalReviewedByCode=new Map(animalReviewed.map(row=>[row.code,row]));
 import {readTariffBanks} from './shared-resources';
@@ -71,7 +72,24 @@ function catalog(){const result:any[]=[];for(const bank of readTariffBanks(legac
     method:old.method||'در مرجع فعلی ثبت نشده',sample_type:old.sample_type||'در مرجع فعلی ثبت نشده',
     requirements:old.requirements||'در مرجع فعلی ثبت نشده',output:old.output||'در مرجع فعلی ثبت نشده'});
  }
- return merged;}
+ // MIC-001..MIC-042 are provisional research service references, not an approved price list.
+ // Keep the microbiology domain's existing order intake, but clearly flag technical and financial approval.
+ const micIds=new Set(microbiologyDraft.map(r=>r.code));
+ const safe=merged.filter((r:any)=>!micIds.has(r.code));
+ for(const r of microbiologyDraft){
+  safe.push({tariff_id:'MIC:'+r.code,code:r.code,title:r.title,description:r.title,
+   unit:r.unit,domain:'microbiology',subdivision:'microbiology',category:r.group,
+   subcategory:'',version:'draft-lab08-2026-11-19',
+   source:'LAB08 microbiology draft CRM; technical approval pending',
+   status:'پیشنهادی / در انتظار تأیید مسئول فنی و تعرفه',
+   tariff_review_required:true,finance_enabled:false,technical_approval:r.technicalApproval,
+   related_code:r.relatedCode||'',validation_rule:r.validationRule,
+   metadata_missing:['method','sample_type','requirements','output'],
+   method:'در زمان بررسی فنی و ثبت سفارش تعیین شود',
+   sample_type:'در زمان پذیرش نمونه تعیین شود',
+   requirements:r.validationRule,output:'پس از تصویب دامنه خدمت تعیین شود'});
+ }
+ return safe;}
 export async function readLaboratoryCenter(u:any,p:URLSearchParams){check(u&&(canMother(u)||u.laboratory||hasAccess(u,'mail')||canCoordinate(u)),'دسترسی ندارید.',403);const base=canMother(u)||u.laboratory?await readMother(u,new URLSearchParams({all:'1'})):{projects:[],resources:{},user:{}};const allJobs=await rows('SELECT j.*,l.name laboratory_name,l.type laboratory_type,l.status laboratory_status FROM laboratory_jobs j JOIN laboratories l ON l.id=j.laboratory_id ORDER BY j.updated_at DESC');const jobs=allJobs.filter(j=>canReadLabJob(u,j)&&jobDomain(j));const projectIds=new Set(base.projects.map((r:any)=>r.id));const roots=projectIds.size?await rows('SELECT r.*,w.details FROM staff_records r JOIN staff_work_details w ON w.record_id=r.id WHERE r.id IN (SELECT value FROM json_each(?))',JSON.stringify([...projectIds])):[];
  const cases=roots.map(r=>{const m=parsed(r.details).mother,js=jobs.filter(j=>jobMetadata(j).mother_project===r.id);const state=r.status==='done'?'تکمیل‌شده':!js.length?'منتظر ارجاع':js.some(j=>j.status==='doing')?'در حال اجرا':m.waiting_reason||'منتظر نمونه';return {record_status:r.status,created_at:r.created_at,review_state:m.review?.state||'',review:m.review||{},has_assignments:!!m.center_assignments?.length,waiting_reason:m.waiting_reason||'',archived:m.archived||null,archived_entities:m.archived_entities||[],draft_form:u.laboratory?undefined:m.draft_form,assignments:u.laboratory?undefined:m.center_assignments||[],id:r.id,code:'LC-'+r.id.slice(-10),title:r.title,invoice_number:m.invoice_number,customer:u.laboratory?{name:js[0]?.client||''}:m.customer,assignee:r.assignee,revision:r.revision,updated_at:r.updated_at,status:state,description:u.laboratory?'':m.description||'',domains:[...new Set(js.length?js.map(j=>jobDomain(j)?.id):(m.center_assignments||[]).map((a:any)=>a.domain))],can_approve:!!u.manager&&!!m.center_assignments?.length&&!m.dispatch_approval,operation_ids:u.laboratory?[]:m.operation_ids||[],management_approved:!!m.dispatch_approval};});
  const evidence=jobs.filter(j=>canReadLabEvidence(u,j)).map(j=>j.id),records=evidence.length?await rows("SELECT * FROM laboratory_records WHERE job_id IN (SELECT value FROM json_each(?)) AND kind IN ('result','result_draft') ORDER BY created_at,version",JSON.stringify(evidence)):[];const files=evidence.length?await rows('SELECT id,job_id,file_name,mime,size,created_at FROM laboratory_files WHERE job_id IN (SELECT value FROM json_each(?))',JSON.stringify(evidence)):[];
