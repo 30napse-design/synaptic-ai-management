@@ -23,8 +23,8 @@ export function selectedTariffLines(lines:any[],scientificOnly:boolean,oldLines:
 export function quotationServiceCatalog(){
  const approved=new Map(approvedTariffServices().map((r:any)=>[r.tariff_id,r]));
  const sources=[
-  ...animalReviewed.map((r:any)=>({code:r.code,title:r.title,unit:r.unit,area:'مطالعات حیوانی',status:r.tariffStatus||'',group:r.group||''})),
-  ...pathologyReviewed.map((r:any)=>({code:r.code,title:r.title,unit:r.unit,area:'بافت‌شناسی و پاتولوژی',status:'قیمت فقط در صورت تطبیق با تعرفه مصوب',group:''})),
+  ...animalReviewed.map((r:any)=>({code:r.code,title:r.title,unit:r.unit,area:'مطالعات حیوانی',status:r.tariffStatus||'',group:r.group||'',reference:''})),
+  ...pathologyReviewed.map((r:any)=>({code:r.code,title:r.title,unit:r.unit,area:'بافت‌شناسی و پاتولوژی',status:'قیمت فقط در صورت تطبیق با تعرفه مصوب',group:'',reference:''})),
   ...cellularReviewed.map((r:any)=>({code:r.code,title:r.title,unit:r.unit,area:'خدمات سلولی و کشت سلول',status:r.rateStatus,group:r.group,reference:r.reference||''})),
   ...geneReviewed.map((r:any)=>({code:r.code,title:r.title,unit:r.unit,area:'ژنتیک و بیان ژن',status:r.rateStatus,group:r.group,reference:r.reference||''}))
  ];
