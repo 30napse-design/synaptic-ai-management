@@ -5,7 +5,9 @@
     "group": "هورمون‌های جنسی و تولیدمثل",
     "rateStatus": "مصوب قبلی؛ مشروط به روش کیت",
     "invoiceStatus": "مشروط به کیت و شرایط سفارش",
-    "requiresKitReview": true
+    "requiresKitReview": true,
+    "unit": "نمونه یا استاندارد / مارکر",
+    "sourcePriceToman": 980000
   },
   {
     "code": "EL-002",
@@ -13,7 +15,9 @@
     "group": "هورمون‌های جنسی و تولیدمثل",
     "rateStatus": "مصوب قبلی؛ مشروط به روش کیت",
     "invoiceStatus": "مشروط به کیت و شرایط سفارش",
-    "requiresKitReview": true
+    "requiresKitReview": true,
+    "unit": "نمونه یا استاندارد / مارکر",
+    "sourcePriceToman": 980000
   },
   {
     "code": "EL-003",
@@ -21,7 +25,9 @@
     "group": "هورمون‌های جنسی و تولیدمثل",
     "rateStatus": "مصوب قبلی؛ مشروط به روش کیت",
     "invoiceStatus": "مشروط به کیت و شرایط سفارش",
-    "requiresKitReview": true
+    "requiresKitReview": true,
+    "unit": "نمونه یا استاندارد / مارکر",
+    "sourcePriceToman": 980000
   },
   {
     "code": "EL-004",
@@ -29,7 +35,9 @@
     "group": "هورمون‌های جنسی و تولیدمثل",
     "rateStatus": "مصوب قبلی؛ مشروط به روش کیت",
     "invoiceStatus": "مشروط به کیت و شرایط سفارش",
-    "requiresKitReview": true
+    "requiresKitReview": true,
+    "unit": "نمونه یا استاندارد / مارکر",
+    "sourcePriceToman": 980000
   },
   {
     "code": "EL-005",
@@ -37,7 +45,9 @@
     "group": "هورمون‌های جنسی و تولیدمثل",
     "rateStatus": "مصوب قبلی؛ مشروط به روش کیت",
     "invoiceStatus": "مشروط به کیت و شرایط سفارش",
-    "requiresKitReview": true
+    "requiresKitReview": true,
+    "unit": "نمونه یا استاندارد / مارکر",
+    "sourcePriceToman": 980000
   },
   {
     "code": "EL-006",
@@ -45,7 +55,9 @@
     "group": "هورمون‌های جنسی و تولیدمثل",
     "rateStatus": "مصوب قبلی؛ مشروط به روش کیت",
     "invoiceStatus": "مشروط به کیت و شرایط سفارش",
-    "requiresKitReview": true
+    "requiresKitReview": true,
+    "unit": "نمونه یا استاندارد / مارکر",
+    "sourcePriceToman": 980000
   },
   {
     "code": "EL-007",
@@ -53,7 +65,9 @@
     "group": "هورمون‌های تیروئیدی و استرس",
     "rateStatus": "مصوب قبلی؛ مشروط به روش کیت",
     "invoiceStatus": "مشروط به کیت و شرایط سفارش",
-    "requiresKitReview": true
+    "requiresKitReview": true,
+    "unit": "نمونه یا استاندارد / مارکر",
+    "sourcePriceToman": 980000
   },
   {
     "code": "EL-008",
@@ -61,7 +75,9 @@
     "group": "هورمون‌های تیروئیدی و استرس",
     "rateStatus": "مصوب قبلی؛ مشروط به روش کیت",
     "invoiceStatus": "مشروط به کیت و شرایط سفارش",
-    "requiresKitReview": true
+    "requiresKitReview": true,
+    "unit": "نمونه یا استاندارد / مارکر",
+    "sourcePriceToman": 980000
   },
   {
     "code": "EL-009",
@@ -69,7 +85,9 @@
     "group": "هورمون‌های تیروئیدی و استرس",
     "rateStatus": "مصوب قبلی؛ مشروط به روش کیت",
     "invoiceStatus": "مشروط به کیت و شرایط سفارش",
-    "requiresKitReview": true
+    "requiresKitReview": true,
+    "unit": "نمونه یا استاندارد / مارکر",
+    "sourcePriceToman": 980000
   },
   {
     "code": "EL-010",
@@ -77,7 +95,9 @@
     "group": "هورمون‌های تیروئیدی و استرس",
     "rateStatus": "مصوب قبلی؛ مشروط به روش کیت",
     "invoiceStatus": "مشروط به کیت و شرایط سفارش",
-    "requiresKitReview": true
+    "requiresKitReview": true,
+    "unit": "نمونه یا استاندارد / مارکر",
+    "sourcePriceToman": 980000
   },
   {
     "code": "EL-011",
@@ -85,7 +105,9 @@
     "group": "هورمون‌های متابولیک",
     "rateStatus": "مصوب قبلی؛ مشروط به روش کیت",
     "invoiceStatus": "مشروط به کیت و شرایط سفارش",
-    "requiresKitReview": true
+    "requiresKitReview": true,
+    "unit": "نمونه یا استاندارد / مارکر",
+    "sourcePriceToman": 1100000
   },
   {
     "code": "EL-012",
@@ -93,7 +115,9 @@
     "group": "هورمون‌های متابولیک",
     "rateStatus": "مصوب قبلی؛ مشروط به روش کیت",
     "invoiceStatus": "مشروط به کیت و شرایط سفارش",
-    "requiresKitReview": true
+    "requiresKitReview": true,
+    "unit": "نمونه یا استاندارد / مارکر",
+    "sourcePriceToman": 1100000
   },
   {
     "code": "EL-013",
@@ -101,7 +125,9 @@
     "group": "هورمون‌های متابولیک",
     "rateStatus": "مصوب قبلی؛ مشروط به روش کیت",
     "invoiceStatus": "مشروط به کیت و شرایط سفارش",
-    "requiresKitReview": true
+    "requiresKitReview": true,
+    "unit": "نمونه یا استاندارد / مارکر",
+    "sourcePriceToman": 1100000
   },
   {
     "code": "EL-014",
@@ -109,7 +135,9 @@
     "group": "هورمون‌های رشد و استرس",
     "rateStatus": "مصوب قبلی؛ مشروط به روش کیت",
     "invoiceStatus": "مشروط به کیت و شرایط سفارش",
-    "requiresKitReview": true
+    "requiresKitReview": true,
+    "unit": "نمونه یا استاندارد / مارکر",
+    "sourcePriceToman": 1100000
   },
   {
     "code": "EL-015",
@@ -117,7 +145,9 @@
     "group": "هورمون‌های رشد و استرس",
     "rateStatus": "مصوب قبلی؛ مشروط به روش کیت",
     "invoiceStatus": "مشروط به کیت و شرایط سفارش",
-    "requiresKitReview": true
+    "requiresKitReview": true,
+    "unit": "نمونه یا استاندارد / مارکر",
+    "sourcePriceToman": 1100000
   },
   {
     "code": "EL-016",
@@ -125,7 +155,9 @@
     "group": "هورمون‌های رشد و استرس",
     "rateStatus": "مصوب قبلی؛ مشروط به روش کیت",
     "invoiceStatus": "مشروط به کیت و شرایط سفارش",
-    "requiresKitReview": true
+    "requiresKitReview": true,
+    "unit": "نمونه یا استاندارد / مارکر",
+    "sourcePriceToman": 1100000
   },
   {
     "code": "EL-017",
@@ -133,7 +165,9 @@
     "group": "هورمون‌های رشد و استرس",
     "rateStatus": "مصوب قبلی؛ مشروط به روش کیت",
     "invoiceStatus": "مشروط به کیت و شرایط سفارش",
-    "requiresKitReview": true
+    "requiresKitReview": true,
+    "unit": "نمونه یا استاندارد / مارکر",
+    "sourcePriceToman": 1100000
   },
   {
     "code": "EL-018",
@@ -141,7 +175,9 @@
     "group": "سایتوکاین‌های پیش‌التهابی",
     "rateStatus": "مصوب قبلی؛ مشروط به روش کیت",
     "invoiceStatus": "مشروط به کیت و شرایط سفارش",
-    "requiresKitReview": true
+    "requiresKitReview": true,
+    "unit": "نمونه یا استاندارد / مارکر",
+    "sourcePriceToman": 840000
   },
   {
     "code": "EL-019",
@@ -149,7 +185,9 @@
     "group": "سایتوکاین‌های پیش‌التهابی",
     "rateStatus": "مصوب قبلی؛ مشروط به روش کیت",
     "invoiceStatus": "مشروط به کیت و شرایط سفارش",
-    "requiresKitReview": true
+    "requiresKitReview": true,
+    "unit": "نمونه یا استاندارد / مارکر",
+    "sourcePriceToman": 840000
   },
   {
     "code": "EL-020",
@@ -157,7 +195,9 @@
     "group": "سایتوکاین‌های پیش‌التهابی",
     "rateStatus": "مصوب قبلی؛ مشروط به روش کیت",
     "invoiceStatus": "مشروط به کیت و شرایط سفارش",
-    "requiresKitReview": true
+    "requiresKitReview": true,
+    "unit": "نمونه یا استاندارد / مارکر",
+    "sourcePriceToman": 840000
   },
   {
     "code": "EL-021",
@@ -165,7 +205,9 @@
     "group": "سایتوکاین‌ها و تنظیم ایمنی",
     "rateStatus": "مصوب قبلی؛ مشروط به روش کیت",
     "invoiceStatus": "مشروط به کیت و شرایط سفارش",
-    "requiresKitReview": true
+    "requiresKitReview": true,
+    "unit": "نمونه یا استاندارد / مارکر",
+    "sourcePriceToman": 840000
   },
   {
     "code": "EL-022",
@@ -173,7 +215,9 @@
     "group": "سایتوکاین‌ها و تنظیم ایمنی",
     "rateStatus": "مصوب قبلی؛ مشروط به روش کیت",
     "invoiceStatus": "مشروط به کیت و شرایط سفارش",
-    "requiresKitReview": true
+    "requiresKitReview": true,
+    "unit": "نمونه یا استاندارد / مارکر",
+    "sourcePriceToman": 840000
   },
   {
     "code": "EL-023",
@@ -181,7 +225,9 @@
     "group": "سایتوکاین‌ها و تنظیم ایمنی",
     "rateStatus": "مصوب قبلی؛ مشروط به روش کیت",
     "invoiceStatus": "مشروط به کیت و شرایط سفارش",
-    "requiresKitReview": true
+    "requiresKitReview": true,
+    "unit": "نمونه یا استاندارد / مارکر",
+    "sourcePriceToman": 840000
   },
   {
     "code": "EL-024",
@@ -189,7 +235,9 @@
     "group": "سایتوکاین‌ها و تنظیم ایمنی",
     "rateStatus": "مصوب قبلی؛ مشروط به روش کیت",
     "invoiceStatus": "مشروط به کیت و شرایط سفارش",
-    "requiresKitReview": true
+    "requiresKitReview": true,
+    "unit": "نمونه یا استاندارد / مارکر",
+    "sourcePriceToman": 840000
   },
   {
     "code": "EL-025",
@@ -197,7 +245,9 @@
     "group": "سایتوکاین‌ها و تنظیم ایمنی",
     "rateStatus": "مصوب قبلی؛ مشروط به روش کیت",
     "invoiceStatus": "مشروط به کیت و شرایط سفارش",
-    "requiresKitReview": true
+    "requiresKitReview": true,
+    "unit": "نمونه یا استاندارد / مارکر",
+    "sourcePriceToman": 840000
   },
   {
     "code": "EL-026",
@@ -205,7 +255,9 @@
     "group": "عوامل رشد و آنژیوژنز",
     "rateStatus": "مصوب قبلی؛ مشروط به روش کیت",
     "invoiceStatus": "مشروط به کیت و شرایط سفارش",
-    "requiresKitReview": true
+    "requiresKitReview": true,
+    "unit": "نمونه یا استاندارد / مارکر",
+    "sourcePriceToman": 560000
   },
   {
     "code": "EL-027",
@@ -213,7 +265,9 @@
     "group": "عوامل رشد و آنژیوژنز",
     "rateStatus": "مصوب قبلی؛ مشروط به روش کیت",
     "invoiceStatus": "مشروط به کیت و شرایط سفارش",
-    "requiresKitReview": true
+    "requiresKitReview": true,
+    "unit": "نمونه یا استاندارد / مارکر",
+    "sourcePriceToman": 560000
   },
   {
     "code": "EL-028",
@@ -221,7 +275,9 @@
     "group": "عوامل رشد و آنژیوژنز",
     "rateStatus": "مصوب قبلی؛ مشروط به روش کیت",
     "invoiceStatus": "مشروط به کیت و شرایط سفارش",
-    "requiresKitReview": true
+    "requiresKitReview": true,
+    "unit": "نمونه یا استاندارد / مارکر",
+    "sourcePriceToman": 560000
   },
   {
     "code": "EL-029",
@@ -229,7 +285,9 @@
     "group": "عوامل رشد و آنژیوژنز",
     "rateStatus": "مصوب قبلی؛ مشروط به روش کیت",
     "invoiceStatus": "مشروط به کیت و شرایط سفارش",
-    "requiresKitReview": true
+    "requiresKitReview": true,
+    "unit": "نمونه یا استاندارد / مارکر",
+    "sourcePriceToman": 560000
   },
   {
     "code": "EL-030",
@@ -237,7 +295,9 @@
     "group": "عوامل نوروتروفیک",
     "rateStatus": "مصوب قبلی؛ مشروط به روش کیت",
     "invoiceStatus": "مشروط به کیت و شرایط سفارش",
-    "requiresKitReview": true
+    "requiresKitReview": true,
+    "unit": "نمونه یا استاندارد / مارکر",
+    "sourcePriceToman": 560000
   },
   {
     "code": "EL-031",
@@ -245,7 +305,9 @@
     "group": "عوامل نوروتروفیک",
     "rateStatus": "مصوب قبلی؛ مشروط به روش کیت",
     "invoiceStatus": "مشروط به کیت و شرایط سفارش",
-    "requiresKitReview": true
+    "requiresKitReview": true,
+    "unit": "نمونه یا استاندارد / مارکر",
+    "sourcePriceToman": 560000
   },
   {
     "code": "EL-032",
@@ -253,7 +315,9 @@
     "group": "نشانگرهای نورودژنراسیون",
     "rateStatus": "مصوب قبلی؛ مشروط به روش کیت",
     "invoiceStatus": "مشروط به کیت و شرایط سفارش",
-    "requiresKitReview": true
+    "requiresKitReview": true,
+    "unit": "نمونه یا استاندارد / مارکر",
+    "sourcePriceToman": 940000
   },
   {
     "code": "EL-033",
@@ -261,7 +325,9 @@
     "group": "نشانگرهای نورودژنراسیون",
     "rateStatus": "مصوب قبلی؛ مشروط به روش کیت",
     "invoiceStatus": "مشروط به کیت و شرایط سفارش",
-    "requiresKitReview": true
+    "requiresKitReview": true,
+    "unit": "نمونه یا استاندارد / مارکر",
+    "sourcePriceToman": 940000
   },
   {
     "code": "EL-034",
@@ -269,7 +335,9 @@
     "group": "نشانگرهای نورودژنراسیون",
     "rateStatus": "مصوب قبلی؛ مشروط به روش کیت",
     "invoiceStatus": "مشروط به کیت و شرایط سفارش",
-    "requiresKitReview": true
+    "requiresKitReview": true,
+    "unit": "نمونه یا استاندارد / مارکر",
+    "sourcePriceToman": 940000
   },
   {
     "code": "EL-035",
@@ -277,7 +345,9 @@
     "group": "نشانگرهای آپوپتوز",
     "rateStatus": "مصوب قبلی؛ مشروط به روش کیت",
     "invoiceStatus": "مشروط به کیت و شرایط سفارش",
-    "requiresKitReview": true
+    "requiresKitReview": true,
+    "unit": "نمونه یا استاندارد / مارکر",
+    "sourcePriceToman": 940000
   },
   {
     "code": "EL-036",
@@ -285,7 +355,9 @@
     "group": "نشانگرهای آپوپتوز",
     "rateStatus": "مصوب قبلی؛ مشروط به روش کیت",
     "invoiceStatus": "مشروط به کیت و شرایط سفارش",
-    "requiresKitReview": true
+    "requiresKitReview": true,
+    "unit": "نمونه یا استاندارد / مارکر",
+    "sourcePriceToman": 940000
   },
   {
     "code": "EL-037",
@@ -293,7 +365,9 @@
     "group": "نشانگرهای آپوپتوز",
     "rateStatus": "مصوب قبلی؛ مشروط به روش کیت",
     "invoiceStatus": "مشروط به کیت و شرایط سفارش",
-    "requiresKitReview": true
+    "requiresKitReview": true,
+    "unit": "نمونه یا استاندارد / مارکر",
+    "sourcePriceToman": 940000
   },
   {
     "code": "EL-038",
@@ -301,7 +375,9 @@
     "group": "نشانگرهای سرطان و التهاب",
     "rateStatus": "مصوب قبلی؛ مشروط به روش کیت",
     "invoiceStatus": "مشروط به کیت و شرایط سفارش",
-    "requiresKitReview": true
+    "requiresKitReview": true,
+    "unit": "نمونه یا استاندارد / مارکر",
+    "sourcePriceToman": 940000
   },
   {
     "code": "EL-039",
@@ -309,7 +385,9 @@
     "group": "نشانگرهای سرطان و التهاب",
     "rateStatus": "مصوب قبلی؛ مشروط به روش کیت",
     "invoiceStatus": "مشروط به کیت و شرایط سفارش",
-    "requiresKitReview": true
+    "requiresKitReview": true,
+    "unit": "نمونه یا استاندارد / مارکر",
+    "sourcePriceToman": 940000
   },
   {
     "code": "EL-040",
@@ -317,7 +395,9 @@
     "group": "پراکسیداسیون لیپید و ظرفیت آنتی‌اکسیدان",
     "rateStatus": "مصوب قبلی؛ مشروط به روش کیت",
     "invoiceStatus": "مشروط به کیت و شرایط سفارش",
-    "requiresKitReview": true
+    "requiresKitReview": true,
+    "unit": "نمونه یا استاندارد / مارکر",
+    "sourcePriceToman": 600000
   },
   {
     "code": "EL-041",
@@ -325,7 +405,9 @@
     "group": "پراکسیداسیون لیپید و ظرفیت آنتی‌اکسیدان",
     "rateStatus": "مصوب قبلی؛ مشروط به روش کیت",
     "invoiceStatus": "مشروط به کیت و شرایط سفارش",
-    "requiresKitReview": true
+    "requiresKitReview": true,
+    "unit": "نمونه یا استاندارد / مارکر",
+    "sourcePriceToman": 600000
   },
   {
     "code": "EL-042",
@@ -333,7 +415,9 @@
     "group": "پراکسیداسیون لیپید و ظرفیت آنتی‌اکسیدان",
     "rateStatus": "مصوب قبلی؛ مشروط به روش کیت",
     "invoiceStatus": "مشروط به کیت و شرایط سفارش",
-    "requiresKitReview": true
+    "requiresKitReview": true,
+    "unit": "نمونه یا استاندارد / مارکر",
+    "sourcePriceToman": 600000
   },
   {
     "code": "EL-043",
@@ -341,7 +425,9 @@
     "group": "آنزیم‌های آنتی‌اکسیدانی",
     "rateStatus": "مصوب قبلی؛ مشروط به روش کیت",
     "invoiceStatus": "مشروط به کیت و شرایط سفارش",
-    "requiresKitReview": true
+    "requiresKitReview": true,
+    "unit": "نمونه یا استاندارد / مارکر",
+    "sourcePriceToman": 600000
   },
   {
     "code": "EL-044",
@@ -349,7 +435,9 @@
     "group": "آنزیم‌های آنتی‌اکسیدانی",
     "rateStatus": "مصوب قبلی؛ مشروط به روش کیت",
     "invoiceStatus": "مشروط به کیت و شرایط سفارش",
-    "requiresKitReview": true
+    "requiresKitReview": true,
+    "unit": "نمونه یا استاندارد / مارکر",
+    "sourcePriceToman": 600000
   },
   {
     "code": "EL-045",
@@ -357,7 +445,9 @@
     "group": "آنزیم‌های آنتی‌اکسیدانی",
     "rateStatus": "مصوب قبلی؛ مشروط به روش کیت",
     "invoiceStatus": "مشروط به کیت و شرایط سفارش",
-    "requiresKitReview": true
+    "requiresKitReview": true,
+    "unit": "نمونه یا استاندارد / مارکر",
+    "sourcePriceToman": 600000
   },
   {
     "code": "EL-046",
@@ -365,7 +455,9 @@
     "group": "سیستم گلوتاتیون",
     "rateStatus": "مصوب قبلی؛ مشروط به روش کیت",
     "invoiceStatus": "مشروط به کیت و شرایط سفارش",
-    "requiresKitReview": true
+    "requiresKitReview": true,
+    "unit": "نمونه یا استاندارد / مارکر",
+    "sourcePriceToman": 600000
   },
   {
     "code": "EL-047",
@@ -373,7 +465,9 @@
     "group": "سیستم گلوتاتیون",
     "rateStatus": "مصوب قبلی؛ مشروط به روش کیت",
     "invoiceStatus": "مشروط به کیت و شرایط سفارش",
-    "requiresKitReview": true
+    "requiresKitReview": true,
+    "unit": "نمونه یا استاندارد / مارکر",
+    "sourcePriceToman": 600000
   },
   {
     "code": "EL-048",
@@ -381,7 +475,9 @@
     "group": "سیستم گلوتاتیون",
     "rateStatus": "مصوب قبلی؛ مشروط به روش کیت",
     "invoiceStatus": "مشروط به کیت و شرایط سفارش",
-    "requiresKitReview": true
+    "requiresKitReview": true,
+    "unit": "نمونه یا استاندارد / مارکر",
+    "sourcePriceToman": 600000
   },
   {
     "code": "EL-049",
@@ -389,7 +485,9 @@
     "group": "سیستم گلوتاتیون",
     "rateStatus": "مصوب قبلی؛ مشروط به روش کیت",
     "invoiceStatus": "مشروط به کیت و شرایط سفارش",
-    "requiresKitReview": true
+    "requiresKitReview": true,
+    "unit": "نمونه یا استاندارد / مارکر",
+    "sourcePriceToman": 600000
   },
   {
     "code": "EL-050",
@@ -397,7 +495,9 @@
     "group": "آسیب DNA و پروتئین",
     "rateStatus": "مصوب قبلی؛ مشروط به روش کیت",
     "invoiceStatus": "مشروط به کیت و شرایط سفارش",
-    "requiresKitReview": true
+    "requiresKitReview": true,
+    "unit": "نمونه یا استاندارد / مارکر",
+    "sourcePriceToman": 680000
   },
   {
     "code": "EL-051",
@@ -405,7 +505,9 @@
     "group": "آسیب DNA و پروتئین",
     "rateStatus": "مصوب قبلی؛ مشروط به روش کیت",
     "invoiceStatus": "مشروط به کیت و شرایط سفارش",
-    "requiresKitReview": true
+    "requiresKitReview": true,
+    "unit": "نمونه یا استاندارد / مارکر",
+    "sourcePriceToman": 680000
   },
   {
     "code": "EL-052",
@@ -413,7 +515,9 @@
     "group": "نشانگرهای قلبی و متابولیک",
     "rateStatus": "مصوب — تأیید کارفرما ۱۴۰۵/۰۸/۰۷",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "requiresKitReview": false
+    "requiresKitReview": false,
+    "unit": "نمونه / آزمون",
+    "sourcePriceToman": 940000
   },
   {
     "code": "EL-053",
@@ -421,7 +525,9 @@
     "group": "نشانگرهای قلبی و متابولیک",
     "rateStatus": "مصوب — تأیید کارفرما ۱۴۰۵/۰۸/۰۷",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "requiresKitReview": false
+    "requiresKitReview": false,
+    "unit": "نمونه / آزمون",
+    "sourcePriceToman": 940000
   },
   {
     "code": "EL-054",
@@ -429,7 +535,9 @@
     "group": "نشانگرهای قلبی و متابولیک",
     "rateStatus": "مصوب — تأیید کارفرما ۱۴۰۵/۰۸/۰۷",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "requiresKitReview": false
+    "requiresKitReview": false,
+    "unit": "نمونه / آزمون",
+    "sourcePriceToman": 940000
   },
   {
     "code": "EL-055",
@@ -437,7 +545,9 @@
     "group": "نشانگرهای قلبی و متابولیک",
     "rateStatus": "مصوب — تأیید کارفرما ۱۴۰۵/۰۸/۰۷",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "requiresKitReview": false
+    "requiresKitReview": false,
+    "unit": "نمونه / آزمون",
+    "sourcePriceToman": 940000
   },
   {
     "code": "EL-056",
@@ -445,7 +555,9 @@
     "group": "آزمون‌های ظرفیت آنتی‌اکسیدانی",
     "rateStatus": "مصوب — تأیید کارفرما ۱۴۰۵/۰۸/۰۷",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "requiresKitReview": false
+    "requiresKitReview": false,
+    "unit": "نمونه / آزمون",
+    "sourcePriceToman": 600000
   },
   {
     "code": "EL-057",
@@ -453,7 +565,9 @@
     "group": "آزمون‌های ظرفیت آنتی‌اکسیدانی",
     "rateStatus": "مصوب — تأیید کارفرما ۱۴۰۵/۰۸/۰۷",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "requiresKitReview": false
+    "requiresKitReview": false,
+    "unit": "نمونه / آزمون",
+    "sourcePriceToman": 600000
   },
   {
     "code": "EL-058",
@@ -461,6 +575,8 @@
     "group": "آزمون‌های ظرفیت آنتی‌اکسیدانی",
     "rateStatus": "مصوب — تأیید کارفرما ۱۴۰۵/۰۸/۰۷",
     "invoiceStatus": "مطابق منبع/کنترل دامنه سفارش",
-    "requiresKitReview": false
+    "requiresKitReview": false,
+    "unit": "نمونه / آزمون",
+    "sourcePriceToman": 600000
   }
 ]
