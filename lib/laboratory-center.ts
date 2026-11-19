@@ -28,6 +28,8 @@ import animalReviewed from './animal-services-reviewed.json';
 import pathologyReviewed from './pathology-services-reviewed.json';
 import cellularReviewed from './cellular-services-reviewed.json';
 import geneReviewed from './gene-expression-services-reviewed.json';
+import westernReviewed from './western-services-reviewed.json';
+import elisaReviewed from './elisa-services-reviewed.json';
 const pathologyReviewedByCode=new Map(pathologyReviewed.map(row=>[row.code,row]));
 const animalReviewedByCode=new Map(animalReviewed.map(row=>[row.code,row]));
 import {readTariffBanks} from './shared-resources';
@@ -55,7 +57,21 @@ function catalog(){const result:any[]=[];for(const bank of readTariffBanks(legac
    method:existing.method||'در مرجع فعلی ثبت نشده',sample_type:existing.sample_type||'در مرجع فعلی ثبت نشده',
    requirements:existing.requirements||'در مرجع فعلی ثبت نشده',output:existing.output||'در مرجع فعلی ثبت نشده'});
  }
- return retained;}
+ const oldById=new Map(retained.map((r:any)=>[r.tariff_id,r]));
+ const wbEl=[...westernReviewed.map((r:any)=>({...r,subdivision:'western',area:'وسترن بلات و آزمایش‌های پروتئینی'})),...elisaReviewed.map((r:any)=>({...r,subdivision:'elisa',area:'ELISA و سنجش بیومارکرها'}))];
+ const wbElIds=new Set(wbEl.map(r=>r.code.split('-')[0]+':'+r.code));
+ const merged=retained.filter((r:any)=>!wbElIds.has(r.tariff_id));
+ for(const r of wbEl){const id=r.code.split('-')[0]+':'+r.code;const old:any=oldById.get(id)||{};
+  merged.push({...old,tariff_id:id,code:r.code,title:r.title,description:r.title,unit:old.unit||'خدمت',
+    domain:'protein-biochemistry',subdivision:r.subdivision,category:r.area,subcategory:r.group,
+    version:old.version||'reviewed-wb-el-2026-11-19',source:old.source||'SYNAPSE reviewed CRM',
+    status:r.rateStatus,tariff_review_required:r.requiresKitReview||r.rateStatus==='در خدمت پایه',
+    reference_code:r.reference||'',invoice_status:r.invoiceStatus,
+    metadata_missing:old.metadata_missing||['method','sample_type','requirements','output'],
+    method:old.method||'در مرجع فعلی ثبت نشده',sample_type:old.sample_type||'در مرجع فعلی ثبت نشده',
+    requirements:old.requirements||'در مرجع فعلی ثبت نشده',output:old.output||'در مرجع فعلی ثبت نشده'});
+ }
+ return merged;}
 export async function readLaboratoryCenter(u:any,p:URLSearchParams){check(u&&(canMother(u)||u.laboratory||hasAccess(u,'mail')||canCoordinate(u)),'دسترسی ندارید.',403);const base=canMother(u)||u.laboratory?await readMother(u,new URLSearchParams({all:'1'})):{projects:[],resources:{},user:{}};const allJobs=await rows('SELECT j.*,l.name laboratory_name,l.type laboratory_type,l.status laboratory_status FROM laboratory_jobs j JOIN laboratories l ON l.id=j.laboratory_id ORDER BY j.updated_at DESC');const jobs=allJobs.filter(j=>canReadLabJob(u,j)&&jobDomain(j));const projectIds=new Set(base.projects.map((r:any)=>r.id));const roots=projectIds.size?await rows('SELECT r.*,w.details FROM staff_records r JOIN staff_work_details w ON w.record_id=r.id WHERE r.id IN (SELECT value FROM json_each(?))',JSON.stringify([...projectIds])):[];
  const cases=roots.map(r=>{const m=parsed(r.details).mother,js=jobs.filter(j=>jobMetadata(j).mother_project===r.id);const state=r.status==='done'?'تکمیل‌شده':!js.length?'منتظر ارجاع':js.some(j=>j.status==='doing')?'در حال اجرا':m.waiting_reason||'منتظر نمونه';return {record_status:r.status,created_at:r.created_at,review_state:m.review?.state||'',review:m.review||{},has_assignments:!!m.center_assignments?.length,waiting_reason:m.waiting_reason||'',archived:m.archived||null,archived_entities:m.archived_entities||[],draft_form:u.laboratory?undefined:m.draft_form,assignments:u.laboratory?undefined:m.center_assignments||[],id:r.id,code:'LC-'+r.id.slice(-10),title:r.title,invoice_number:m.invoice_number,customer:u.laboratory?{name:js[0]?.client||''}:m.customer,assignee:r.assignee,revision:r.revision,updated_at:r.updated_at,status:state,description:u.laboratory?'':m.description||'',domains:[...new Set(js.length?js.map(j=>jobDomain(j)?.id):(m.center_assignments||[]).map((a:any)=>a.domain))],can_approve:!!u.manager&&!!m.center_assignments?.length&&!m.dispatch_approval,operation_ids:u.laboratory?[]:m.operation_ids||[],management_approved:!!m.dispatch_approval};});
  const evidence=jobs.filter(j=>canReadLabEvidence(u,j)).map(j=>j.id),records=evidence.length?await rows("SELECT * FROM laboratory_records WHERE job_id IN (SELECT value FROM json_each(?)) AND kind IN ('result','result_draft') ORDER BY created_at,version",JSON.stringify(evidence)):[];const files=evidence.length?await rows('SELECT id,job_id,file_name,mime,size,created_at FROM laboratory_files WHERE job_id IN (SELECT value FROM json_each(?))',JSON.stringify(evidence)):[];
