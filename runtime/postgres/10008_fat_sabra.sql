@@ -1,0 +1,1 @@
+ALTER TABLE "laboratory_files" ADD "laboratory_id" text DEFAULT '' NOT NULL;

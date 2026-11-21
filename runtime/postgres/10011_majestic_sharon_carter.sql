@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX "finance_active_source_invoice_unique" ON "finance_documents" ("source_id") WHERE "finance_documents"."source_id" <> '' AND "finance_documents"."kind" = 'invoice' AND "finance_documents"."status" <> 'cancelled';

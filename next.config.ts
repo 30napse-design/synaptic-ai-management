@@ -2,6 +2,7 @@ import { resolve } from "node:path";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  serverExternalPackages: ["pg"],
   env: { SYNAPSE_STANDALONE_BUILD: "1" },
   webpack(config, { webpack }) {
     config.resolve.extensionAlias = {
