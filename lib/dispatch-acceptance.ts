@@ -2,7 +2,7 @@
 import {db} from './staff-server';
 import {workflowMember} from './workflow-core';
 import {dispatchCreate,dispatchWrite,readDispatch as readDispatchCore,routeLabCommunication,reconcileDispatch,dispatchTaskChanged} from './dispatch-engine';
-import {handleWorkRequest} from '../app/api/work/route';
+import {handleWorkRequest} from './work-request';
 import {workflowMust as must} from './workflow-policy';
 import {OWNER} from './staff-policy';
 import {organizationalLogins} from './organizational-logins';
