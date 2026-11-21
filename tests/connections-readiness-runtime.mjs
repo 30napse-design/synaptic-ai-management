@@ -1,0 +1,48 @@
+import assert from 'node:assert/strict';
+const base='https://synapse.test',owner={'oai-authenticated-user-id':'connections-fixture','oai-authenticated-user-email':'ekramiihamid@gmail.com'};let checks=0;
+async function api(path,body,status=200,headers=owner){const r=await fetch(base+path,{method:body?'POST':'GET',redirect:'manual',headers:{...headers,Origin:base,'Content-Type':'application/json'},...(body?{body:JSON.stringify(body)}:{})});let d;try{d=await r.clone().json()}catch{d={}}assert.equal(r.status,status,path+' '+JSON.stringify(d).slice(0,400));checks++;return {r,d};}
+const manage=async(body,status=200)=>(await api('/api/integrations',body,status)).d;
+const today=new Date().toISOString().slice(0,10);
+let model=await manage();assert.equal(model.google.ready,true);assert.ok(model.sources.some(s=>s.address==='histogene.result@gmail.com'));assert.equal(model.ai.ready,false);
+await api('/api/integrations',undefined,403,{});
+const config={id:'result-sync',revision:0,name:'Synthetic third mailbox',channel:'gmail',method:'gmail_oauth',address:'histogene.result@gmail.com',enabled:false,defaultDueDays:1,notBefore:today,labels:['INBOX']};
+await manage({...config,action:'source_save',notBefore:'2026-02-30'},400);
+await manage({...config,action:'source_save',notBefore:'2026-05-21'},409);
+await manage({...config,id:'approved-history',action:'source_save',notBefore:'2026-05-21',notAfter:today,historicalApproved:true});
+let source=await manage({...config,action:'source_save'});
+assert.ok(!JSON.stringify(source).includes('secret"'));
+const start=await manage({action:'google_connect',id:source.id});const auth=new URL(start.url);assert.equal(auth.searchParams.get('scope'),'https://www.googleapis.com/auth/gmail.readonly');assert.ok(auth.searchParams.get('code_challenge'));
+await api('/api/integrations/google/callback?state='+auth.searchParams.get('state')+'&code=SYNTHETIC-result',undefined,303);
+await api('/api/integrations/google/callback?state='+auth.searchParams.get('state')+'&code=SYNTHETIC-result',undefined,400);
+await manage({action:'source_test',id:source.id}); // probe works without enabling imports
+let labels=await manage({action:'google_labels',id:source.id});assert.equal(labels.labels.length,2);
+model=await manage();source=model.sources.find(s=>s.id===source.id);assert.equal(source.enabled,false);assert.equal(source.health.status,'authorized');assert.equal(source.hasSecret,true);
+source=await manage({...source,action:'source_save',enabled:true});
+await manage({action:'source_sync',id:source.id});
+const first=await db.prepare("SELECT request_id FROM ops_communications WHERE source_key='gmail:histogene.result:message-1'").first();assert.ok(first);
+await db.prepare("UPDATE ops_items SET status='waiting',resolution='HUMAN decision',due='2026-12-31' WHERE id=?").bind(first.request_id).run();
+const before=(await db.prepare('SELECT COUNT(*) n FROM staff_records').first()).n;
+await manage({action:'source_sync',id:source.id},502); // retryable fixture failure keeps next-page
+let health=JSON.parse((await db.prepare('SELECT value FROM staff_auth_settings WHERE id=?').bind('input-health:'+source.id).first()).value);assert.equal(health.cursor,'next-page');
+await manage({action:'source_sync',id:source.id});
+let saved=await db.prepare('SELECT status,resolution,due FROM ops_items WHERE id=?').bind(first.request_id).first();assert.deepEqual(saved,{status:'waiting',resolution:'HUMAN decision',due:'2026-12-31'});
+let replay=await manage({action:'source_sync',id:source.id});assert.equal(replay.replayed,1);assert.equal((await db.prepare("SELECT COUNT(*) n FROM ops_communications WHERE source_key LIKE 'gmail:histogene.result:%'").first()).n,2);
+const countBefore=(await db.prepare('SELECT COUNT(*) n FROM ops_items').first()).n;
+const imported=(await api('/api/ops/import',{items:[{sourceKey:'gmail:histogene.result:message-1',category:'customers',subtype:'ثبت سفارش',sourceType:'gmail',sourceAt:new Date().toISOString(),title:'ثبت سفارش مولکولی آزمایشی',sourceBody:'SYNTHETIC service request',email:'fixture@example.invalid'}]},200,{'x-synapse-ops':'local-ops'})).d;
+await api('/api/ops/import',{items:[{sourceKey:'gmail:histogene.result:invalid-date',category:'customers',subtype:'ثبت سفارش',sourceType:'gmail',sourceAt:'2026-02-30T10:00:00Z',title:'Must not import',sourceBody:'SYNTHETIC'}]},400,{'x-synapse-ops':'local-ops'});assert.equal(imported.created,0);assert.equal(imported.requests[0].requestId,first.request_id);assert.equal((await db.prepare('SELECT COUNT(*) n FROM ops_items').first()).n,countBefore);
+const hashed=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode('histogene.result@gmail.com'))),b=>b.toString(16).padStart(2,'0')).join('').slice(0,20);
+await db.prepare("UPDATE ops_communications SET source_key=? WHERE source_key='gmail:histogene.result:message-1'").bind('gmail:mailbox-'+hashed+':message-1').run();
+await db.prepare("UPDATE staff_auth_settings SET value=json_set(value,'$.cursor','') WHERE id=?").bind('input-health:'+source.id).run();
+assert.equal((await manage({action:'source_sync',id:source.id})).replayed,1);assert.equal((await db.prepare('SELECT COUNT(*) n FROM ops_items').first()).n,countBefore,'historical hashed key must not create a second request');
+await db.prepare('INSERT INTO staff_auth_settings(id,value) VALUES(?,?)').bind('input-lease:'+source.id,JSON.stringify({token:'Synthetic other runner',expires:Date.now()+60000})).run();await manage({action:'source_sync',id:source.id},409);await db.prepare('DELETE FROM staff_auth_settings WHERE id=?').bind('input-lease:'+source.id).run();
+let sheet=await manage({action:'source_save',id:'sheet-large',revision:0,name:'Synthetic 130 rows',channel:'phone',method:'google_sheets',sheetId:'synthetic-sheet-id-000',range:'Calls!A1:J1000',enabled:true,defaultDueDays:1,notBefore:today});
+const sa=await manage({action:'google_connect',id:sheet.id});await api('/api/integrations/google/callback?state='+new URL(sa.url).searchParams.get('state')+'&code=SYNTHETIC-sheet',undefined,303);
+let batch=await manage({action:'source_sync',id:sheet.id});assert.equal(batch.events,100);assert.equal(batch.more,true);
+batch=await manage({action:'source_sync',id:sheet.id});assert.equal(batch.events,30);assert.equal(batch.more,false);
+batch=await manage({action:'source_sync',id:sheet.id});assert.equal(batch.events,0);assert.equal((await db.prepare("SELECT COUNT(*) n FROM ops_communications WHERE source_key LIKE 'source:sheet-large:%'").first()).n,130);
+await api('/api/integrations/tick',{},404,{});
+const tick=(await api('/api/integrations/tick',{},200,{'x-synapse-automation':'synthetic-scheduler-token'})).d;assert.equal(tick.ok,true);assert.ok(tick.results.some(s=>s.id===sheet.id));
+model=await manage();source=model.sources.find(s=>s.id===source.id);await manage({action:'google_disconnect',id:source.id,revision:source.revision});model=await manage();source=model.sources.find(s=>s.id===source.id);assert.equal(source.enabled,false);assert.equal(source.hasSecret,false);assert.ok(await db.prepare('SELECT id FROM ops_items WHERE id=?').bind(first.request_id).first());
+const page=(await api('/manage/connections')).r;assert.ok((await page.text()).includes('منابع ورودی و اتصال‌ها'));
+const home=(await api('/')).r;const html=await home.text();assert.ok(html.includes('home-domain-menu'));assert.ok(html.includes('home-v2-campus'));assert.ok(html.indexOf('home-v2-stats')<html.indexOf('workspace-previews'));
+console.log('PASS connections continuation: '+checks+' focused HTTP/SSR checks; OAuth scope/PKCE/replay, disabled probe, labels, real-shaped third-mailbox keys, cursor retry, human state preservation, lease exclusion, 130-row continuation/dedup, disconnect and restored compact home. Synthetic providers only; no real OAuth, imports or paid AI.');

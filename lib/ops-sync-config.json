@@ -269,6 +269,11 @@
       "link_id": "link_6aef21fd84388191919e8dbf4c03585f",
       "source_prefix": "gmail:ekramiihamid:",
       "automatic_api_oauth": false
+    },
+    {
+      "email": "histogene.result@gmail.com",
+      "source_prefix": "gmail:histogene.result:",
+      "automatic_api_oauth": false
     }
   ]
 }
