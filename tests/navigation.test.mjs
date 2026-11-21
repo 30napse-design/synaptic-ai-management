@@ -1,8 +1,34 @@
-import test from 'node:test';import assert from 'node:assert/strict';
-import {workspaceNavigation,activeNavigation,navigationSections} from '../lib/navigation.ts';
-test('single navigation has six consistent groups and preserves protected manager entries',()=>{const groups=workspaceNavigation({manager:false,permissions:['people','projects','lab','mail','operations','calls','billing_ops','results_ops']});assert.equal(groups.length,6);assert.ok(groups.find(g=>g.id==='management').items.filter(i=>['/manage/finance','/manage/chats','/accounts'].includes(i.href)).every(i=>!i.enabled));assert.ok(groups.find(g=>g.id==='operations').items.every(i=>i.enabled));assert.ok(groups.find(g=>g.id==='work').items.some(i=>i.href==='/staff?view=board'))});
-test('active submenu distinguishes call and billing filters',()=>{assert.equal(activeNavigation('/operations',new URLSearchParams('source=incoming'),'/operations'),false);assert.equal(activeNavigation('/operations',new URLSearchParams('source=incoming'),'/operations?source=incoming'),true);assert.equal(activeNavigation('/staff',new URLSearchParams(),'/staff?view=overview'),true);assert.equal(activeNavigation('/staff',new URLSearchParams('view=board'),'/staff?view=plans'),false)});
-
-test('six desks are integrated into existing groups',()=>{const g=workspaceNavigation({manager:true,permissions:[]});const research=g.find(x=>x.id==='research');assert.ok(!g.flatMap(x=>x.items).some(x=>x.href==='/work/desks'));for(const href of ['/work/science','/work/projects'])assert.ok(research.items.some(x=>x.href===href&&x.enabled));assert.equal(g.find(x=>x.id==='management').label,'مدیریت و راهبری پژوهشکده');assert.ok(!research.items.some(x=>x.href==='/work/lab'));assert.deepEqual(g.find(x=>x.id==='laboratories').items.map(x=>x.href),['/laboratories/internal','/laboratories/external'])});
-
-test('financial modules live only in the finance group',()=>{const g=workspaceNavigation({manager:true});const financial=['/finance/dashboard','/finance/contracts','/staff?view=invoices','/manage/tariffs'];for(const href of financial){assert.ok(g.find(g=>g.id==='finance').items.some(i=>i.href===href));assert.ok(!g.filter(g=>g.id!=='finance').flatMap(g=>g.items).some(i=>i.href===href))}const finance=g.find(g=>g.id==='finance');assert.deepEqual(navigationSections(finance).map(s=>s.label),['اسناد و قراردادها','دریافت و تسویه','حسابداری و تعرفه‌ها']);assert.equal(finance.items.filter(i=>!i.category).length,1);assert.equal(new Set(g.flatMap(g=>g.items).map(i=>i.href)).size,g.flatMap(g=>g.items).length);assert.ok(g.find(g=>g.id==='management').items.some(i=>i.href==='/finance/compare'&&i.enabled));assert.equal(workspaceNavigation({permissions:['finance_ops']}).find(g=>g.id==='management').items.find(i=>i.href==='/finance/compare').enabled,false)});
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {existsSync} from 'node:fs';
+import {workspaceNavigation,activeNavigation,navigationSections,routeRegistry,resolveWorkspaceRoute,workspacePreviews} from '../lib/navigation.ts';
+const owner={email:'ekramiihamid@gmail.com',manager:true,permissions:[]};
+test('six approved domains preserve laboratory cases and all eight finance destinations',()=>{
+ const groups=workspaceNavigation(owner);
+ assert.deepEqual(groups.map(g=>g.id),['operations','work','research','laboratories','finance','management']);
+ assert.ok(groups.find(g=>g.id==='research').items.some(i=>i.href==='/laboratories?view=new'));
+ assert.equal(groups.find(g=>g.id==='finance').items.length,8);
+ assert.deepEqual(navigationSections(groups.find(g=>g.id==='finance')).map(s=>s.id),['documents','payments','accounting']);
+ const links=routeRegistry(owner);assert.equal(new Set(links.map(i=>i.href)).size,links.length);
+ for(const link of links){const path=new URL(link.href,'https://synapse.test').pathname;
+ const direct='app/(workspace)'+path+'/page.tsx';
+ assert.ok(existsSync(direct)||/^\/(finance|work|manage)\/[^/]+$/.test(path),link.href);
+ assert.ok(link.label&&link.description&&link.destination&&link.access);
+ }
+});
+test('active route resolves calls, dispatch, work views, laboratory domains and aliases exactly',()=>{
+ assert.equal(activeNavigation('/operations',new URLSearchParams('source=incoming'),'/operations'),false);
+ for(const [path,query,title]of [['/operations','source=incoming','دفتر تماس‌های ورودی'],['/operations','view=dispatch','مدیریت و پیگیری درخواست‌ها'],['/staff','','امروز من'],['/staff','view=cases','پرونده‌های ارجاع‌شده'],['/laboratories','view=new','ثبت پرونده جدید'],['/work/finance','','داشبورد مالی'],['/manage/finance','resources=1','منابع و سوابق مالی']])assert.equal(resolveWorkspaceRoute(path,new URLSearchParams(query),owner).label,title);
+ assert.equal(activeNavigation('/staff',new URLSearchParams('view=board'),'/staff?view=plans'),false);
+});
+test('home previews expose only existing enabled destinations without granting API access',()=>{
+ const user={email:'staff:test',permissions:['people'],dataPermissions:[]};const registry=routeRegistry(user);
+ for(const href of ['/manage/chats','/accounts','/manage/connections','/finance/bank'])assert.equal(registry.find(r=>r.href===href).enabled,false);
+ assert.ok(workspacePreviews(user).every(p=>p.links.every(l=>l.enabled)));
+ assert.equal(workspacePreviews(owner).length,6);
+});
+test('laboratory navigation preserves restricted operational API boundary and canonical specialty links',()=>{
+ const lab=workspaceNavigation({laboratory:true,laboratoryType:'internal',permissions:[]});
+ assert.ok(lab.find(g=>g.id==='research').items.some(i=>i.href==='/laboratories'));
+ assert.ok(lab.find(g=>g.id==='laboratories').items.every(i=>i.href.startsWith('/laboratories?domain=')));
+});

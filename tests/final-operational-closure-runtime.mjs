@@ -38,7 +38,7 @@ current=await job();await completion('mother_job_action',{job_id:current.id,job_
 await completion('mother_item_move',{item_id:tissue,stage:'receive',location:labs[0].id,quantity:3,...handoff()},provider);
 await completion('mother_item_move',{item_id:medicine,stage:'send',location:'institute',destination:labs[0].id,quantity:3,...handoff()});
 await completion('mother_item_move',{item_id:medicine,stage:'receive',location:labs[0].id,quantity:3,...handoff()},provider);
-current=await job();await completion('mother_job_action',{job_id:current.id,job_revision:current.revision,work_version:current.work_version,lab_action:'progress',status:'doing',progress:25},provider);
+current=await job();await completion('mother_job_action',{job_id:current.id,job_revision:current.revision,work_version:current.work_version,lab_action:'progress',status:'doing',progress:25,progress_notes:'Synthetic execution progress with required evidence note'},provider);
 const resultKey=crypto.randomUUID();current=await job();const result={key:resultKey,job_id:current.id,job_revision:current.revision,work_version:current.work_version,kind:'raw',title:'SYNTHETIC dataset',url:'https://fixture.invalid/mother-result',notes:'Test only'};
 await completion('mother_result',result,provider);assert.equal((await completion('mother_result',result,provider)).replayed,true);
 await completion('mother_message',{job_id:current.id,job_revision:(await job()).revision,body:'Synthetic follow-up',topic:'operations'},provider);
@@ -46,7 +46,7 @@ await completion('mother_item_move',{item_id:tissue,stage:'send',location:labs[0
 await completion('mother_item_move',{item_id:tissue,stage:'receive',location:labs[1].id,quantity:2,...handoff()},otherProvider);
 p=await selected();assert.equal(p.inventory.find(i=>i.id===tissue).total,10);assert.equal(p.inventory.find(i=>i.id===medicine).total,3);assert.equal(p.inventory.find(i=>i.id===tissue).stock[labs[0].id],4);assert.equal(p.inventory.find(i=>i.id===tissue).stock[labs[1].id],2);assert.equal(p.jobs.length,3);assert.equal(p.records.filter(r=>r.kind==='result').length,0,'sample-intake role cannot read unapproved raw evidence');const ownerProject=await api('/api/lab-operations?view=mother&id='+root.id,null,owner);assert.equal(ownerProject.selected.records.filter(r=>r.kind==='result').length,1);
 assert.equal((await db.prepare('SELECT COUNT(*) n FROM finance_transactions').first()).n,0);
-assert.ok((await api('/laboratories',null,provider)).text.includes('مرکز مادر آزمایشگاه‌ها'));
+assert.ok((await api('/laboratories',null,provider)).text.includes('پرونده‌های آزمایشگاهی'));
 assert.equal((await api('/api/lab-operations?view=mother&department='+encodeURIComponent('بیوشیمی'),null,customer)).projects.length,0);
 // A fresh personal password login must retrieve the same saved mother and children.
 const customerPassword='Synthetic8',customerSalt='isolated-mother-relogin',customerKey=await crypto.subtle.importKey('raw',new TextEncoder().encode(customerPassword+'\u0000local-test-pepper'),'PBKDF2',false,['deriveBits']),customerHash=Array.from(new Uint8Array(await crypto.subtle.deriveBits({name:'PBKDF2',salt:new TextEncoder().encode(customerSalt),iterations:100000,hash:'SHA-256'},customerKey,256)),x=>x.toString(16).padStart(2,'0')).join('');

@@ -169,3 +169,49 @@ Production configuration inspected read-only at environment revision 18, without
 Required Owner action for Gmail: create/use a Google Cloud Web OAuth client, enable the Gmail API and consent configuration, register the exact redirect `https://synapse.ekramiihamid.chatgpt.site/api/integrations/google/callback`, and place the two Google variables in secure Site settings. Preserve the existing integration encryption key. Then authorize each intended source account independently in `/manage/connections`, select allowed labels, and verify a small permitted receive/replay test before enabling periodic processing. No historical six-month import is performed by this release.
 
 GitHub's branch metadata confirms `main` is **not protected** and the repository is **private**. The branch-protection endpoint returned HTTP 403, `Resource not accessible by integration`; the managed connector does not supply the required administration access. Therefore protection was not changed. This error does not prove the private-repository plan lacks protection support. The Owner must inspect GitHub Settings/Branches or Rulesets with administration access and confirm plan support there. No branch deletion, force push, visibility change or GitHub-main update was performed.
+
+
+## Workspace repair and shared UX — 2026-11-21 (Asia/Dubai)
+
+Baseline: published version 64, `af5525d86c538dc15a6f597e84abea69e4898d07`, plus GitHub main `1ca930d1e99db51f61227fb6d28c7789614c43b2`. The newer Node/Vinext runtime entry and dependency configuration are retained. Working branch: `fix/final-repair-ux-2026-11-21`. The owner explicitly authorized a tested fast-forward to main and publication on the existing Site; no DNS, infrastructure, account or sensitive permission changes are included.
+
+### Implemented repairs
+
+- `lib/navigation.ts`: central route metadata/aliases, canonical destination resolution, role-filtered home previews and six approved navigation domains. Existing mother-case entries move into research; laboratory specialty links and all eight financial destinations remain. Connection settings no longer accidentally default to an enabled menu entry when `manager` is undefined. API permissions remain authoritative.
+- `components/workspace/workspace-shell.tsx`, `workspace-repair.css`: consistent sidebar styling, independently scrolling navigation, explicit current location, accurate active entry/category, mobile close/focus/keyboard behavior and shared focus styles. Account/password and older resource entry points retain meaningful labels. No route is deleted.
+- `personal-home.tsx`, `home-toolbar.tsx`: six authorized functional module previews, four operational shortcuts, removal of personalized greeting and decorative campus panel, working legacy search intent. Counts continue to come from the central records.
+- `lib/work-policy.ts`: Today uses scheduled execution date, falling back to due date, consistently with overdue/future views. Past and future records remain in the other views.
+- `app/staff/work-app.tsx`: client directive is at the module start. The existing task drawer now offers lazy file previews and original download links through `work-file-preview.tsx`.
+- `app/api/work/files/route.ts`, `lib/file-preview.ts`: preserve the existing record authorization for downloads and previews, inspect actual file signatures, allow only PNG/JPEG/WebP/PDF inline, reject unsafe content with 415, keep private/no-store and sandbox headers. Other file types retain original downloads. PDF/browser rendering still requires browser acceptance.
+- `lib/staff-data.ts`: select attachment metadata only for authorized record IDs and include MIME metadata required by previews; do not return object storage keys. Work records and historical events are retained.
+- `lib/legacy-workspace.ts`, `app/api/manager-tools/route.ts`: keep the existing chat/resource UI scoped to its mounted container, prevent forced scroll jumps, separate browser-local conversation shortcuts by authenticated identity. Primary Owner can still read historical unscoped shortcuts; the historical key is not deleted. These remain browser-local shortcuts, not a server chat transcript or cross-device synchronization service.
+- `connections-settings.tsx`, `assistant-panel.tsx`: keep the knowledge form/draft open on a failed save; restore the submitted question after an assistant error.
+- `app/api/integrations/knowledge/route.ts`, `lib/managed-assistant.ts`: write the source object successfully before creating its knowledge record; preserve the existing attachment on text-only version changes, with existing optimistic revisions, history and owner-only writes. Cross-service D1/R2 atomicity is not claimed; a failed version write after object upload may leave an unreferenced private object rather than a broken document.
+- `components/laboratory/mother-execution-panel.tsx`, `laboratory-workspace.tsx`: require the execution note already required by the server. Existing scientific, sample, financial and result-release controls are preserved.
+
+### Verification and evidence
+
+No production migrations or synthetic production writes are part of these checks. All runtime checks use disposable Miniflare D1/R2 and synthetic identities, credentials and files. Injected identity headers in these fixtures do not prove live staff login.
+
+- TypeScript `node node_modules/typescript/bin/tsc --noEmit`: passed.
+- Production `npm run build`: passed; Cloudflare Worker artifact remains the deployment target. Recharts emits its existing zero-layout SSR sizing warning; real browser dimensions are not certified by SSR.
+- 22 direct Node unit/contract tests: navigation 4, scoped legacy DOM contract 2, work planning 10, home dashboard 5, date compatibility 1. These were run directly with Node, not inferred from file-level test runner completion.
+- `workspace-repair-runtime.mjs`: 42 HTTP/SSR checks, including 28 workspace routes, six groups, real home links, private preview signatures/denial, knowledge upload/version/conflict and attachment preservation.
+- `reception-manual-runtime.mjs`: 26 HTTP checks; synthetic password login/logout, existing unassigned queue, single/bulk assignment, conflict/privacy controls, support note/status save/reopen and routed cartable persistence.
+- `scripts/test-shared-tools-runtime.mjs`: 54 API/SSR checks; authorized search, notifications, correspondence, profile, private files, password rotation/revocation, logout and AI permission boundaries.
+- `finance-accounting-runtime.mjs`: 96 HTTP checks; FIN-08, immutable versions, verified-only balances, allocations, company isolation, contracts, files and exports.
+- `final-laboratory-catalog-runtime.mjs`: 17 HTTP checks; AN203/HP102/CEL102/GE79/WB76/EL58/MIC42 = 662 unique services, 30 reference-only imaging entries, legacy identities retained and unapproved/conditional/MIC billing denied.
+- `final-operational-closure-runtime.mjs`: 205 HTTP checks; CRM/invoice to three laboratory orders/cartables, staged materials, protocol/QC/approval, documented synthetic release and closure, owner acceptance/assignment/replay. The fixture now supplies the mandatory execution note and checks the current laboratory page title instead of its obsolete title.
+- `scripts/test-work-planning-runtime.mjs`: passed task creation/collaboration, notifications, attachments, revisions, approval/correction, rescheduling without duplicates and 1,101 source records. Fixtures now provision the existing approved organizational positions/accounts instead of retired arbitrary assignees; no permission checks were relaxed.
+
+The counted runtime suites above contain 440 distinct HTTP/SSR checks, plus the separate work-planning integration scenario. Repeated runs after observed failures or source changes are not counted as additional coverage.
+
+### Operational handoff and limits
+
+Work should verify the published UI on desktop/mobile and use an authorized secure employee session to check menu, dialogs, previews, assignment and persistence after logout/login. Managed browser infrastructure was not available to this Codex run; no screenshots, live employee acceptance, external Gmail/bank test or paid-model execution is claimed.
+
+No database schema, production record, tariff, invoice, account password, organizational assignment or sensitive permission was changed by the repair work. Publishing application code is not an operational database/files backup or a tested full recovery. OAuth credentials, bank authorization and AI connectivity are not made valid by a successful build.
+
+Hostinger: the newer production entry from main is preserved, but `cloudflare:workers`, D1 batch/database semantics, R2 and managed identity still require compatible adapters and secure data/secret transfer on another host. No host migration, DNS change or shutdown occurred. A new personal Cloudflare account does not grant access to ChatGPT-managed Site resources; use an authorized Site export path/provider support for an actual backup, not repository ZIPs labeled as database exports.
+
+Publishing receipt and final commit are reported by the deployment response and GitHub commit associated with this revision; do not infer live employee success from that receipt.

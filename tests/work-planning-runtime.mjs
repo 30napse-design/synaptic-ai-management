@@ -1,6 +1,12 @@
 import assert from 'node:assert/strict';
 const owner='ekramiihamid@gmail.com',a='qa-a@sites.test',b='qa-b@sites.test',reviewer='qa-review@sites.test',stranger='qa-stranger@sites.test',now=new Date().toISOString();
 for(const [email,role] of [[a,'employee'],[b,'employee'],[reviewer,'reviewer'],[stranger,'employee']])await db.prepare('INSERT INTO staff_members(email,name,role,active) VALUES(?,?,?,1)').bind(email,email,role).run();
+// Use the current organizational account/position contract, not retired arbitrary logins.
+for(const [email,username,code] of [[a,'customer','customer_manager'],[b,'scientific','scientific_manager'],[reviewer,'research','research_manager'],[stranger,'finance','finance_manager']]){
+ const position=await db.prepare('SELECT id,role_definition FROM workflow_positions WHERE code=?').bind(code).first();
+ await db.prepare("INSERT INTO staff_accounts(username,member_id,password_hash,salt,must_change,permissions,org_roles,org_mode,updated_at) VALUES(?,?,'synthetic','synthetic',0,?,?,'managed',?)").bind(username,email,JSON.stringify(JSON.parse(position.role_definition).permissions),JSON.stringify([code]),now).run();
+ await db.prepare('INSERT INTO workflow_position_assignments(id,position_id,primary_member_id,created_by,created_at,updated_at) VALUES(?,?,?,?,?,?)').bind('work-fixture-'+username,position.id,email,owner,now,now).run();
+}
 async function req(email,path,payload){const res=await mf.dispatchFetch('https://synapse.test'+path,{method:payload?'POST':'GET',headers:{'oai-authenticated-user-id':'qa:'+email,'oai-authenticated-user-email':email,'Origin':'https://synapse.test','Content-Type':'application/json'},...(payload?{body:JSON.stringify(payload)}:{})});const data=await res.json();return {status:res.status,data}}
 const base={kind:'task',title:'وظیفه آزمون محلی',body:'گزارش دقیق',assignee:a,reviewer,priority:'high',due:'2026-11-14',scheduledDate:'2026-11-11',startTime:'09:00',endTime:'10:00',collaborators:[b],approvalRequired:true,reminder:true};
 let result=await req(owner,'/api/work',{...base,action:'create'});assert.equal(result.status,200,JSON.stringify(result));const id=result.data.id;

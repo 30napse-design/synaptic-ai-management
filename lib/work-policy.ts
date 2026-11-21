@@ -6,7 +6,7 @@ const completedDay=(r:any)=>[r.completedAt,r.updatedAt,r.updated_at].filter(Bool
 export const isWork=(r:any)=>WORK_KINDS.includes(r.kind);
 export const participant=(r:any,u:any)=>r.assignee===u.email||(r.collaborators||[]).includes(u.email);
 export const executionDay=(r:any)=>r.scheduledDate||r.due||'';
-export const isToday=(r:any,today:string)=>r.scheduledDate===today||r.due===today;
+export const isToday=(r:any,today:string)=>executionDay(r)===today;
 export const isOverdue=(r:any,today:string)=>r.status!=='done'&&!!executionDay(r)&&executionDay(r)<today;
 export function workSummary(records:any[],u:any,today=workDayKey()){const allowed=records.filter(r=>isWork(r)&&visible(r,u)),mine=allowed.filter(r=>participant(r,u)),todayTasks=mine.filter(r=>isToday(r,today));return {mine,today:todayTasks,active:mine.filter(r=>r.status!=='done'),overdue:mine.filter(r=>isOverdue(r,today)),review:allowed.filter(r=>r.status==='review'&&canReview(r,u)),submitted:allowed.filter(r=>r.status==='review'&&(r.submittedBy?r.submittedBy===u.email:r.assignee===u.email)),completed:mine.filter(r=>r.status==='done'&&completedDay(r)===today),plans:mine.filter(r=>r.kind==='plan'&&isToday(r,today))}}
 export function filterWork(records:any[],u:any,f:any={},today=workDayKey()){return records.filter(r=>isWork(r)&&visible(r,u)).filter(r=>{

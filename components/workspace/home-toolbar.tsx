@@ -1,5 +1,6 @@
 'use client';
 import {useEffect,useRef,useState} from 'react';
+import {useSearchParams} from 'next/navigation';
 import {Search,Mail,X,ChevronLeft} from 'lucide-react';
 import WorkNotifications from './work-notifications';
 import AccountMenu from './account-menu';
@@ -8,6 +9,8 @@ import {hasAccess} from '../../lib/auth-policy';
 type Hit={id:string,title:string,href:string,kind:string};
 export default function HomeToolbar({user}:{user:any}){
  const [query,setQuery]=useState(''),[searchOpen,setSearchOpen]=useState(false),[mailOpen,setMailOpen]=useState(false),[messages,setMessages]=useState<any[]>([]),[unread,setUnread]=useState(0),[results,setResults]=useState<Hit[]>([]),[error,setError]=useState(''),[mailError,setMailError]=useState(''),[loading,setLoading]=useState(false);
+ const params=useSearchParams();
+ useEffect(()=>{if(params.get('search')==='1'){setSearchOpen(true);input.current?.focus()}},[params.toString()]);
  const input=useRef<HTMLInputElement>(null),root=useRef<HTMLDivElement>(null),last=useRef(0);
  useEffect(()=>{const onKey=(e:KeyboardEvent)=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();input.current?.focus();setSearchOpen(true)}if(e.key==='Escape'){setMailOpen(false);setSearchOpen(false)}};const outside=(e:PointerEvent)=>{if(!root.current?.contains(e.target as Node)){setMailOpen(false);setSearchOpen(false)}};window.addEventListener('keydown',onKey);document.addEventListener('pointerdown',outside);return()=>{window.removeEventListener('keydown',onKey);document.removeEventListener('pointerdown',outside)}},[]);
  useEffect(()=>{const version=++last.current;setResults([]);setError('');if(query.trim().length<2){setLoading(false);return}setLoading(true);const abort=new AbortController();const timer=setTimeout(async()=>{try{const r=await fetch('/api/search?q='+encodeURIComponent(query.trim()),{signal:abort.signal,cache:'no-store'});const d:any=await r.json();if(!r.ok)throw Error(d.error);if(version===last.current)setResults(d.items||[])}catch(e:any){if(e.name!=='AbortError'&&version===last.current)setError('جست‌وجو انجام نشد؛ دوباره تلاش کنید.')}finally{if(version===last.current)setLoading(false)}},300);return()=>{clearTimeout(timer);abort.abort()}},[query]);
