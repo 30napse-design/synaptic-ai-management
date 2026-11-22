@@ -76,7 +76,7 @@ function normalize(value) {
   return value;
 }
 
-function createBinding(pool) {
+export function createBinding(pool) {
   const statements = new WeakMap();
 
   async function executeBatch(batch) {
