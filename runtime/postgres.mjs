@@ -2,6 +2,7 @@ import { readdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
 import pg from "pg";
 import { postgresQuery } from "./postgres-sql.mjs";
+import { postgresTLSOptions } from "./postgres-tls.mjs";
 
 const activeDatabase = Symbol.for("synapse.hostinger.postgres");
 const namespace = "synapse";
@@ -15,17 +16,8 @@ function parseNumber(text) {
 }
 
 function connectionOptions() {
-  const connectionString = process.env.DATABASE_URL;
-  if (!connectionString) throw new Error("DATABASE_URL is required for the Hostinger PostgreSQL runtime.");
-  const url = new URL(connectionString);
-  if (!["postgresql:", "postgres:"].includes(url.protocol)) throw new Error("DATABASE_URL must be a PostgreSQL URL.");
-  const local = ["localhost", "127.0.0.1", "[::1]"].includes(url.hostname);
-  if (!local && (url.searchParams.get("sslmode") === "disable" || url.searchParams.has("uselibpqcompat"))) {
-    throw new Error("Remote PostgreSQL connections require verified TLS.");
-  }
-  if (!local) url.searchParams.set("sslmode", "verify-full");
   return {
-    connectionString: url.href,
+    ...postgresTLSOptions(process.env.DATABASE_URL),
     connectionTimeoutMillis: 10000,
     types: {
       getTypeParser(oid, format) {
