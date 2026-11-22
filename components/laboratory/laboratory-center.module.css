@@ -108,3 +108,13 @@
 .center :global(.lab-case-project-meta),.center :global(.lab-case-project-dates){border-top:1px solid #e3e8ef;margin-top:18px;padding-top:18px}
 .center :global(.lab-case-project-meta h3),.center :global(.lab-case-project-dates h3){margin-bottom:12px}
 @media(max-width:680px){.center :global(.unified-case-shortcuts){grid-template-columns:repeat(2,minmax(0,1fr))}.center :global(.unified-case-shortcut){min-height:62px;font-size:13px}}
+
+/* Quiet, clear final section for the mother case form; no change to legacy workflow. */
+.center :global(.lab-case-form .lab-assignment){border:1px solid #dce6ef;border-radius:16px;padding:18px;background:linear-gradient(135deg,#f8fbff,#fff)}
+.center :global(.lab-case-final-notes){border:1px solid #dbe6ee;border-radius:16px;padding:18px;margin:16px 0;background:#f9fcfd}
+.center :global(.lab-case-final-notes h3){margin:0 0 14px;color:#234568}
+.center :global(.lab-case-final-notes small){font-size:.76em;font-weight:400;color:#64748b}
+.center :global(.lab-case-lab-notes){border:1px solid #e2e8f0;border-radius:12px;padding:12px 16px;margin:12px 0}
+.center :global(.lab-case-lab-notes summary){cursor:pointer;font-weight:600;color:#355373}
+.center :global(.lab-case-lab-notes label){display:grid;gap:6px;margin-top:14px}
+.center :global(.lab-case-lab-notes textarea){min-height:85px}
