@@ -7,9 +7,18 @@ import {promisify} from 'node:util';
 import {createHash} from 'node:crypto';
 import pg from 'pg';
 import {postgresTLSOptions} from '../runtime/postgres-tls.mjs';
-import {operationsTransferPlan,readTransferTarget,insertOperationsPlan,validateOperationsSnapshot} from '../lib/operations-transfer.mjs';
+import {operationsTransferPlan,readTransferTarget,insertOperationsPlan,validateOperationsSnapshot,operationsPilotSQL} from '../lib/operations-transfer.mjs';
 const exec=promisify(execFile),args=process.argv.slice(2),apply=args.includes('--apply'),file=args.find(a=>!a.startsWith('--'));
 if(!file||args.includes('--help')){console.log('DATABASE_URL=<secure environment> node scripts/transfer-operations-history.mjs /secure/history.json [--apply --backup-dir=/secure/backups]');process.exit(args.includes('--help')?0:1)}
+if(args.includes('--prepare-pilot-sql')){
+ try{
+  const input=JSON.parse(await readFile(file,'utf8')),out=args.find(a=>a.startsWith('--out='))?.slice(6);
+  if(!out||!relative(process.cwd(),resolve(out)).startsWith('..'))throw Error('Private output required');
+  const {plan,sql}=operationsPilotSQL(input.snapshot,input.target,input.backup);
+  await writeFile(out,sql,{mode:0o600,flag:'wx'});console.log(JSON.stringify({prepared:true,checksum:plan.checksum,insert:plan.counts.ops_items.insert,repeated:plan.counts.ops_items.repeated,bulk:false}));
+ }catch{console.error('Pilot preparation rejected; private export, target or backup proof invalid.');process.exitCode=1}
+ process.exit(process.exitCode||0);
+}
 let snapshot,client;
 async function backup(snapshotId){
  const dirArg=args.find(a=>a.startsWith('--backup-dir='));if(!dirArg)throw Error('Private backup directory required');

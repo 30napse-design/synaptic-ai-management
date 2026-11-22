@@ -4,6 +4,31 @@ import {readFile,mkdtemp,rm,realpath} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import path from 'node:path';
 import os from 'node:os';
+// Restore a private Hostinger logical DATA backup using only repository schema.
+// All writes below are to in-memory PostgreSQL, never the connected project.
+if(process.argv[2]==='--postgres-json'){
+ const {PGlite}=await import('@electric-sql/pglite');
+ const {readdir}=await import('node:fs/promises');
+ const file=process.argv[3],bytes=await readFile(file),backup=JSON.parse(bytes);
+ if(backup.format!=='synapse-private-logical-backup-v1'||backup.schema!=='synapse'||!backup.tables)throw Error('Invalid PostgreSQL data backup');
+ const memory=new PGlite(),quote=x=>{if(!/^[a-z_][a-z0-9_]*$/.test(x))throw Error('Invalid backup identifier');return '"'+x+'"'};
+ try{
+  await memory.exec('CREATE SCHEMA synapse; SET search_path TO synapse,pg_catalog; CREATE TABLE synapse_migrations(name text PRIMARY KEY)');
+  for(const name of (await readdir('runtime/postgres')).filter(n=>n.endsWith('.sql')).sort())await memory.exec(await readFile(path.join('runtime/postgres',name),'utf8'));
+  const tables=(await memory.query("SELECT tablename FROM pg_tables WHERE schemaname='synapse'")).rows.map(r=>r.tablename);
+  if(tables.some(t=>!Array.isArray(backup.tables[t])))throw Error('Backup table missing');
+  await memory.exec('TRUNCATE '+tables.map(quote).join(',')+' CASCADE');
+  const edges=(await memory.query("SELECT c.conrelid::regclass::text child,c.confrelid::regclass::text parent FROM pg_constraint c WHERE c.contype='f' AND c.connamespace='synapse'::regnamespace")).rows.map(r=>({child:r.child.replace('synapse.',''),parent:r.parent.replace('synapse.','')}));
+  const pending=new Set(tables),done=new Set();let rows=0;
+  while(pending.size){const next=[...pending].find(t=>edges.filter(e=>e.child===t&&e.parent!==t).every(e=>done.has(e.parent)));if(!next)throw Error('Cyclic backup dependencies');
+   for(const row of backup.tables[next]){const keys=Object.keys(row);await memory.query('INSERT INTO '+quote(next)+' ('+keys.map(quote).join(',')+') OVERRIDING SYSTEM VALUE VALUES ('+keys.map((_,i)=>'$'+(i+1)).join(',')+')',keys.map(k=>row[k]));rows++}
+   const actual=(await memory.query('SELECT * FROM '+quote(next))).rows,canonical=r=>JSON.stringify(Object.fromEntries(Object.keys(r).sort().map(k=>[k,r[k]]))),a=actual.map(canonical).sort(),b=backup.tables[next].map(canonical).sort();if(JSON.stringify(a)!==JSON.stringify(b))throw Error('Restored backup data differs');
+   pending.delete(next);done.add(next);
+  }
+  console.log(JSON.stringify({ok:true,format:backup.format,restored_tables:tables.length,restored_rows:rows,accounts:backup.tables.staff_accounts.length,sha256:createHash('sha256').update(bytes).digest('hex'),scope:'isolated PostgreSQL DATA restore against repository schema; excludes external storage, secrets and full hosting recovery'}));
+ }catch{throw Error('Isolated PostgreSQL data restore failed; no live database changed')}finally{await memory.close()}
+ process.exit(0);
+}
 const root=await realpath(process.argv[2]||'.'),manifest=JSON.parse(await readFile(path.join(root,'manifest.json'),'utf8'));
 function must(v,m){if(!v)throw Error(m)}
 async function local(name){must(typeof name==='string'&&!path.isAbsolute(name),'Invalid relative export path');const p=await realpath(path.resolve(root,name));must(p.startsWith(root+path.sep),'Export path escapes backup directory');return p}

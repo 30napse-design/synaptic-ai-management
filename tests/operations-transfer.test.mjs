@@ -4,7 +4,7 @@ import {spawnSync} from 'node:child_process';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {PGlite} from '@electric-sql/pglite';
-import {sourceProject,transferTables,operationsTransferPlan,readTransferTarget,insertOperationsPlan,validateOperationsSnapshot} from '../lib/operations-transfer.mjs';
+import {sourceProject,transferTables,operationsTransferPlan,readTransferTarget,insertOperationsPlan,validateOperationsSnapshot,operationsPilotSQL} from '../lib/operations-transfer.mjs';
 const database=new PGlite();let checks=0;
 const check=(fn)=>{fn();checks++};
 try{
@@ -49,5 +49,10 @@ c.commit();c.close()`,join(dir,'source.sqlite')],{input:JSON.stringify(full),enc
   const exported=spawnSync('python3',['scripts/export-operations-snapshot.py',join(dir,'source.sqlite'),join(dir,'history.json')],{encoding:'utf8'});assert.equal(exported.status,0,exported.stderr);
   const received=JSON.parse(await readFile(join(dir,'history.json'),'utf8'));check(()=>assert.ok(validateOperationsSnapshot(received)));check(()=>assert.equal(received.tables.ops_items.rows[0].source_body,full.tables.ops_items.rows[0].source_body));
  }finally{await rm(dir,{recursive:true,force:true})}
+ const pilot=structuredClone(snapshot);pilot.scope='verified-pilot';for(const t of Object.keys(transferTables)){pilot.tables[t].rows=[];pilot.tables[t].count=0}
+ const pilotRow={...snapshot.tables.ops_items.rows[0],id:'synthetic-pilot',source_key:'calls:incoming:synthetic-pilot',assignee:'',routing:'{}',access_scope:'',manager_only:0,source_body:"Synthetic quote ' slash \\ $operations_pilot$"};pilot.tables.ops_items.rows=[pilotRow];pilot.tables.ops_items.count=1;
+ const pilotTarget=await readTransferTarget(database),receipt={verified:true,sha256:'b'.repeat(64)},sql=operationsPilotSQL(pilot,pilotTarget,receipt).sql;
+ await database.exec(sql);await database.exec(sql);
+ const pilotSaved=(await database.query("SELECT * FROM ops_items WHERE id='synthetic-pilot'")).rows;check(()=>assert.equal(pilotSaved.length,1));check(()=>assert.equal(pilotSaved[0].source_body,pilotRow.source_body));check(()=>assert.equal(pilotSaved[0].assignee,''));check(()=>assert.throws(()=>operationsPilotSQL({...pilot,scope:'full'},pilotTarget,receipt)));check(()=>assert.throws(()=>operationsPilotSQL(pilot,pilotTarget,null)));
  console.log('PASS operations transfer: '+checks+' isolated PostgreSQL checks; full original rows, source keys, invoice reference, human followup, task links and notification read state preserved; no live data changed.');
 }finally{await database.close()}
