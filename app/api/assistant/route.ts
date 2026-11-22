@@ -1,7 +1,7 @@
 import {managedAI,managedKnowledge} from '../../../lib/managed-assistant';
 import {db,identity,json,mutationAllowed} from '../../../lib/staff-server';
 import {allowedModes,assistantModes,assistantConfig,retrieveKnowledge,AssistantMode} from '../../../lib/assistant-policy';
-import {openAIProvider} from '../../../lib/assistant-provider';
+import {openAIProvider,groqProvider} from '../../../lib/assistant-provider';
 import {tariffSuggestions} from '../../../lib/assistant-tariffs';
 export const dynamic='force-dynamic';
 export async function GET(){const u=await identity();if(!u)return json({error:'ابتدا وارد شوید'},401);const c=await managedAI();return json({connected:c.ready,modes:allowedModes(u).map(id=>({id,label:assistantModes[id]})),retention:'گفت‌وگو فقط تا بستن پنل در حافظه مرورگر نگهداری می‌شود؛ در سامانه ذخیره نمی‌شود.',recordAccess:false})}
@@ -13,5 +13,5 @@ export async function POST(req:Request){if(!mutationAllowed(req))return json({er
  if(b.externalConsent!==true)return json({error:'ارسال متن پرسش به ارائه‌دهنده خارجی نیازمند تأیید شماست.'},400);
  if(chunks.some(x=>x.document!=='synapse-account-guide'&&x.document!=='synapse-work-guide'&&x.document!=='synapse-intake-guide'&&x.document!=='synapse-science-guide'&&x.document!=='synapse-quote-guide'&&x.document!=='synapse-management-guide'&&!x.externalAllowed))return json({error:'این منبع برای ارسال به مدل خارجی مجوز ندارد؛ فقط آزمایش داخلی مجاز است.'},403);
  const limit=Math.min(c.global,Math.floor(c.budget/c.reserve));if(!await allowance('ai:user:'+u.email,c.daily)||!await allowance('ai:global',limit))return json({error:'سهمیه روزانه تکمیل شده است؛ مدیر باید میزان مصرف را بررسی کند.'},429);
- const runtime=await managedAI(true);const result=await openAIProvider(runtime.key,c.model,c.output).answer({question:q,context:chunks.map(x=>'['+x.id+'] '+x.text).join('\n'),mode});return json({test:false,answer:result.text,sources,suggestions,usage:result.usage});
+ const runtime=await managedAI(true);const provider=runtime.provider==='groq'?groqProvider(runtime.key,c.model,c.output):openAIProvider(runtime.key,c.model,c.output);const result=await provider.answer({question:q,context:chunks.map(x=>'['+x.id+'] '+x.text).join('\n'),mode});return json({test:false,answer:result.text,sources,suggestions,usage:result.usage});
  }catch{return json({error:'پاسخ دریافت نشد؛ هیچ عملیات اجرایی انجام نشد و درخواست خودکار تکرار نشد.'},503)}}
