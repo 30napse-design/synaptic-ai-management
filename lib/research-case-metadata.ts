@@ -79,6 +79,6 @@ export function projectGroup(status:string,blocker='none'){
  if(['اتمام پروژه','تکمیل‌شده','بسته‌شده','تحویل‌شده'].includes(status))return 'completed';
  if(['در آستانه اتمام','گزارش آماده','در بررسی علمی'].includes(status))return 'finishing';
  if(['در حال اجرا'].includes(status))return 'running';
- if(['متوقف','متوقف یا دارای مانع'].includes(status)||blocker!=='none'&&status==='متوقف')return 'paused';
+ if(['متوقف','متوقف یا دارای مانع','تعلیق‌شده'].includes(status)||blocker&&blocker!=='none')return 'paused';
  return 'preparing';
 }
