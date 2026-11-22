@@ -42,7 +42,7 @@ export const projectBlockerReasons = [
  {id:'other',title:'سایر موارد'},
 ] as const;
 const isOption=(options:readonly {id:string}[],value:unknown)=>typeof value==='string'&&options.some(x=>x.id===value);
-function validDay(s:unknown){return s===''||(typeof s==='string'&&/^\\d{4}-\\d{2}-\\d{2}$/.test(s)&&!Number.isNaN(Date.parse(s))&&new Date(s+'T12:00:00Z').toISOString().slice(0,10)===s);}
+function validDay(s:unknown){return s===''||(typeof s==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(s)&&!Number.isNaN(Date.parse(s))&&new Date(s+'T12:00:00Z').toISOString().slice(0,10)===s);}
 export type ResearchCaseMetadata = {
  project_kind:string; priority:string; responsibility_type:string;
  responsibility_person:string; approver_type:string;
