@@ -26,7 +26,8 @@ test('metadata has safe defaults and rejects fabricated role, approver or dates'
 });
 test('case buckets preserve operational lifecycle independently of blocker labels',()=>{
  assert.equal(projectGroup('در حال اجرا'),'running');
- assert.equal(projectGroup('در انتظار تأیید مدیریت','unpaid'),'preparing');
+ assert.equal(projectGroup('در انتظار تأیید مدیریت','unpaid'),'paused');
+ assert.equal(projectGroup('در حال اجرا','unpaid'),'running');
  assert.equal(projectGroup('متوقف یا دارای مانع'),'paused');
  assert.equal(projectGroup('گزارش آماده'),'finishing');
  assert.equal(projectGroup('بسته‌شده'),'completed');
