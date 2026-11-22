@@ -77,3 +77,6 @@ export async function resetPackage1Existing(c:any,b:any,origin:string){
  await db().batch([await eventStmt('auth',OWNER,'package1-nine-login-check',JSON.stringify({request:c.id,results,passwords_logged:false}))]);
  return {ok:true,accounts_reset:['scientific','admin'],existing_seven_passwords_preserved:true,credentials_location:'/accounts',login_tests:results};
 }
+
+// Metadata for owner UI only; never return plaintext from a page/read model.
+export async function initialCredentialAvailability(accounts:any[]){const available:Record<string,boolean>={};const v=await db().prepare('SELECT value FROM staff_auth_settings WHERE id=?').bind(vaultId).first<any>();if(!v)return available;let saved;try{saved=await open(v.value)}catch{return available}for(const c of saved){const a=accounts.find(a=>a.username===c.username);if(c.password&&a?.must_change&&(c.fingerprint?await digest(a.password_hash+'\0'+a.salt)===c.fingerprint:await passwordHash(c.password,a.salt)===a.password_hash))available[c.username]=true}return available}
