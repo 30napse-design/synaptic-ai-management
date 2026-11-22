@@ -1,0 +1,27 @@
+name: Validate unified research cases (isolated branch)
+on:
+  push:
+    branches:
+      - test/unified-research-cases-hostinger-2026-11-23
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pinned pnpm
+        run: npm install --global pnpm@11.25.0
+      - name: Install locked dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Targeted navigation and case metadata tests
+        run: node --test tests/navigation.test.mjs tests/research-case-metadata.test.mjs
+      - name: TypeScript typecheck
+        run: pnpm exec tsc --noEmit
+      - name: Production build
+        run: pnpm build
