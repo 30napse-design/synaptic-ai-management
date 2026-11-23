@@ -56,3 +56,8 @@
 @media(max-width:1180px){.work-command-modules{grid-template-columns:repeat(2,minmax(0,1fr))}.work-command-metrics{grid-template-columns:repeat(3,minmax(0,1fr))}.work-command-board{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:790px){.work-command-main{grid-template-columns:1fr;direction:rtl}.work-command-board{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:520px){.work-command-heading{padding:13px;flex-wrap:wrap}.work-command-heading h1{font-size:19px}.work-command-modules{gap:7px}.work-command-module{padding:11px;min-height:86px}.work-command-module b{font-size:12px}.work-command-module small{font-size:9px}.work-command-module>svg:first-child{width:20px}.work-command-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.work-command-board{grid-template-columns:repeat(2,minmax(0,1fr))}.work-command-taskspace>header{align-items:start;flex-direction:column}.work-command-section{padding:11px}.work-command-week{gap:2px}}
+
+.work-command-responsibilities{background:#f7fbff;border:1px solid #d7e5f5;border-radius:13px;padding:11px 15px;color:#345c86}
+.work-command-responsibilities summary{cursor:pointer;font-size:12px;font-weight:700}
+.work-command-responsibilities[open]{background:#fff}
+.work-command-responsibilities>section{margin-top:12px}
