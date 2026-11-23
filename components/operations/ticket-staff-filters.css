@@ -15,3 +15,8 @@
 .ticket-staff-clear:hover{background:#eaf2fc}
 @media(max-width:850px){.ticket-staff-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:580px){.ops-module .ticket-staff-panel{padding:14px}.ticket-staff-grid{grid-template-columns:1fr}.ticket-staff-heading{flex-wrap:wrap}.ticket-staff-total{margin-right:0}}
+
+.ops-module .ticket-bulk-panel{border:1px solid #d9e6f6;border-radius:15px;background:#f7faff;padding:15px 18px;box-shadow:none}
+.ops-module .ticket-bulk-panel label{color:#3f5978;font-size:11px}
+.ops-module .ticket-bulk-panel select{border:1px solid #c6d8ec;border-radius:10px;background:#fff;min-height:39px}
+.ops-module .ticket-bulk-panel .primary{background:#326bc2;border-color:#326bc2}
