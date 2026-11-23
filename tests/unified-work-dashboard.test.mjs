@@ -27,7 +27,7 @@ test('all data is sourced from authorized real staff records, with no example co
 });
 test('six clickable scoped status metrics and board columns',()=>{
  for(const id of ['all','new','today','waiting','overdue','unassigned'])assert.match(ui,new RegExp("id:'"+id+"'"));
- assert.match(ui,/setMetric\(id\)/);
+ assert.match(ui,/setMetric\(id as Metric\)/);
  assert.match(ui,/isOverdue\(r,today\)/);
  for(const status of ['todo','doing','blocked','done'])assert.match(ui,new RegExp("id:'"+status+"'"));
  assert.match(ui,/onClick=\{\(\)=>open\(r\)\}/);
