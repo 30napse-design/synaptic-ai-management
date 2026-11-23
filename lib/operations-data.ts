@@ -31,7 +31,7 @@ export async function readOperationsData(u:any,p:URLSearchParams){
     // Old Gmail entries remain accessible by category, and only equal legacy
     // topic labels are included when a specific topic is requested.
     where+=' AND (substr(source_body,1,?)=? OR subtype=?)';
-    const prefix='موضوع درخواست: '+ticketTopic+'\\n';
+    const prefix='موضوع درخواست: '+ticketTopic+String.fromCharCode(10);
     args.push(prefix.length,prefix,ticketTopic);
    }
   }
@@ -39,7 +39,17 @@ export async function readOperationsData(u:any,p:URLSearchParams){
 
  if(p.get('channel')){where+=' AND '+channelSQL+'=?';args.push(p.get('channel'))}
  for(const [key,column] of [['category','category'],['subtype','subtype'],['status','status'],['source','source_type'],['requestType','request_type'],['assignee','assignee'],['intakeState',"COALESCE(NULLIF(intake_state,''),'unreviewed')"]]){const value=p.get(key);if(value){where+=' AND '+column+'=?';args.push(value)}}
- const query=(p.get('q')||'').trim().slice(0,300);if(query){where+=" AND (title LIKE ? ESCAPE '\\' OR client_name LIKE ? ESCAPE '\\' OR phone LIKE ? ESCAPE '\\' OR email LIKE ? ESCAPE '\\' OR reference LIKE ? ESCAPE '\\' OR organization LIKE ? ESCAPE '\\' OR representative LIKE ? ESCAPE '\\' OR source_body LIKE ? ESCAPE '\\')";const escaped='%'+query.replace(/[\\%_]/g,'\\$&')+'%';args.push(...Array(8).fill(escaped))}
+ const query=(p.get('q')||'').trim().slice(0,300);
+ if(query){
+  const escaped='%'+query.replace(/[\\%_]/g,c=>'\\'+c)+'%';
+  if(view==='tickets'){
+   where+=" AND (client_name LIKE ? ESCAPE '\\' OR phone LIKE ? ESCAPE '\\' OR email LIKE ? ESCAPE '\\' OR reference LIKE ? ESCAPE '\\')";
+   args.push(...Array(4).fill(escaped));
+  }else{
+   where+=" AND (title LIKE ? ESCAPE '\\' OR client_name LIKE ? ESCAPE '\\' OR phone LIKE ? ESCAPE '\\' OR email LIKE ? ESCAPE '\\' OR reference LIKE ? ESCAPE '\\' OR organization LIKE ? ESCAPE '\\' OR representative LIKE ? ESCAPE '\\' OR source_body LIKE ? ESCAPE '\\')";
+   args.push(...Array(8).fill(escaped));
+  }
+ }
  const baseWhere=where,baseArgs=[...args];
  const today=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Dubai',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
  const followup=p.get('followup');if(followup==='today'){where+=" AND status!='closed' AND due=?";args.push(today)}else if(followup==='overdue'){where+=" AND status!='closed' AND due!='' AND due<?";args.push(today)}else if(followup==='unassigned'){where+=" AND status!='closed' AND (trim(assignee)='' OR json_extract(routing,'$.acceptanceNeedsAssignment')=1)"}else if(followup==='unanswered'){where+=" AND status!='closed' AND trim(resolution)=''"}else if(followup==='calls_pending'){where+=" AND status!='closed' AND "+channelSQL+"='phone' AND trim(resolution)=''"}
