@@ -10,7 +10,8 @@ import {operationPayments} from './finance-data';
 import {hasDataAccess} from './auth-policy';
 import {intakeMembers} from './intake-server';
 import {ticketSQL,isTicket} from './intake-policy';
-import {siteTicketCategories,getTicketCategories} from './ticket-support-taxonomy';
+import {siteTicketCategories,directTicketCategories,getTicketCategories} from './ticket-support-taxonomy';
+import {legacyCategoryForSite} from './operations-intake-ui';
 export async function readOperationsData(u:any,p:URLSearchParams){
  const routingReady=await dispatchReady();const {sql:permitted,args:scopeArgs}=operationsScope(u,routingReady);
  const view=p.get('view')||'',contact=(p.get('contact')||'').trim().slice(0,200);
@@ -44,6 +45,18 @@ export async function readOperationsData(u:any,p:URLSearchParams){
    }
   }
 }
+ if(view!=='tickets'&&p.get('opsGroup')){
+  const group=String(p.get('opsGroup')||'').slice(0,90);
+  const [kind,id]=group.split(':');
+  const directLegacy:Record<string,string>={collaboration:'internal',proposal:'projects',organization:'internal',general:'system'};
+  const canonical=kind==='site'?legacyCategoryForSite[id]:kind==='direct'?directLegacy[id]:undefined;
+  const match=kind==='site'?siteTicketCategories.find(c=>c.id===id):kind==='direct'?directTicketCategories.find(c=>c.id===id):undefined;
+  if(!canonical||!match){where+=' AND 1=0'}
+  else{where+=' AND category=?';args.push(canonical);
+   const topic=(p.get('opsTopic')||'').slice(0,160);
+   if(topic){if(!match.topics.some(t=>t===topic))where+=' AND 1=0';else{where+=' AND (substr(source_body,1,?)=? OR subtype=?)';const prefix='موضوع درخواست: '+topic+String.fromCharCode(10);args.push(prefix.length,prefix,topic)}}
+  }
+ }
  if(p.get('channel')){where+=' AND '+channelSQL+'=?';args.push(p.get('channel'))}
  for(const [key,column] of [['category','category'],['subtype','subtype'],['status','status'],['source','source_type'],['requestType','request_type'],['assignee','assignee'],['intakeState',"COALESCE(NULLIF(intake_state,''),'unreviewed')"]]){const value=p.get(key);if(value&&!(view==='tickets'&&key==='status')){where+=' AND '+column+'=?';args.push(value)}}
  const query=(p.get('q')||'').trim().slice(0,300);if(query){where+=" AND (title LIKE ? ESCAPE '\\' OR client_name LIKE ? ESCAPE '\\' OR phone LIKE ? ESCAPE '\\' OR email LIKE ? ESCAPE '\\' OR reference LIKE ? ESCAPE '\\' OR organization LIKE ? ESCAPE '\\' OR representative LIKE ? ESCAPE '\\' OR source_body LIKE ? ESCAPE '\\')";const escaped='%'+query.replace(/[\\%_]/g,'\\$&')+'%';args.push(...Array(8).fill(escaped))}
