@@ -28,8 +28,11 @@ test('Colored cards have interactive filters, keyboard accessibility and mobile 
  assert.match(styles,/ticket-card-today/);
  assert.match(styles,/ticket-card-waiting/);
  assert.match(styles,/ticket-card-new/);
- assert.match(styles,/max-width:860px/);
- assert.match(app,/setFollowup\(id==='today'/);
+ assert.match(styles,/max-width:660px/);
+ assert.match(styles,/repeat\(6,minmax\(0,1fr\)\)/);
+ assert.match(styles,/ticket-card-overdue/);
+ assert.match(styles,/ticket-card-unassigned/);
+ assert.match(app,/setFollowup\(\['today','overdue','unassigned'\]/);
  assert.match(app,/setStatus\(id==='waiting'/);
 });
 
@@ -53,4 +56,32 @@ test('No artificial ticket population or migration is performed by the dashboard
  assert.match(app,/const pageSize=tickets\?100:50/);
  assert.match(app,/offset-pageSize/);
  assert.match(app,/Math\.floor\(offset\/pageSize\)\+1/);
+});
+
+test('Extra KPI counts use scoped server SQL and no guessed ticket status',()=>{
+ assert.match(source,/AS overdue_count/);
+ assert.match(source,/AS unassigned_count/);
+ assert.match(source,/status!='closed' AND due!='' AND due<\?/);
+ assert.match(source,/ticketBaseWhere/);
+ assert.match(app,/data\.ticketSummary\?\.overdue/);
+ assert.match(app,/data\.ticketSummary\?\.unassigned/);
+});
+test('Staff UI hides channel grid and provides compact source selection',()=>{
+ assert.match(app,/!tickets&&source!=='incoming'/);
+ assert.match(app,/aria-label="منبع تیکت"/);
+ assert.match(app,/value="gmail"/);
+ assert.match(source,/source_type='gmail'/);
+ assert.match(app,/roleMembers/);
+ assert.match(app,/organizationalCode/);
+ assert.match(app,/ticket-bulk-panel/);
+ assert.match(app,/ticket-detail-modal/);
+});
+test('No duplicate links or unauthorized assignment shortcuts introduced',()=>{
+ const link=readFileSync('lib/operation-work-link.ts','utf8');
+ const assign=readFileSync('lib/operations-manual-assignment.ts','utf8');
+ assert.match(link,/ops-work:'\+r.id/);
+ assert.match(link,/INSERT OR IGNORE INTO staff_records/);
+ assert.match(assign,/validateManualAssignee/);
+ assert.match(assign,/r.revision===x.revision/);
+ assert.match(assign,/canSeeOps/);
 });
