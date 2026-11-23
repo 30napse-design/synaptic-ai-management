@@ -64,8 +64,8 @@ export default function OperationsApp({initialData,initialFilters={}}:{initialDa
   <details className="ops-help"><summary>راهنمای ثبت و وضعیت اتصال کانال‌ها</summary><div className="notice">آیکون تلفن برای ثبت تماس و شماره‌گیری از دستگاه است؛ اتصال خودکار خط تلفن به CRM فعال نشده است. سایر کانال‌های متصل‌نشده را می‌توانید دستی ثبت کنید. برای کار داخلی، <Link href="/staff?view=board">کارتابل وظایف</Link> را باز کنید؛ ایجاد وظیفه با مدیریت است.</div><div className="notice">منبع ایمیل فعلی: synapticsite@gmail.com. ثبت پاسخ یا یادداشت در این صفحه، پیام یا ایمیل ارسال نمی‌کند؛ پاسخ در کانال اصلی ارسال و نتیجه اینجا ثبت می‌شود.</div></details>
   {category==='billing'&&<div className="notice"><ShieldCheck size={18}/><p>اعلام واریز یا برچسب Gmail به معنی تأیید بانکی نیست. صورت‌حساب بانک و حسابداری داخلی در دسترس عمومی نیستند.</p></div>}
   {tickets&&<TicketDashboard
-   total={data.total}
-   today={Number(data.followups?.today||0)}
+   total={Number(data.ticketSummary?.all||0)}
+   today={Number(data.ticketSummary?.today||0)}
    waiting={Number(data.ticketSummary?.waiting||0)}
    newCount={Number(data.ticketSummary?.new||0)}
    active={followup==='today'?'today':status==='waiting'?'waiting':status==='open'?'new':!followup&&!status?'all':''}
