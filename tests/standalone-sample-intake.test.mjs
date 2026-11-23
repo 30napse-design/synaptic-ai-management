@@ -7,7 +7,7 @@ const client=readFileSync('components/laboratory/independent-sample-intake.tsx',
 const page=readFileSync('app/(workspace)/sample-intake/page.tsx','utf8');
 test('no invoice or previous mother case is required for independent intake',()=>{
  assert.match(page,/<IndependentSampleIntake\/>/);
- assert.match(page,/<details open className="legacy-linked-intake"/);
+ assert.match(page,/<details className="legacy-linked-intake"/);
  assert.match(client,/ثبت و ایجاد برگه نمونه/);
  assert.match(server,/kind='sample_intake'/);
  assert.doesNotMatch(server,/motherProject\(|mother_create|invoice_number|intakeOrderLines/);
