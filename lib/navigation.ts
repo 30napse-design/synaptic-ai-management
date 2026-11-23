@@ -53,6 +53,8 @@ export function routeRegistry(user:any){
 export function resolveWorkspaceRoute(path:string,query:URLSearchParams,user:any){
  if(path==='/manage/finance'&&query.get('resources')==='1')return {label:'منابع و سوابق مالی',group:'finance',groupTitle:'مالی و قراردادها',href:path+'?resources=1'};
  const registry=routeRegistry(user);
+ // Old phone notebook deep links resolve into the existing unified intake menu.
+ if(path==='/operations'&&query.get('source')==='incoming')return registry.find(route=>route.href==='/operations');
  const matches=registry.filter(route=>activeNavigation(path,query,route.href));
  // A domain / new-case link must win over its parent list.
  const exact=matches.sort((a,b)=>new URL(b.href,'https://synapse.local').searchParams.size-new URL(a.href,'https://synapse.local').searchParams.size)[0];
