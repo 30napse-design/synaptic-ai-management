@@ -20,6 +20,14 @@ export async function readOperationsData(u:any,p:URLSearchParams){
  if(view==='history'&&contact){where+=' AND (lower(email)=? OR phone=?)';args.push(contact.toLowerCase(),contact)}else{where+=' AND direction=?';args.push(p.get('direction')||'inbound')}
  if(view==='tickets')where+=' AND '+ticketSQL;
  if(view==='tickets'){
+  const ticketOrigin=p.get('ticketOrigin')||'';
+  if(ticketOrigin==='legacy')where+=" AND (source_type='gmail' OR channel IN ('gmail','whatsapp','telegram','bale','rubika','instagram','linkedin'))";
+  else if(ticketOrigin==='site')where+=" AND channel='website'";
+  else if(ticketOrigin==='direct')where+=" AND source_type='manual' AND is_ticket=1 AND channel NOT IN ('website','phone')";
+  else if(ticketOrigin)where+=' AND 1=0';
+ }
+
+ if(view==='tickets'){
   const ticketCategory=(p.get('ticketCategory')||'').slice(0,80),ticketTopic=(p.get('ticketTopic')||'').slice(0,120);
   if(ticketCategory){
    const legacy=legacyTicketGroup(ticketCategory);
