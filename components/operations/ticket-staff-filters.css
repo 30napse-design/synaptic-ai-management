@@ -20,3 +20,6 @@
 .ops-module .ticket-bulk-panel label{color:#3f5978;font-size:11px}
 .ops-module .ticket-bulk-panel select{border:1px solid #c6d8ec;border-radius:10px;background:#fff;min-height:39px}
 .ops-module .ticket-bulk-panel .primary{background:#326bc2;border-color:#326bc2}
+
+.ops-module .heading-buttons .ops-ticket-create{background:linear-gradient(115deg,#2c6dce,#458dd7);border-color:#377bcf;color:#fff;box-shadow:0 4px 12px #346fc52b;border-radius:11px}
+.ops-module .heading-buttons .ops-ticket-create:hover{background:linear-gradient(115deg,#2059b3,#2877c7)}
