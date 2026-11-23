@@ -127,3 +127,18 @@
 .wrd-expand-tasks,.wrd-collapse-tasks{display:flex;justify-content:center;align-items:center;gap:6px;width:100%;min-height:29px;padding:5px;border:1px solid #d4e2f4;background:#f6faff;color:#286ba5;border-radius:9px;font-size:10px;font-weight:700}
 .wrd-expand-tasks:hover,.wrd-collapse-tasks:hover{background:#e8f4ff}
 @media(max-width:740px){.wrd-right-column{min-width:0}.wrd-right-column .wrd-board{min-height:0}}
+
+/* Internal correspondence is the existing fully functional ticket workflow,
+   now embedded into the command center. No duplicate data source or API. */
+.work-command .wrd-inline-mail{min-width:0;overflow:visible}
+.work-command .wrd-inline-mail>.panel{margin:10px 0 0;max-width:none;min-width:0;box-shadow:none;border:1px solid #d9e5f4;background:#fff;border-radius:14px}
+.work-command .wrd-inline-mail .fin-tabs{display:flex;gap:8px;flex-wrap:wrap;overflow-x:auto}
+.work-command .wrd-inline-mail .fin-tabs button{white-space:normal;min-height:38px}
+.work-command .wrd-inline-mail :is(input,select,textarea){max-width:100%;min-width:0}
+.work-command .wrd-inline-mail :is(.fin-row,.fin-form){min-width:0}
+@media(max-width:760px){
+ .work-command .wrd-inline-mail{padding:12px}
+ .work-command .wrd-inline-mail>.panel{padding:12px}
+ .work-command .wrd-inline-mail .fin-row{flex-wrap:wrap}
+ .work-command .wrd-inline-mail .fin-tabs{gap:5px}
+}
