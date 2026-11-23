@@ -12,6 +12,7 @@ import {intakeMembers} from './intake-server';
 import {ticketSQL,isTicket} from './intake-policy';
 import {siteTicketCategories,directTicketCategories,getTicketCategories} from './ticket-support-taxonomy';
 import {legacyCategoryForSite} from './operations-intake-ui';
+import {intakeNineGroups,classifyIncomingNine} from './intake-nine-groups';
 export async function readOperationsData(u:any,p:URLSearchParams){
  const routingReady=await dispatchReady();const {sql:permitted,args:scopeArgs}=operationsScope(u,routingReady);
  const view=p.get('view')||'',contact=(p.get('contact')||'').trim().slice(0,200);
@@ -62,6 +63,27 @@ export async function readOperationsData(u:any,p:URLSearchParams){
      where+=" AND (source_body LIKE ? OR subtype=?)";
      args.push('%'+String.fromCharCode(10)+'موضوع درخواست: '+topic+String.fromCharCode(10)+'%',topic);
     }
+   }
+  }
+ }
+ // Nine management-approved RESPONSIBILITY group projections; filter in SQL before
+ // pagination, without altering persisted categories, source messages or assignments.
+ const nine=(p.get('nineGroup')||'').slice(0,60);
+ if(nine){
+  const special:Record<string,string[]>={scientific:['بررسی تخصصی','اجرای آزمایش','تصمیم علمی','بررسی علمی'],escalations:['شکایت','اختلاف','مغایرت جدی','تاخیر جدی','تأخیر جدی','نیازمند بررسی'],executive:['تصمیم نهایی مدیریت','ارجاع استثنایی مدیر']};
+  if(nine==='unclassified'){
+   const known=[...new Set(intakeNineGroups.flatMap(g=>[...g.legacy]))],explicit=Object.values(special).flat();
+   where+=' AND (category NOT IN ('+known.map(()=>'?').join(',')+') OR trim(subtype)=\'\' OR manager_only=1)';
+   args.push(...known);
+  }else if(special[nine]){
+   where+=' AND subtype IN ('+special[nine].map(()=>'?').join(',')+')';args.push(...special[nine]);
+  }else{
+   const selected=intakeNineGroups.find(g=>g.id===nine);
+   if(!selected||!selected.legacy.length)where+=' AND 1=0';
+   else{
+    const excluded=Object.values(special).flat();
+    where+=' AND category IN ('+selected.legacy.map(()=>'?').join(',')+') AND subtype NOT IN ('+excluded.map(()=>'?').join(',')+') AND manager_only=0';
+    args.push(...selected.legacy,...excluded);
    }
   }
  }
