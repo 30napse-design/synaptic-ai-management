@@ -21,3 +21,13 @@ test('both mandatory conversation fields are retained in source description',()=
  assert.match(text,/شرح تماس \/ درخواست مشتری:\nسلام/);
  assert.match(text,/پاسخ پشتیبان \/ اقدام یا قول داده‌شده:\nپیگیری می‌کنیم/);
 });
+
+test('new topic mapping never silently assigns an unrelated subtype',()=>{
+ const groups=[{id:'billing',items:['فاکتورهای ارسال‌شده']}];
+ assert.equal(matchingLegacySubtype('invoices','مغایرت فاکتور',groups),'');
+ assert.equal(matchingLegacySubtype('invoices','ارسال فاکتور',groups),'فاکتورهای ارسال‌شده');
+});
+test('all six transport modes stay directionally explicit',()=>{
+ const expected=[['phone-in','inbound','phone'],['phone-out','outbound','phone'],['visit','visit','manual'],['email-in','inbound','gmail'],['email-out','outbound','gmail'],['messaging','inbound','whatsapp']];
+ for(const [id,direction,channel] of expected){const m=modeTransport(id);assert.equal(m.direction,direction);assert.equal(m.channel,channel);}
+});
