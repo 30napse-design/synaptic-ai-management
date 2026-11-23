@@ -4,6 +4,7 @@ import Link from 'next/link';
 import {CalendarDays,ClipboardList,ShieldCheck,Mail,Inbox,AlarmClock,Hourglass,UserRoundX,CheckCircle2,ChevronRight,ChevronLeft,ArrowUpLeft,Plus,Clock3,Layers3} from 'lucide-react';
 import {isWork,participant,isOverdue,executionDay,calendarDays} from '../../lib/work-policy';
 import './work-command-dashboard.css';
+import WorkCorrespondenceStrip from './work-correspondence-strip';
 type Props={data:any;today:string;open:(r:any)=>void;create:(kind:string,date?:string)=>void;manager:boolean};
 const number=(n:number)=>n.toLocaleString('fa-IR');
 const pretty=(s:string)=>new Intl.DateTimeFormat('fa-IR',{day:'numeric',month:'long',year:'numeric',timeZone:'Asia/Dubai'}).format(new Date(s+'T12:00:00Z'));
@@ -47,6 +48,7 @@ export default function WorkCommandDashboard({data,today,open,create,manager}:Pr
   {section==='plans'&&<section className="work-command-section"><header><h2>برنامه‌ریزی روزانه و آینده</h2><Link href="/staff?view=plans">تقویم روزانه، هفتگی و ماهانه <ArrowUpLeft size={15}/></Link></header><div className="work-command-week">{week.map(d=><button key={d} className={d===anchor?'selected':''} onClick={()=>setAnchor(d)}><small>{new Intl.DateTimeFormat('fa-IR',{weekday:'short',timeZone:'Asia/Dubai'}).format(new Date(d+'T12:00:00Z'))}</small><strong>{new Intl.DateTimeFormat('fa-IR',{day:'numeric',timeZone:'Asia/Dubai'}).format(new Date(d+'T12:00:00Z'))}</strong></button>)}</div><button className="work-command-create" onClick={()=>create('plan',anchor)}><Plus size={16}/> ثبت برنامه برای {pretty(anchor)}</button>{byDay(anchor).map((r:any)=><button className="work-command-line" key={r.id} onClick={()=>open(r)}>{r.title} <span>{states[r.status]}</span></button>)}{!byDay(anchor).length&&<p>برای این تاریخ برنامه‌ای ثبت نشده است.</p>}</section>}
   {section==='approvals'&&<section className="work-command-section"><header><h2>بررسی و تأیید</h2><Link href="/staff?view=approvals">همه درخواست‌های تأیید <ArrowUpLeft size={15}/></Link></header><p>{number(approvals.length)} مورد در انتظار بررسی مجاز شما</p>{approvals.slice(0,50).map((r:any)=><button className="work-command-line" key={r.id} onClick={()=>open(r)}>{r.title}<span>منتظر تصمیم</span></button>)}{!approvals.length&&<p>درخواست تأییدی وجود ندارد.</p>}</section>}
   {section==='mail'&&<section className="work-command-section"><header><h2>مکاتبات داخلی</h2><Link href="/work/mail">مشاهده دریافتی، ارسالی و تاریخچه <ArrowUpLeft size={15}/></Link></header><p>مکاتبات سازمانی از سامانه اصلی و با مجوزهای واقعی خوانده می‌شوند. در این نما، مکاتبه یا مسئول ساختگی ایجاد نمی‌شود.</p><Link className="work-command-create" href="/work/mail">ورود به دفتر مکاتبات داخلی</Link></section>}
+  <WorkCorrespondenceStrip/>
   <footer className="work-command-foot"><Clock3 size={14}/> آمار بر اساس داده‌های مجاز حساب شماست. رکوردهای قدیمی بدون تغییر و بدون انتساب جدید باقی می‌مانند.</footer>
  </div>;
 }
