@@ -12,6 +12,7 @@ import {intakeMembers} from './intake-server';
 import {ticketSQL,isTicket} from './intake-policy';
 import {siteTicketCategories,directTicketCategories,getTicketCategories} from './ticket-support-taxonomy';
 import {legacyCategoryForSite} from './operations-intake-ui';
+import {intakeCategory,unifiedIntakeCategories} from './unified-intake-taxonomy';
 export async function readOperationsData(u:any,p:URLSearchParams){
  const routingReady=await dispatchReady();const {sql:permitted,args:scopeArgs}=operationsScope(u,routingReady);
  const view=p.get('view')||'',contact=(p.get('contact')||'').trim().slice(0,200);
@@ -28,7 +29,8 @@ export async function readOperationsData(u:any,p:URLSearchParams){
   if(ticketCategory){
    const cat=(source==='direct'?getTicketCategories('direct'):siteTicketCategories).find(c=>c.id===ticketCategory);
    const legacyGroups:Record<string,string>={orders:'customers',invoices:'billing',payments:'billing',results:'results',projects:'projects',internal:'internal',system:'system'};
-   if(!cat){where+=' AND 1=0'}
+   if(intakeCategory(ticketCategory)){where+=" AND json_extract(source_labels,'$.ticket_category')=?";args.push(ticketCategory)}
+   else if(!cat){where+=' AND 1=0'}
    else if(source==='site'||source==='direct'){where+=" AND json_extract(source_labels,'$.ticket_category')=?";args.push(ticketCategory)}
    else{
     where+=" AND (json_extract(source_labels,'$.ticket_category')=?"+(legacyGroups[ticketCategory]?" OR (COALESCE(json_extract(source_labels,'$.ticket_v'),0)=0 AND category=?)":"")+")";
@@ -37,7 +39,10 @@ export async function readOperationsData(u:any,p:URLSearchParams){
   }
   if(ticketTopic){
    const cat=(source==='direct'?getTicketCategories('direct'):siteTicketCategories).find(c=>c.id===ticketCategory);
-   if(!cat||!cat.topics.some(topic=>topic===ticketTopic)){where+=' AND 1=0'}
+   if(intakeCategory(ticketCategory)){
+    if(!intakeCategory(ticketCategory)!.topics.some(t=>t.title===ticketTopic))where+=' AND 1=0';
+    else{where+=" AND json_extract(source_labels,'$.ticket_topic')=?";args.push(ticketTopic)}
+   }else if(!cat||!cat.topics.some(topic=>topic===ticketTopic)){where+=' AND 1=0'}
    else{
     // Never guess a precise topic for a legacy message: only exact historic subtype matches.
     where+=" AND (json_extract(source_labels,'$.ticket_topic')=?"+(!source||source==='legacy'?" OR (COALESCE(json_extract(source_labels,'$.ticket_v'),0)=0 AND subtype=?)":"")+")";
@@ -45,6 +50,10 @@ export async function readOperationsData(u:any,p:URLSearchParams){
    }
   }
 }
+ const unifiedGroup=(p.get('unifiedGroup')||'').slice(0,30),unifiedCategory=(p.get('unifiedCategory')||'').slice(0,80),unifiedTopic=(p.get('unifiedTopic')||'').slice(0,160);
+ if(unifiedGroup){if(['services','consultation'].includes(unifiedGroup)){where+=" AND (json_extract(source_labels,'$.intake_group')=? OR json_extract(source_labels,'$.ticket_group')=?)";args.push(unifiedGroup,unifiedGroup)}else where+=' AND 1=0'}
+ if(unifiedCategory){if(intakeCategory(unifiedCategory)){where+=" AND (json_extract(source_labels,'$.intake_category')=? OR json_extract(source_labels,'$.ticket_category')=?)";args.push(unifiedCategory,unifiedCategory)}else where+=' AND 1=0'}
+ if(unifiedTopic){if(intakeCategory(unifiedCategory)?.topics.some(t=>t.title===unifiedTopic)){where+=" AND (json_extract(source_labels,'$.intake_topic')=? OR json_extract(source_labels,'$.ticket_topic')=?)";args.push(unifiedTopic,unifiedTopic)}else where+=' AND 1=0'}
  if(view!=='tickets'&&p.get('opsGroup')){
   const group=String(p.get('opsGroup')||'').slice(0,90);
   const [kind,id]=group.split(':');
@@ -59,7 +68,7 @@ export async function readOperationsData(u:any,p:URLSearchParams){
  }
  if(p.get('channel')){where+=' AND '+channelSQL+'=?';args.push(p.get('channel'))}
  for(const [key,column] of [['category','category'],['subtype','subtype'],['status','status'],['source','source_type'],['requestType','request_type'],['assignee','assignee'],['intakeState',"COALESCE(NULLIF(intake_state,''),'unreviewed')"]]){const value=p.get(key);if(value&&!(view==='tickets'&&key==='status')){where+=' AND '+column+'=?';args.push(value)}}
- const query=(p.get('q')||'').trim().slice(0,300);if(query){where+=" AND (title LIKE ? ESCAPE '\\' OR client_name LIKE ? ESCAPE '\\' OR phone LIKE ? ESCAPE '\\' OR email LIKE ? ESCAPE '\\' OR reference LIKE ? ESCAPE '\\' OR organization LIKE ? ESCAPE '\\' OR representative LIKE ? ESCAPE '\\' OR source_body LIKE ? ESCAPE '\\')";const escaped='%'+query.replace(/[\\%_]/g,'\\$&')+'%';args.push(...Array(8).fill(escaped))}
+ const query=(p.get('q')||'').trim().slice(0,200);if(query){where+=" AND (title LIKE ? ESCAPE '\\' OR client_name LIKE ? ESCAPE '\\' OR phone LIKE ? ESCAPE '\\' OR email LIKE ? ESCAPE '\\' OR reference LIKE ? ESCAPE '\\' OR organization LIKE ? ESCAPE '\\' OR representative LIKE ? ESCAPE '\\' OR source_body LIKE ? ESCAPE '\\')";const escaped='%'+query.replace(/[\\%_]/g,'\\$&')+'%';args.push(...Array(8).fill(escaped))}
  const ticketBaseWhere=where,ticketBaseArgs=[...args];
  if(view==='tickets'&&p.get('status')){where+=' AND status=?';args.push(p.get('status'))}
  const baseWhere=where,baseArgs=[...args];
