@@ -2,7 +2,7 @@
  * Existing persisted categories/subtypes remain authoritative for routing/RBAC.
  * Exact selected user-facing topics are appended to the conversation record.
  */
-import {siteTicketCategories} from './ticket-support-taxonomy';
+import {siteTicketCategories} from './ticket-support-taxonomy.ts';
 export const communicationModes=[
  {id:'phone-in',title:'تماس ورودی',direction:'inbound',channel:'phone'},
  {id:'phone-out',title:'تماس خروجی',direction:'outbound',channel:'phone'},
