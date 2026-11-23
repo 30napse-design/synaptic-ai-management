@@ -10,7 +10,7 @@ import {operationPayments} from './finance-data';
 import {hasDataAccess} from './auth-policy';
 import {intakeMembers} from './intake-server';
 import {ticketSQL,isTicket} from './intake-policy';
-import {siteTicketCategories} from './ticket-support-taxonomy';
+import {siteTicketCategories,getTicketCategories} from './ticket-support-taxonomy';
 export async function readOperationsData(u:any,p:URLSearchParams){
  const routingReady=await dispatchReady();const {sql:permitted,args:scopeArgs}=operationsScope(u,routingReady);
  const view=p.get('view')||'',contact=(p.get('contact')||'').trim().slice(0,200);
@@ -23,7 +23,7 @@ export async function readOperationsData(u:any,p:URLSearchParams){
   const ticketTopic=(p.get('ticketTopic')||'').trim().slice(0,160);
   if(source){where+=" AND json_extract(source_labels,'$.ticket_source')=?";args.push(source)}
   if(ticketCategory){
-   const cat=siteTicketCategories.find(c=>c.id===ticketCategory);
+   const cat=(source==='direct'?getTicketCategories('direct'):siteTicketCategories).find(c=>c.id===ticketCategory);
    const legacyGroups:Record<string,string>={orders:'customers',invoices:'billing',payments:'billing',results:'results',projects:'projects',internal:'internal',system:'system'};
    if(!cat){where+=' AND 1=0'}
    else if(source){where+=" AND json_extract(source_labels,'$.ticket_category')=?";args.push(ticketCategory)}
@@ -33,7 +33,7 @@ export async function readOperationsData(u:any,p:URLSearchParams){
    }
   }
   if(ticketTopic){
-   const cat=siteTicketCategories.find(c=>c.id===ticketCategory);
+   const cat=(source==='direct'?getTicketCategories('direct'):siteTicketCategories).find(c=>c.id===ticketCategory);
    if(!cat||!cat.topics.includes(ticketTopic)){where+=' AND 1=0'}
    else{
     // Never guess a precise topic for a legacy message: only exact historic subtype matches.
