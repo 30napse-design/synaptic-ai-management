@@ -26,7 +26,7 @@ export default function TicketStaffFilters({query,setQuery,category,setCategory,
   <div className="ticket-staff-grid">
    <label>دسته اصلی<select aria-label="دسته اصلی تیکت" value={category} onChange={e=>{setCategory(e.target.value);setTopic('')}}><option value="">همه دسته‌ها</option>{siteTicketCategories.map(x=><option key={x.id} value={x.id}>{x.title}</option>)}</select></label>
    <label>موضوع درخواست<select aria-label="موضوع درخواست تیکت" value={topic} disabled={!current} onChange={e=>setTopic(e.target.value)}><option value="">همه موضوعات</option>{current?.topics.map(t=><option key={t} value={t}>{t}</option>)}</select></label>
-   <label>مسئول تیکت<select aria-label="مسئول تیکت" value={assignee} onChange={e=>setAssignee(e.target.value)}><option value="">همه مسئولان</option>{members.map(m=><option key={m.email} value={m.email}>{memberPositionLabel(m,orgRoleCatalog,organizationalCode)}</option>)}</select></label>
+   <label>مسئول تیکت<select aria-label="مسئول تیکت" value={assignee} onChange={e=>setAssignee(e.target.value)}><option value="">همه مسئولان</option>{members.filter(m=>m.manager||Boolean(organizationalCode(m.username||''))).map(m=><option key={m.email} value={m.email}>{memberPositionLabel(m,orgRoleCatalog,organizationalCode)}</option>)}</select></label>
   </div>
   <button type="button" className="ticket-staff-clear" onClick={reset}>پاک‌کردن فیلترها</button>
  </section>;
