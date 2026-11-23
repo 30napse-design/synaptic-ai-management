@@ -1,8 +1,6 @@
 'use client';
-import {useState} from 'react';
-import {Phone,Plus} from 'lucide-react';
+import {useState,type FormEvent} from 'react';
 import {communicationChannels,visitPurposes} from '../../lib/communication-policy';
-import {siteTicketCategories} from '../../lib/ticket-support-taxonomy';
 import {communicationModes,messengerChannels,modeTransport,siteCategoriesForAuthorized,matchingLegacySubtype,communicationTranscript} from '../../lib/operations-intake-ui';
 import './operations-intake.css';
 
@@ -13,7 +11,7 @@ export default function OperationsIntakeForm({form,setForm,user,allowed,eligible
  const cat=cats.find(c=>c.id===form.siteCategory)||cats[0];
  const mode=modeTransport(form.communicationMode||'phone-in');
  const change=(part:any)=>setForm({...form,...part});
- const save=async(event:React.FormEvent<HTMLFormElement>)=>{
+ const save=async(event:FormEvent<HTMLFormElement>)=>{
   event.preventDefault();
   if(!form.siteTopic||!form.customerRequest?.trim()||!form.staffResponse?.trim())return;
   const legacy=matchingLegacySubtype(cat.id,form.siteTopic,allowed);
