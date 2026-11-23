@@ -28,3 +28,12 @@ export function validPersianContactName(raw:string){
 export function validOptionalEmail(raw:string){
  return !raw||raw.length<=200&&/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(raw.trim());
 }
+
+/** Existing access entitlements only: role labels do not bypass any record permission. */
+export function unifiedRequiredAccess(category:string){
+ return category==='service_finance'?'billing_ops':
+ category==='service_admin'?'administration_ops':
+ category==='service_it'?'security_ops':
+ category==='service_results'?'results_ops':
+ category.startsWith('consult_')?'projects':'operations';
+}
