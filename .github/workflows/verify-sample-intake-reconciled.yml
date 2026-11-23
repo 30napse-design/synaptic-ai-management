@@ -1,0 +1,24 @@
+name: Verify sample intake and header on current Hostinger
+on:
+  push:
+    branches:
+      - test/sample-intake-reconciled-hostinger-2026-11-23
+  pull_request:
+    branches:
+      - hostinger-nextjs-fix
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 28
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --global pnpm@11.25.0
+      - run: pnpm install --frozen-lockfile
+      - run: node --test tests/account-profile-sample-regression.test.mjs tests/sample-intake-ux-regression.test.mjs tests/ticket-compact-final.test.mjs tests/ticket-source-role-reconcile.test.mjs tests/ticket-dashboard.test.mjs tests/navigation.test.mjs tests/operations-intake-ui.test.mjs
+      - run: pnpm exec tsc --noEmit
+      - run: pnpm build
