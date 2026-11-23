@@ -54,7 +54,7 @@ export async function readOperationsData(u:any,p:URLSearchParams){
   if(!canonical||!match){where+=' AND 1=0'}
   else{where+=' AND category=?';args.push(canonical);
    const topic=(p.get('opsTopic')||'').slice(0,160);
-   if(topic){if(!match.topics.some(t=>t===topic))where+=' AND 1=0';else{where+=' AND (substr(source_body,1,?)=? OR subtype=?)';const prefix='موضوع درخواست: '+topic+String.fromCharCode(10);args.push(prefix.length,prefix,topic)}}
+   if(topic){if(!match.topics.some(t=>t===topic))where+=' AND 1=0';else{where+=" AND (source_body LIKE ? ESCAPE '\\' OR subtype=?)";const literal=topic.replace(/[\\%_]/g,'\\$&');args.push('%'+String.fromCharCode(10)+'موضوع درخواست: '+literal+String.fromCharCode(10)+'%',topic)}}
   }
  }
  if(p.get('channel')){where+=' AND '+channelSQL+'=?';args.push(p.get('channel'))}

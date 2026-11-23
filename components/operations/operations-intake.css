@@ -9,3 +9,25 @@
 .ops-module .ops-intake-form .required{color:#dc4545;font-weight:700}
 .ops-module .ops-intake-form .hint{padding:10px 12px;border-radius:9px;background:#e9f3ff;color:#3c5c7f}
 @media(max-width:700px){.ops-module .heading-buttons{flex-wrap:wrap}.ops-module .ops-call-action{flex:1}.ops-module .ops-intake-form .form-grid{grid-template-columns:minmax(0,1fr)}}
+
+/* Compact clinical-workflow palette: presentation only, no changes to data or permissions */
+.ops-module .modal:has(.ops-intake-form){background:linear-gradient(160deg,#ffffff 0%,#f6fbff 58%,#f8f5ff 100%);border:1px solid #bbd9ef;border-radius:19px;box-shadow:0 20px 70px #193e7047}
+.ops-module .ops-intake-form{display:grid;gap:16px;padding:6px 1px 1px}
+.ops-module .ops-intake-form>.hint{margin:0;border-left:4px solid #47a4db;background:linear-gradient(115deg,#edf8ff,#f7faff);padding:13px 15px;border-radius:11px;color:#365d88;font-size:12px}
+.ops-module .ops-intake-form>.form-grid{gap:12px 14px}
+.ops-module .ops-intake-form .form-grid>label{display:grid;align-content:start;gap:7px;padding:10px 12px;border:1px solid #dfeaf7;border-radius:12px;background:#ffffffd6;box-shadow:0 2px 9px #285b8a09;line-height:1.8}
+.ops-module .ops-intake-form .form-grid>label:focus-within{border-color:#80b6e8;background:#fafdff;box-shadow:0 0 0 3px #4fa0ea11}
+.ops-module .ops-intake-form .form-grid>label:nth-child(3n+1){border-top:3px solid #9fd6ef}
+.ops-module .ops-intake-form .form-grid>label:nth-child(3n+2){border-top:3px solid #c4b2f2}
+.ops-module .ops-intake-form .form-grid>label:nth-child(3n){border-top:3px solid #9bdfd0}
+.ops-module .ops-intake-form .form-grid>label.wide{border-top:3px solid #79b7e7;background:#f8fcff}
+.ops-module .ops-intake-form .form-grid :is(input,select,textarea){min-height:39px;padding:8px 11px;border-radius:9px;font-size:12px}
+.ops-module .ops-intake-form .form-grid textarea{min-height:98px}
+.ops-module .ops-intake-form .modal-actions{border-top:1px solid #e2eaf4;padding-top:12px;margin-top:0;display:flex;flex-wrap:wrap;gap:9px}
+.ops-module .ops-intake-form .modal-actions .primary{background:#267bc4;border-color:#267bc4;color:white;border-radius:10px;min-height:42px}
+.ops-module .ops-intake-form .modal-actions .primary:hover{background:#1769ac}
+.ops-module .ops-list .ops-item-row{border-radius:10px;transition:background-color .16s}
+.ops-module .ops-list .ops-item-row:hover{background:#f6faff}
+.ops-module .detail-modal{background:linear-gradient(160deg,#fff,#f8fbff);border:1px solid #d5e6f8;border-radius:17px}
+@media(max-width:700px){.ops-module .ops-intake-form .form-grid>label{padding:10px}.ops-module .ops-intake-form .form-grid{gap:9px}.ops-module .ops-intake-form .modal-actions>*{flex:1}}
+@media(prefers-reduced-motion:reduce){.ops-module .ops-list .ops-item-row{transition:none}}
