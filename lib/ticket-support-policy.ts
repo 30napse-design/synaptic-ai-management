@@ -9,7 +9,6 @@ export function validTicketEntry(b:any,manager=false):b is TicketEntry{
  if(!b||!['site','direct'].includes(b.source)||typeof b.category!=='string'||typeof b.topic!=='string')return false;
  const route=intakeDefaultResponsibility(b.category,b.topic);
  if(!route||route.group!==(b.group||intakeCategory(b.category)?.group))return false;
- if(b.source==='site'&&route.category==='service_admin'&&!manager)return false;
  if(typeof b.description!=='string'||b.description.length>16000||typeof b.title!=='string'||b.title.length>240)return false;
  if(b.source==='direct'&&!b.title.trim())return false;
  for(const [key,max] of [['clientName',160],['phone',80],['email',200],['reference',160],['organization',240],['due',10]] as const)
