@@ -13,7 +13,7 @@ export function TicketSupportCreate({manager,onSaved,onCancel}:Props){
   try{
    if(!id){
     const r=await fetch('/api/ticket-support',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...value,clientName,phone,email,reference,organization,due,requestKey})});
-    const d=await r.json();if(!r.ok)throw Error(d.error||'تیکت ثبت نشد');
+    const d:any=await r.json();if(!r.ok)throw Error(d.error||'تیکت ثبت نشد');
     id=d.id;setCreatedId(id);
    }
    for(const file of files){
@@ -21,7 +21,7 @@ export function TicketSupportCreate({manager,onSaved,onCancel}:Props){
     if(uploaded.includes(identity))continue;
     const body=new FormData();body.set('ticket_id',id);body.set('file',file);
     const response=await fetch('/api/ticket-support/files',{method:'POST',body});
-    const data=await response.json();
+    const data:any=await response.json();
     if(!response.ok)throw Error('تیکت '+id+' ثبت شد، اما پیوست «'+file.name+'» ذخیره نشد: '+(data.error||'خطا'));
     setUploaded(prev=>[...prev,identity]);
    }
