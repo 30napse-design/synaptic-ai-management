@@ -12,7 +12,7 @@ type Props={
  members:any[];counts?:Record<string,number>;
  reset:()=>void;
 };
-const statuses={open:'جدید',doing:'در حال پیگیری',waiting:'منتظر پاسخ',review:'در انتظار تأیید',closed:'بسته‌شده'};
+const statuses={open:'جدید',doing:'در حال پیگیری',waiting:'منتظر پاسخ',review:'در انتظار تأیید',awaiting_assignment:'در انتظار تعیین مسئول',closed:'بسته‌شده'};
 export function UnifiedIntakeFilters({query,setQuery,group,setGroup,category,setCategory,topic,setTopic,owner,setOwner,status,setStatus,members,counts,reset}:Props){
  const categories=unifiedIntakeCategories.filter(c=>!group||c.group===group);
  const selected=intakeCategory(category);
