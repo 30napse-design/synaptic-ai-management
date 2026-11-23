@@ -1,0 +1,21 @@
+name: Science four consultation desks
+on:
+  push:
+    branches:
+      - feature/science-consultation-four-hubs-2026-11-23
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --global pnpm@11.25.0
+      - run: pnpm install --frozen-lockfile
+      - run: node --test tests/science-consultation-four-desks.test.mjs tests/science-policy.test.mjs
+      - run: pnpm exec tsc --noEmit
+      - run: pnpm build
