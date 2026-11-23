@@ -1,6 +1,6 @@
 import {mayReadRequest,requestRouting} from './dispatch-policy';
 import {unifiedRequiredAccess} from './unified-intake-routing';
-import {unifiedIntakeCategories} from './unified-intake-taxonomy';
+import {unifiedIntakeCategories,seniorResearchMayReview} from './unified-intake-taxonomy';
 import {organizationalCode} from './organizational-logins';
 import {visitPurposes} from './communication-policy.ts';
 import {hasDataAccess} from './auth-policy.ts';
@@ -24,15 +24,17 @@ export function canUseOpsCategory(user:any,item:any){if(!canUseOps(user))return 
  const unified=requestRouting(item)?.unifiedIntake;
  if(unified){
   const required=unifiedRequiredAccess(String(unified.category||''));
-  return hasDataAccess(user,required)&&(!(item.channel==='phone'||item.source_type==='incoming')||hasDataAccess(user,'calls'));
+  const senior=organizationalCode(user.username||user.organizationalUsername||'')==='research_manager'&&hasDataAccess(user,'research_supervision')&&seniorResearchMayReview(unified.category);
+  return senior||hasDataAccess(user,required)&&(!(item.channel==='phone'||item.source_type==='incoming')||hasDataAccess(user,'calls'));
  }
  if(departmentAccess(user,item))return true;if(item.manager_only||item.managerOnly||item.category==='internal'||privateSubtypes.includes(item.subtype))return false;const c=operationCategories.find(c=>c.id===item.category);const technical=item.category==='system'&&technicalSubtypes.includes(item.subtype)&&hasDataAccess(user,'security_ops');return !!c&&(technical||hasDataAccess(user,c.scope))&&(!((item.channel==='phone')||item.source_type==='incoming'||item.sourceType==='incoming')||hasDataAccess(user,'calls'))}
 export function canSeeOps(user:any,item:any){const routing=requestRouting(item);if(routing?.ownerRole)return mayReadRequest(user,item)&&(!routing.unifiedIntake||canUseOpsCategory(user,item));const shared=hasDataAccess(user,'customer_ops')&&['customers','visits'].includes(item.category);return canUseOpsCategory(user,item)&&(user.manager||!!user.email&&(shared||!item.assignee&&hasDataAccess(user,'customer_ops')||item.assignee===user.email||item.created_by===user.email||item.createdBy===user.email))}
-export function operationsScope(user:any,routingReady=false):{sql:string;args:any[]}{if(routingReady){const old=operationsScope(user,false),role=organizationalCode(user?.username||user?.organizationalUsername||'');const categories=unifiedIntakeCategories.filter(c=>hasDataAccess(user,unifiedRequiredAccess(c.id))).map(c=>c.id);
+export function operationsScope(user:any,routingReady=false):{sql:string;args:any[]}{if(routingReady){const old=operationsScope(user,false),role=organizationalCode(user?.username||user?.organizationalUsername||'');const senior=role==='research_manager'&&hasDataAccess(user,'research_supervision');
+ const categories=unifiedIntakeCategories.filter(c=>hasDataAccess(user,unifiedRequiredAccess(c.id))||senior&&seniorResearchMayReview(c.id)).map(c=>c.id);
  const eligible=categories.length?"json_extract(routing,'$.unifiedIntake.category') IN ("+categories.map(()=>'?').join(',')+")":'0=1';
  const scopeCheck="(json_extract(routing,'$.unifiedIntake.category') IS NULL OR "+eligible+")";
- return {sql:`(((${old.sql}) AND json_extract(routing,'$.ownerRole') IS NULL) OR (json_extract(routing,'$.ownerRole') IS NOT NULL AND (created_by=? OR ?=1 OR EXISTS(SELECT 1 FROM json_each(routing,'$.roles') WHERE value=?) OR (json_extract(routing,'$.unifiedIntake.version')=2 AND assignee=?)) AND ${scopeCheck}))`,
- args:[...old.args,user?.email||'',user?.manager&&user.email==='ekramiihamid@gmail.com'?1:0,role||'',user?.email||'',...categories]}}if(!canUseOps(user))return {sql:'0=1',args:[]};if(user.manager)return {sql:'1=1',args:[]};const categories=operationCategories.filter(c=>c.id!=='internal'&&hasDataAccess(user,c.scope)).map(c=>c.id);let base=`manager_only=0 AND category IN (${categories.map(()=>'?').join(',')||"''"}) AND subtype NOT IN (${privateSubtypes.map(()=>'?').join(',')})`,args:any[]=[...categories,...privateSubtypes];
+ return {sql:`(((${old.sql}) AND json_extract(routing,'$.ownerRole') IS NULL) OR (json_extract(routing,'$.ownerRole') IS NOT NULL AND (created_by=? OR ?=1 OR EXISTS(SELECT 1 FROM json_each(routing,'$.roles') WHERE value=?) OR (json_extract(routing,'$.unifiedIntake.version')=2 AND assignee=?) OR (?=1 AND json_extract(routing,'$.unifiedIntake.category') IN ('service_orders','service_projects','service_results','consult_before','consult_change','consult_execution','consult_results'))) AND ${scopeCheck}))`,
+ args:[...old.args,user?.email||'',user?.manager&&user.email==='ekramiihamid@gmail.com'?1:0,role||'',user?.email||'',senior?1:0,...categories]}}if(!canUseOps(user))return {sql:'0=1',args:[]};if(user.manager)return {sql:'1=1',args:[]};const categories=operationCategories.filter(c=>c.id!=='internal'&&hasDataAccess(user,c.scope)).map(c=>c.id);let base=`manager_only=0 AND category IN (${categories.map(()=>'?').join(',')||"''"}) AND subtype NOT IN (${privateSubtypes.map(()=>'?').join(',')})`,args:any[]=[...categories,...privateSubtypes];
  if(hasDataAccess(user,'security_ops')){base+=" OR (category='system' AND subtype=? AND manager_only=0) OR (access_scope='security' AND category='system' AND subtype IN (?,?))";args.push(technicalSubtypes[0],...technicalSubtypes)}
  if(hasDataAccess(user,'administration_ops')){base+=" OR (access_scope='administration' AND category='internal' AND subtype IN (?,?))";args.push(...administrativeSubtypes)}
  let participant='assignee=? OR created_by=?';args.push(user.email,user.email);if(hasDataAccess(user,'customer_ops'))participant+=" OR category IN ('customers','visits') OR trim(assignee)=''";
