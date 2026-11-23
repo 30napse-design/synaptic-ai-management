@@ -10,9 +10,9 @@ const mail=readFileSync('components/workspace/work-correspondence-strip.tsx','ut
 const shell=readFileSync('components/workspace/workspace-shell.tsx','utf8');
 const repair=readFileSync('components/workspace/workspace-repair.css','utf8');
 test('sidebar offers four approved destinations and legacy work routes remain',()=>{
- const group=nav.match(/\{id:'work',label:'کارتابل و برنامه‌ریزی',items:\[([^\]]+)\]\}/)?.[1]||'';
- assert.equal((group.match(/item\(/g)||[]).length,4);
- for(const label of ['برنامه‌ریزی','کارتابل وظایف','بررسی و تأیید','مکاتبات داخلی'])assert.ok(group.includes(label));
+ const group=nav.split("{id:'work',label:'کارتابل و برنامه‌ریزی',items:[")[1]?.split("]}")[0]||'';
+ assert.ok((group.match(/item\(/g)||[]).length>=7,'Existing work routes must remain');
+ for(const label of ['کارتابل و برنامه‌ریزی','همه وظایف','برد وظایف','برنامه‌ریزی','بررسی و تأیید','مکاتبات داخلی'])assert.ok(group.includes(label));
  assert.match(work,/overview:'امروز من'/);
  assert.match(work,/board:'برد وظایف'/);
  assert.match(work,/view==='dashboard'\?<WorkCommandDashboard/);
