@@ -10,3 +10,14 @@ export function validateDesign(p:any){const text=(v:any,n:number,required=false)
 export function protocolReady(p:any){return p.feasibility==='possible'&&!!p.objectives?.trim()&&!!p.model?.trim()&&p.groups?.length>0&&p.assays?.length>0&&!!p.sample_plan?.trim()&&!!p.deliverables?.trim()}
 export function latestEntries(entries:any[],kind:string){const result=new Map<string,any>();for(const e of entries.filter(e=>e.kind===kind).sort((a,b)=>(a.sequence||0)-(b.sequence||0)||a.created_at.localeCompare(b.created_at)))result.set(e.source_id,e);return [...result.values()]}
 export const T02Comparison=[['مشاوره علمی','عنوان و متن عمومی ارجاع','سؤال پژوهش، پروپوزال، اهداف، امکان‌سنجی و نظر مشاور'],['طراحی مطالعه','بدون ساختار مشخص گروه و آزمون','مدل، گروه‌ها، نمونه‌ها، آزمون، تکرار، روش و خروجی؛ با نسخه محفوظ'],['کارشناسان و هیئت علمی','ارجاع عمومی به مسئول','مسئول، همکاران تخصصی، تأییدکننده و ثبت نظر در همان پرونده'],['کنترل داده','فایل و نتیجه عمومی کارتابل','اتصال نتایج مجری و داده دستی، چک‌لیست و تصمیم برای نسخه داده'],['QC / QA','بدون مسیر مستقل مغایرت','پذیرش، رد، درخواست اصلاح، مسئول و مهلت اقدام اصلاحی'],['مسئول فنی','بستن کار عمومی','تأیید پروتکل و تأیید نهایی نسخه مشخص گزارش؛ با کنترل تغییر داده']];
+
+// Four staff-facing scientific consultation desks (not customer intake forms).
+// Keep existing seven technical tabs; expose them contextually under four desks.
+export const scienceConsultationDesks=[
+ {id:'before',title:'پیش از اجرای پروژه',short:'ایده، پروپوزال، طراحی و امکان‌سنجی',tabs:['cases','referrals','consultation','design']},
+ {id:'estimate',title:'پس از برآورد و فاکتور',short:'اصلاح روش، خدمات و دامنه سفارش',tabs:['cases','referrals','consultation','design']},
+ {id:'execution',title:'حین اجرای پژوهش',short:'آزمایشگاه، داده‌ها و مشکلات اجرا',tabs:['cases','referrals','consultation','design','data','deviations']},
+ {id:'results',title:'نتایج و مستندات',short:'داده خام، تصویر، نمودار، پروتکل و گزارش',tabs:['cases','data','deviations','approval']}
+] as const;
+export type ScienceConsultationDeskId=typeof scienceConsultationDesks[number]['id'];
+export const scienceConsultationDeskIds=scienceConsultationDesks.map(d=>d.id);
