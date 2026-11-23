@@ -36,7 +36,7 @@
 .science-four-desks .sci-log{border-radius:12px;border-color:#e0e9f2}
 .science-four-desks .sci-case{border-radius:14px}
 .science-four-desks :is(button,a,input,select,textarea):focus-visible{outline:3px solid #32a8b2;outline-offset:2px}
-@media(max-width:1250px){.sci-desk-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.sci-desk-card{min-height:96px}}
+@media(max-width:940px){.sci-desk-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.sci-desk-card{min-height:96px}}
 @media(max-width:700px){.science-four-desks{padding:12px}.science-four-desks>.page-heading{align-items:flex-start;flex-wrap:wrap}.sci-desk-grid{gap:8px}.sci-desk-card{gap:8px;padding:11px;min-height:92px}.sci-desk-icon{width:38px;height:38px;flex-basis:38px}.sci-desk-text strong{font-size:11px}.sci-desk-text small{font-size:9px}.sci-desk-number{display:none}.sci-active-desk{padding:11px}.sci-owner-control select{max-width:100%}.science-four-desks .sci-section{padding:14px}.science-four-desks .sci-desk-tabs{flex-wrap:nowrap}.science-four-desks .sci-desk-tabs button{white-space:nowrap}}
 @media(max-width:380px){.sci-desk-grid{grid-template-columns:1fr}.sci-desk-card{min-height:70px}}
 @media(prefers-reduced-motion:reduce){.sci-desk-card{transition:none}.sci-desk-card:hover{transform:none}}
