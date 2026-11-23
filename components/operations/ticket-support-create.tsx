@@ -5,22 +5,25 @@ import styles from './ticket-category-selector.module.css';
 type Props={manager:boolean;onSaved:()=>void;onCancel:()=>void};
 const empty:TicketCategorySelection={source:'site',category:'orders',topic:'',description:'',title:''};
 export function TicketSupportCreate({manager,onSaved,onCancel}:Props){
- const [value,setValue]=useState<TicketCategorySelection>(empty),[clientName,setName]=useState(''),[phone,setPhone]=useState(''),[email,setEmail]=useState(''),[reference,setReference]=useState(''),[organization,setOrganization]=useState(''),[due,setDue]=useState('');
+ const [requestKey]=useState(()=>crypto.randomUUID()),[uploaded,setUploaded]=useState<string[]>([]);const [value,setValue]=useState<TicketCategorySelection>(empty),[clientName,setName]=useState(''),[phone,setPhone]=useState(''),[email,setEmail]=useState(''),[reference,setReference]=useState(''),[organization,setOrganization]=useState(''),[due,setDue]=useState('');
  const [files,setFiles]=useState<File[]>([]),[createdId,setCreatedId]=useState(''),[busy,setBusy]=useState(false),[message,setMessage]=useState(''),[done,setDone]=useState(false);
  async function submit(e:React.FormEvent){
   e.preventDefault();if(busy||done)return;setBusy(true);setMessage('');
   let id=createdId;
   try{
    if(!id){
-    const r=await fetch('/api/ticket-support',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...value,clientName,phone,email,reference,organization,due})});
+    const r=await fetch('/api/ticket-support',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...value,clientName,phone,email,reference,organization,due,requestKey})});
     const d=await r.json();if(!r.ok)throw Error(d.error||'تیکت ثبت نشد');
     id=d.id;setCreatedId(id);
    }
    for(const file of files){
+    const identity=file.name+':'+file.size+':'+file.lastModified;
+    if(uploaded.includes(identity))continue;
     const body=new FormData();body.set('ticket_id',id);body.set('file',file);
     const response=await fetch('/api/ticket-support/files',{method:'POST',body});
     const data=await response.json();
     if(!response.ok)throw Error('تیکت '+id+' ثبت شد، اما پیوست «'+file.name+'» ذخیره نشد: '+(data.error||'خطا'));
+    setUploaded(prev=>[...prev,identity]);
    }
    setDone(true);setMessage('تیکت با شناسه '+id+' ثبت و به کارتابل ارجاع شد.'+(files.length?' پیوست‌ها برای بررسی امنیتی ذخیره شدند.':''));
    onSaved();
