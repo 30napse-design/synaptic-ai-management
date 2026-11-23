@@ -27,6 +27,7 @@ export default function OperationsIntakeForm({form,setForm,user,allowed,eligible
   if(!validPersianContactName(form.clientName)){setValidation('نام و نام خانوادگی فارسی معتبر وارد کنید.');return}
   if(!validOptionalEmail(form.email||'')){setValidation('ایمیل معتبر نیست.');return}
   if(mode.channel==='phone'&&!normalizeIranPhone(form.phone||'')){setValidation('شماره موبایل ایرانی معتبر وارد کنید.');return}
+  if(form.assignee&&String(form.assignmentReason||'').trim().length<4){setValidation('برای ارجاع دستی، دلیل حداقل چهار حرفی بنویسید.');return}
   setValidation('');
   const body='دسته اصلی: '+cat.title+'\n'+communicationTranscript(form.siteTopic,form.customerRequest,form.staffResponse);
   const title=form.siteTopic+' — '+(form.clientName||form.phone||'درخواست جدید');
@@ -55,7 +56,8 @@ export default function OperationsIntakeForm({form,setForm,user,allowed,eligible
    <label>موعد پیگیری / مهلت پاسخ<input type="date" value={form.due||''} onChange={e=>change({due:e.target.value})}/></label>
    <label className="wide">شرح تماس / درخواست مشتری <span className="required">*</span><textarea required rows={4} maxLength={7000} value={form.customerRequest||''} onChange={e=>change({customerRequest:e.target.value})} placeholder="صحبت‌ها و درخواست مطرح‌شده توسط مخاطب را ثبت کنید…"/></label>
    <label className="wide">پاسخ پشتیبان / اقدام یا قول داده‌شده <span className="required">*</span><textarea required rows={4} maxLength={7000} value={form.staffResponse||''} onChange={e=>change({staffResponse:e.target.value})} placeholder="پاسخ، تعهد یا اقدام بعدی را دقیق ثبت کنید…"/></label>
-   <label className="wide">مسئول پیگیری<select value={form.assignee||''} onChange={e=>change({assignee:e.target.value})}><option value="">بعداً تعیین شود</option>{eligible({...form,subtype:mode.direction==='visit'?form.visitPurpose:matchingLegacySubtype(cat?.id||'',form.siteTopic,allowed),category:mode.direction==='visit'?'visits':undefined,channel:mode.id==='messaging'?form.channel:mode.channel,sourceType:mode.channel==='phone'?'incoming':'manual'}).map(m=><option key={m.email} value={m.email}>{memberPositionLabel(m,orgRoleCatalog,organizationalCode)}</option>)}</select></label>
+   <label className="wide">مسئول پیگیری<select value={form.assignee||''} onChange={e=>change({assignee:e.target.value})}><option value="">بعداً تعیین شود</option>{eligible({...form,subtype:form.siteTopic,category:'customers',routing:{ownerRole:'unified_pending_'+(suggested?.role||'unknown'),unifiedIntake:suggested},channel:mode.id==='messaging'?form.channel:mode.channel,sourceType:mode.channel==='phone'?'incoming':'manual'}).map(m=><option key={m.email} value={m.email}>{memberPositionLabel(m,orgRoleCatalog,organizationalCode)}</option>)}</select></label>
+   {form.assignee&&<label className="wide">دلیل انتخاب مسئول پیگیری<input required minLength={4} maxLength={500} value={form.assignmentReason||''} onChange={e=>change({assignmentReason:e.target.value})} placeholder="علت ارجاع به این کارمند مجاز"/></label>}
   </div>
   {(feedback||validation)&&<div className="error-banner" role="alert">{validation||feedback}</div>}
   <div className="modal-actions"><button className="primary" disabled={busy||submitting||!cat||!form.siteTopic}>{busy||submitting?'در حال ثبت…':'ثبت و ارجاع'}</button><button type="button" className="secondary" disabled={busy||submitting} onClick={onCancel}>انصراف</button></div>
