@@ -13,7 +13,7 @@
 .ticket-card-waiting{--tbg:#fff4e5;--tborder:#f7ddaf;--tcolor:#a56820}
 .ticket-card-overdue{--tbg:#fff0ef;--tborder:#fad4d0;--tcolor:#b94c46}
 .ticket-card-unassigned{--tbg:#eaf7f8;--tborder:#cae7e9;--tcolor:#287d84}
-@media(max-width:1100px){.ticket-dashboard-cards{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:850px){.ticket-dashboard-cards{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:590px){.ticket-dashboard-cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.ticket-dashboard-card{min-height:60px;padding:8px}.ticket-dashboard-card strong{font-size:17px}}
 .ops-module .ticket-staff-panel{display:grid;gap:9px;margin:9px 0 11px;padding:12px;border:1px solid #d6e3f3;border-radius:13px;background:#f8fbff;color:#223f61}
 .ops-module .ticket-staff-panel h3{margin:0;font-size:13px;color:#25476e}
