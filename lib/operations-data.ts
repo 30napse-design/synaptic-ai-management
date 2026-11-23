@@ -21,12 +21,14 @@ export async function readOperationsData(u:any,p:URLSearchParams){
   const source=(p.get('ticketSource')||'').trim().slice(0,20);
   const ticketCategory=(p.get('ticketCategory')||'').trim().slice(0,80);
   const ticketTopic=(p.get('ticketTopic')||'').trim().slice(0,160);
-  if(source){where+=" AND json_extract(source_labels,'$.ticket_source')=?";args.push(source)}
+  if(source==='legacy'){where+=" AND (source_type='gmail' OR channel IN ('gmail','whatsapp','telegram','bale','rubika','instagram','linkedin'))"}
+  else if(source==='site'||source==='direct'){where+=" AND json_extract(source_labels,'$.ticket_source')=?";args.push(source)}
+  else if(source){where+=' AND 1=0'}
   if(ticketCategory){
    const cat=(source==='direct'?getTicketCategories('direct'):siteTicketCategories).find(c=>c.id===ticketCategory);
    const legacyGroups:Record<string,string>={orders:'customers',invoices:'billing',payments:'billing',results:'results',projects:'projects',internal:'internal',system:'system'};
    if(!cat){where+=' AND 1=0'}
-   else if(source){where+=" AND json_extract(source_labels,'$.ticket_category')=?";args.push(ticketCategory)}
+   else if(source==='site'||source==='direct'){where+=" AND json_extract(source_labels,'$.ticket_category')=?";args.push(ticketCategory)}
    else{
     where+=" AND (json_extract(source_labels,'$.ticket_category')=?"+(legacyGroups[ticketCategory]?" OR (COALESCE(json_extract(source_labels,'$.ticket_v'),0)=0 AND category=?)":"")+")";
     args.push(ticketCategory);if(legacyGroups[ticketCategory])args.push(legacyGroups[ticketCategory]);
@@ -37,8 +39,8 @@ export async function readOperationsData(u:any,p:URLSearchParams){
    if(!cat||!cat.topics.some(topic=>topic===ticketTopic)){where+=' AND 1=0'}
    else{
     // Never guess a precise topic for a legacy message: only exact historic subtype matches.
-    where+=" AND (json_extract(source_labels,'$.ticket_topic')=?"+(!source?" OR (COALESCE(json_extract(source_labels,'$.ticket_v'),0)=0 AND subtype=?)":"")+")";
-    args.push(ticketTopic);if(!source)args.push(ticketTopic);
+    where+=" AND (json_extract(source_labels,'$.ticket_topic')=?"+(!source||source==='legacy'?" OR (COALESCE(json_extract(source_labels,'$.ticket_v'),0)=0 AND subtype=?)":"")+")";
+    args.push(ticketTopic);if(!source||source==='legacy')args.push(ticketTopic);
    }
   }
 }
