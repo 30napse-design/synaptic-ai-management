@@ -43,7 +43,7 @@ export async function writeStandaloneSampleIntake(u:any,b:any){allow(u);check(st
   check(str(b.researcher_name,180)&&str(b.project_title,180)&&optional(b.researcher_phone||'',80)&&optional(b.researcher_email||'',200)&&optional(b.organization||'',240)&&optional(b.notes||'',4000),'مشخصات محقق یا پروژه معتبر نیست.');
   check(!b.researcher_email||/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(b.researcher_email),'ایمیل معتبر نیست.');
   const id='sample-intake:'+await digest(u.email+':'+b.key);
-  const d={intake_v1:{project_title:b.project_title.trim(),researcher_name:b.researcher_name.trim(),researcher_phone:String(b.researcher_phone||'').trim(),researcher_email:String(b.researcher_email||'').trim(),organization:String(b.organization||'').trim(),notes:String(b.notes||''),samples:[],history:[{action:'created',at:now,actor:u.email}]}};
+  const d:any={intake_v1:{project_title:b.project_title.trim(),researcher_name:b.researcher_name.trim(),researcher_phone:String(b.researcher_phone||'').trim(),researcher_email:String(b.researcher_email||'').trim(),organization:String(b.organization||'').trim(),notes:String(b.notes||''),samples:[],history:[{action:'created',at:now,actor:u.email}]}};
   const exists=await db().prepare("SELECT w.details FROM staff_records r JOIN staff_work_details w ON w.record_id=r.id WHERE r.id=? AND r.kind='sample_intake'").bind(id).first<any>();
   if(exists){const old=JSON.parse(exists.details).intake_v1;check(old.project_title===d.intake_v1.project_title&&old.researcher_name===d.intake_v1.researcher_name,'کلید ثبت قبلاً استفاده شده است.',409);return {ok:true,id,replayed:true};}
   const result=await db().batch([
