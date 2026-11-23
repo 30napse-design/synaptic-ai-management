@@ -19,7 +19,7 @@ export default function ResearcherSampleIntake({initialData}:{initialData:any}){
  return <main dir="rtl" className={styles.root}><SampleIntakeHero/><SampleIntakeProgress/>
  <div className={styles.workspaceGrid}><aside className={styles.quickSidebar} aria-label="خلاصه و دسترسی سریع نمونه‌ها">
   <section className={styles.summaryPanel}><h2>خلاصه وضعیت نمونه‌ها</h2>
-   {[['کل نمونه‌ها','all'],['ثبت اولیه','registered'],['اعلام ارسال','announced'],['دریافت پژوهشکده','received'],['پذیرش‌شده','accepted']].map(([label,status])=><div className={styles.summaryRow} key={status}><span>{label}</span><strong>{number(status==='all'?(data.overview||[]).length:(data.overview||[]).filter((i:any)=>i.state===status).length)}</strong></div>)}
+   {[['نمونه‌های اخیر','all'],['ثبت اولیه','registered'],['اعلام ارسال','announced'],['دریافت پژوهشکده','received'],['پذیرش‌شده','accepted']].map(([label,status])=><div className={styles.summaryRow} key={status}><span>{label}</span><strong>{number(status==='all'?(data.overview||[]).length:(data.overview||[]).filter((i:any)=>i.state===status).length)}</strong></div>)}
   </section>
   <section className={styles.quickPanel}><h2>دسترسی سریع</h2>
    <a href="#intake-details">ثبت مشخصات نمونه</a><a href="#intake-shipments">اعلام و دریافت محموله</a><a href="#intake-review">بررسی و تأیید پذیرش</a><a href="#registered-samples">فهرست همه نمونه‌ها</a>
