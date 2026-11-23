@@ -89,7 +89,7 @@ export default function WorkCommandDashboard({data,today,open,create,manager}:Pr
  };
  const canAccessMail=manager||hasAccess(data.user,'mail');
  const modules=[
-  ...(canAccessMail?[{id:'mail',label:'مکاتبات داخلی',sub:'مکاتبات بین واحدها و تاریخچه',Icon:Mail}]:[]),
+  ...(canAccessMail?[{id:'mail' as const,label:'مکاتبات داخلی',sub:'مکاتبات بین واحدها و تاریخچه',Icon:Mail}]:[]),
   {id:'approvals',label:'بررسی و تأیید',sub:'درخواست‌ها و موارد نیازمند تأیید',Icon:ShieldCheck},
   {id:'tasks',label:'کارتابل وظایف',sub:'همه وظایف، وظایف امروز، برد وظایف',Icon:ClipboardCheck},
   {id:'plans',label:'برنامه‌ریزی',sub:'تقویم، برنامه‌های روزانه و آتی',Icon:CalendarDays}
