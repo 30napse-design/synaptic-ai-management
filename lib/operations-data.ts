@@ -37,8 +37,8 @@ export async function readOperationsData(u:any,p:URLSearchParams){
    if(!cat||!cat.topics.some(topic=>topic===ticketTopic)){where+=' AND 1=0'}
    else{
     // Never guess a precise topic for a legacy message: only exact historic subtype matches.
-    where+=" AND (json_extract(source_labels,'$.ticket_topic')=?"+(!source?" OR (COALESCE(json_extract(source_labels,'$.ticket_v'),0)=0 AND subtype=?)":"")+")";
-    args.push(ticketTopic);if(!source)args.push(ticketTopic);
+    where+=" AND (json_extract(source_labels,'$.ticket_topic')=?"+(!source||source==='gmail'?" OR (COALESCE(json_extract(source_labels,'$.ticket_v'),0)=0 AND subtype=?)":"")+")";
+    args.push(ticketTopic);if(!source||source==='gmail')args.push(ticketTopic);
    }
   }
 }
