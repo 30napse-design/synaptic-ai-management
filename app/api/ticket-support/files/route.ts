@@ -1,4 +1,4 @@
-import {env} from 'cloudflare:workers';
+import {privateTicketPut,privateTicketGet,privateTicketDelete} from '../../../../lib/ticket-private-storage';
 import {identity,db,json} from '../../../../lib/staff-server';
 import {requestOrigin} from '../../../../lib/request-origin';
 import {canSeeOps} from '../../../../lib/ops-policy';
@@ -32,11 +32,10 @@ export async function POST(req:Request){
   const file=form.get('file');assert(file instanceof File&&file.size>0&&file.size<=MAX_SIZE,'فایل غیرخالی تا ۸ مگابایت انتخاب کنید',413);
   const bytes=new Uint8Array(await file.arrayBuffer()),mime=mimeOf(file.name,bytes);
   assert(mime,'فقط PDF، DOCX، PNG و JPG معتبر پذیرفته می‌شود',415);
-  assert(env.BUCKET,'فضای خصوصی ذخیره پیوست هنوز فعال نشده است',503);
   const old=JSON.parse(ticket.attachments||'[]');assert(Array.isArray(old)&&old.length<MAX_FILES,'حداکثر پنج پیوست مجاز است',400);
   const fileId=crypto.randomUUID(),name=file.name.replace(/[\\/\r\n]/g,'_').slice(0,180);
   key='ticket-support/'+id+'/'+fileId;
-  await env.BUCKET!.put(key,bytes,{httpMetadata:{contentType:'application/octet-stream'}});
+  await privateTicketPut(key,bytes);
   const meta={id:fileId,filename:name,mime,size:file.size,object_key:key,review_required:true,review_status:'pending',created_by:u.email};
   try{
    const result=await db().batch([
@@ -44,7 +43,7 @@ export async function POST(req:Request){
     db().prepare("INSERT INTO staff_events(id,record_id,actor,action,body,created_at) SELECT ?,?,?,?,?,? WHERE changes()=1").bind(crypto.randomUUID(),id,u.email,'ticket-file-pending-review',JSON.stringify({file_id:fileId,filename:name,mime,size:file.size}),new Date().toISOString())
    ]);
    assert(result[0].meta.changes===1,'تیکت هم‌زمان تغییر کرده است؛ دوباره بارگذاری کنید',409);
-  }catch(e){await env.BUCKET!.delete(key);throw e}
+  }catch(e){await privateTicketDelete(key);throw e}
   return json({ok:true,id:fileId,filename:name,review_status:'pending'});
  }catch(e:any){return json({error:e?.status?e.message:'پیوست ذخیره نشد'},e?.status||500)}
 }
@@ -56,8 +55,7 @@ export async function GET(req:Request){
   const file=attachments.find((a:any)=>a.id===url.searchParams.get('file_id'));
   assert(file,'فایل پیدا نشد',404);
   assert(u.manager||file.review_status==='approved','این پیوست تا بررسی امنیتی فقط برای مدیریت قابل دریافت است',403);
-  assert(env.BUCKET,'فضای فایل در دسترس نیست',503);
-  const object=await env.BUCKET!.get(file.object_key);assert(object,'فایل در فضای خصوصی پیدا نشد',404);
-  return new Response(object.body,{headers:{'Content-Type':'application/octet-stream','Content-Disposition':"attachment; filename*=UTF-8''"+encodeURIComponent(file.filename),'Cache-Control':'private,no-store','X-Content-Type-Options':'nosniff','Content-Security-Policy':"default-src 'none'; sandbox"}});
+  const object=await privateTicketGet(file.object_key);assert(object,'فایل در فضای خصوصی پیدا نشد',404);
+  return new Response(object,{headers:{'Content-Type':'application/octet-stream','Content-Disposition':"attachment; filename*=UTF-8''"+encodeURIComponent(file.filename),'Cache-Control':'private,no-store','X-Content-Type-Options':'nosniff','Content-Security-Policy':"default-src 'none'; sandbox"}});
  }catch(e:any){return json({error:e?.status?e.message:'دریافت پیوست انجام نشد'},e?.status||500)}
 }
