@@ -1,0 +1,21 @@
+name: Verify SYNAPSE nine-domain UX integration
+on:
+  push:
+    branches:
+      - feature/synapse-nine-category-experience-2026-11-23
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --global pnpm@11.25.0
+      - run: pnpm install --frozen-lockfile
+      - run: node --test tests/synapse-nine-category-experience.test.mjs tests/operational-intake-engines-integration.test.mjs tests/operations-intake-ui.test.mjs tests/navigation.test.mjs tests/standalone-sample-intake.test.mjs tests/home-dashboard.test.mjs
+      - run: pnpm exec tsc --noEmit
+      - run: pnpm build
