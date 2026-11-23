@@ -1,4 +1,5 @@
 import {mayReadRequest,requestRouting} from './dispatch-policy';
+import {unifiedRequiredAccess} from './unified-intake-routing';
 import {organizationalCode} from './organizational-logins';
 import {visitPurposes} from './communication-policy.ts';
 import {hasDataAccess} from './auth-policy.ts';
@@ -21,8 +22,7 @@ function departmentAccess(user:any,item:any){const scope=item.access_scope||item
 export function canUseOpsCategory(user:any,item:any){if(!canUseOps(user))return false;if(user.manager)return true;
  const unified=requestRouting(item)?.unifiedIntake;
  if(unified){
-  const category=String(unified.category||'');
-  const required=category==='service_finance'?'billing_ops':category==='service_admin'?'administration_ops':category==='service_it'?'security_ops':category==='service_results'?'results_ops':category.startsWith('consult_')?'projects':'operations';
+  const required=unifiedRequiredAccess(String(unified.category||''));
   return hasDataAccess(user,required)&&(!(item.channel==='phone'||item.source_type==='incoming')||hasDataAccess(user,'calls'));
  }
  if(departmentAccess(user,item))return true;if(item.manager_only||item.managerOnly||item.category==='internal'||privateSubtypes.includes(item.subtype))return false;const c=operationCategories.find(c=>c.id===item.category);const technical=item.category==='system'&&technicalSubtypes.includes(item.subtype)&&hasDataAccess(user,'security_ops');return !!c&&(technical||hasDataAccess(user,c.scope))&&(!((item.channel==='phone')||item.source_type==='incoming'||item.sourceType==='incoming')||hasDataAccess(user,'calls'))}
