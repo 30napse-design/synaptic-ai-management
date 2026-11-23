@@ -7,7 +7,7 @@ export type TicketCategorySelection={source:TicketEntrySource;category:string;to
 type Props={value:TicketCategorySelection;onChange:(next:TicketCategorySelection)=>void;showInternal?:boolean};
 export function TicketCategorySelector({value,onChange,showInternal=false}:Props){
  const [expanded,setExpanded]=useState(false);
- const cats=getTicketCategories(value.source).filter(c=>showInternal||c.id!=='internal');
+ const cats=getTicketCategories(value.source).filter(c=>showInternal||c.id!=='internal').map(c=>c.id==='internal'&&value.source==='site'?{...c,topics:c.topics.filter(t=>t!=='امور کارکنان')}:c);
  const group=cats.find(x=>x.id===value.category)||cats[0];
  const set=(update:Partial<TicketCategorySelection>)=>onChange({...value,...update});
  return <section className={styles.root} dir="rtl" aria-label="طبقه‌بندی درخواست">
