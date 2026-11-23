@@ -33,3 +33,6 @@
 @media(max-width:1200px){.unified-workspace .home-toolbar-profile>span:last-of-type{display:block}.unified-workspace .home-toolbar-profile{max-width:190px}}
 @media(max-width:720px){.account-actions{gap:5px}.unified-workspace .home-toolbar-profile{max-width:175px;padding:4px}.home-toolbar-profile b{font-size:11px!important}.home-toolbar-profile small{font-size:9px}.unified-workspace .home-toolbar-user{gap:5px}.account-quick-settings{width:34px;height:34px}}
 @media(prefers-reduced-motion:reduce){.unified-workspace .home-toolbar-icon.ai-trigger:before{filter:none}}
+
+/* Keep the organizational role visible under the name on narrow screens. */
+@media(max-width:720px){.unified-workspace .home-toolbar-profile small{display:block!important;font-size:9px!important;line-height:1.2}.unified-workspace .home-toolbar-profile>span:last-of-type{display:block!important;min-width:0}.unified-workspace .home-toolbar-profile{max-width:195px}}
