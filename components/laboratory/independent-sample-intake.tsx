@@ -4,7 +4,7 @@ import {ClipboardList,CheckCircle2,PackageCheck,Send,Search,Plus,FlaskConical,Re
 import {intakeCategories,intakeUnits,intakeSuppliers,intakePreparations} from '../../lib/sample-intake-catalog';
 import './independent-sample-intake.css';
 
-type Sample={id:string;name:string;category:string;sample_type:string;quantity:number;unit:string;amount_per_unit:string;supplier:string;preparation:string;treatment:string;transport:string;storage:string;notes:string;received:number;lab_id:string;lab_name:string;sent:number;lab_received:number;status:string;receipt?:any;dispatch?:any;lab_receipt?:any;history:any[]};
+type Sample={id:string;name:string;category:string;sample_type:string;quantity:number;unit:string;amount_per_unit:string;supplier:string;preparation:string;treatment:string;transport:string;storage:string;notes:string;received:number;lab_id:string;lab_name:string;requested_labs?:string[];sent:number;lab_received:number;status:string;receipt?:any;dispatch?:any;lab_receipt?:any;history:any[]};
 type Entry={id:string;revision:number;researcher_name:string;researcher_phone:string;researcher_email:string;organization:string;project_title:string;notes:string;samples:Sample[];history:any[]};
 const states:Record<string,string>={registered:'ثبت اولیه',received:'دریافت پژوهشکده',sent:'ارسال به آزمایشگاه',lab_received:'تأیید آزمایشگاه',lab_issue:'مغایرت دریافت آزمایشگاه'};
 const fa=(n:number)=>Number(n||0).toLocaleString('fa-IR');
@@ -18,6 +18,7 @@ export default function IndependentSampleIntake(){
   e.preventDefault();if(busy)return;const form=e.currentTarget;const fd=new FormData(form),body:any=Object.fromEntries(fd);
   const key=form.dataset.requestKey||(form.dataset.requestKey=crypto.randomUUID());
   for(const prop of ['quantity','packages'])if(prop in body)body[prop]=Number(body[prop]);
+  if(action==='add_sample')body.requested_labs=fd.getAll('requested_labs').map(String);
   setBusy(true);setError('');setMessage('');
   try{const response=await parse(await fetch('/api/sample-intake/independent',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...body,...extra,action,key,id:action==='create'?undefined:id,revision:selected?.revision})}));
    const target=action==='create'?response.id:id;setId(target);await load(target);form.reset();delete form.dataset.requestKey;
@@ -47,9 +48,9 @@ export default function IndependentSampleIntake(){
   {selected&&<div className="independent-selected"><div><b>{selected.researcher_name}</b><span>{selected.project_title}</span><small>شناسه داخلی: <bdi>{selected.id}</bdi> · {fa(selected.samples.length)} قلم نمونه</small></div><button type="button" onClick={()=>{setId('');setSampleId('');setMessage('')}}>برگه جدید / بازگشت به فهرست</button></div>}
   {selected&&<div className="independent-panel">
     <h2><FlaskConical size={18}/> برگه مشخصات نمونه‌ها</h2>
-    {data?.can_create&&<SampleForm busy={busy} onSubmit={e=>void submit('add_sample',e)} category={category} setCategory={setCategory}/>}
+    {data?.can_create&&<SampleForm busy={busy} onSubmit={e=>void submit('add_sample',e)} category={category} setCategory={setCategory} laboratories={data.laboratories||[]}/>}
     <div className="independent-items">{selected.samples.map(s=><button type="button" key={s.id} className={sampleId===s.id?'current':''} onClick={()=>setSampleId(s.id)}><span>{s.name} · {s.sample_type}</span><small>{fa(s.quantity)} {s.unit} · {states[s.status]||s.status}</small></button>)}</div>
-    {!!selected.samples.length&&<div className="independent-table" aria-label="برگه ثبت نمونه"><table><thead><tr><th>نام نمونه</th><th>نوع</th><th>مقدار و تعداد</th><th>حمل و نگهداری</th><th>آزمایشگاه مقصد</th><th>وضعیت تحویل</th></tr></thead><tbody>{selected.samples.map(s=><tr key={s.id}><td>{s.name}<small>{s.id.slice(0,18)}</small></td><td>{s.category}<small>{s.sample_type}</small></td><td>{fa(s.quantity)} {s.unit}<small>{s.amount_per_unit||''}</small></td><td>{s.transport||'—'}<small>{s.storage||''} · {s.preparation||''} · {s.supplier||''}</small></td><td>{s.lab_name||'در انتظار تعیین مسئول مجاز'}</td><td>{states[s.status]||s.status}</td></tr>)}</tbody></table></div>}
+    {!!selected.samples.length&&<div className="independent-table" aria-label="برگه ثبت نمونه"><table><thead><tr><th>نام نمونه</th><th>نوع</th><th>مقدار و تعداد</th><th>حمل و نگهداری</th><th>آزمایشگاه مقصد</th><th>وضعیت تحویل</th></tr></thead><tbody>{selected.samples.map(s=><tr key={s.id}><td>{s.name}<small>{s.id.slice(0,18)}</small></td><td>{s.category}<small>{s.sample_type}</small></td><td>{fa(s.quantity)} {s.unit}<small>{s.amount_per_unit||''}</small></td><td>{s.transport||'—'}<small>{s.storage||''} · {s.preparation||''} · {s.supplier||''}</small></td><td>{s.lab_name||'در انتظار تعیین مسئول مجاز'}{!s.lab_name&&!!s.requested_labs?.length&&<small>پیشنهادی: {(data.laboratories||[]).filter((l:any)=>s.requested_labs?.includes(l.id)).map((l:any)=>l.name).join('، ')}</small>}</td><td>{states[s.status]||s.status}</td></tr>)}</tbody></table></div>}
     {!!selected.samples.length&&!sample&&<p className="independent-note">برای ثبت تحویل یا ارجاع، نمونه موردنظر را از برگه بالا انتخاب کنید.</p>}
   </div>}
   {selected&&sample&&<div className="independent-panel" key={sample.id}>
@@ -67,7 +68,7 @@ export default function IndependentSampleIntake(){
     {sample.receipt&&<p className="independent-note">دریافت پژوهشکده: {fa(sample.received)} قلم · ثبت‌کننده {sample.receipt.actor} · {new Date(sample.receipt.at).toLocaleString('fa-IR')}</p>}
     <h2><Send size={18}/> ۳. تعیین آزمایشگاه و تحویل</h2>
     {data.can_assign&&sample.status==='received'&&<form className="independent-fields" onSubmit={e=>void submit('send',e,{sample_id:sample.id})}>
-      <label>آزمایشگاه مقصد واقعی<select name="lab_id" required defaultValue=""><option value="">انتخاب آزمایشگاه فعال</option>{data.laboratories.map((l:any)=><option value={l.id} key={l.id}>{l.name}</option>)}</select></label>
+      <label>آزمایشگاه مقصد واقعی<select name="lab_id" required defaultValue={sample.requested_labs?.[0]||''}><option value="">انتخاب آزمایشگاه فعال</option>{data.laboratories.map((l:any)=><option value={l.id} key={l.id}>{l.name}</option>)}</select></label>
       <label>تعداد ارسال‌شده<input name="quantity" required type="number" min={1} max={sample.received} defaultValue={sample.received}/></label>
       <label className="wide">توضیحات ارجاع<input name="notes" maxLength={2000}/></label>
       <button className="independent-primary" disabled={busy}>ثبت ارسال به آزمایشگاه</button>
@@ -89,7 +90,7 @@ export default function IndependentSampleIntake(){
   </div>
  </section>;
 }
-function SampleForm({busy,onSubmit,category,setCategory}:{busy:boolean;onSubmit:(e:React.FormEvent<HTMLFormElement>)=>void;category:string;setCategory:(v:string)=>void}){
+function SampleForm({busy,onSubmit,category,setCategory,laboratories}:{busy:boolean;onSubmit:(e:React.FormEvent<HTMLFormElement>)=>void;category:string;setCategory:(v:string)=>void;laboratories:any[]}){
  return <form onSubmit={onSubmit} className="independent-fields independent-new-sample">
   <label>نام یا کد نمونه / دارو / ماده<input name="name" required maxLength={180}/></label>
   <label>دسته‌بندی نمونه<select name="category" value={category} required onChange={e=>setCategory(e.target.value)}><option value="">انتخاب دسته</option>{Object.keys(intakeCategories).map(c=><option key={c}>{c}</option>)}</select></label>
@@ -103,6 +104,7 @@ function SampleForm({busy,onSubmit,category,setCategory}:{busy:boolean;onSubmit:
   <label>شرایط حمل<input name="transport" maxLength={1000}/></label>
   <label>شرایط نگهداری<input name="storage" maxLength={1000}/></label>
   <label className="wide">توضیحات تخصصی<input name="notes" maxLength={4000}/></label>
+  <fieldset className="independent-lab-preferences"><legend>آزمایشگاه‌های پیشنهادی برای این نمونه (اختیاری)</legend><p>این انتخاب فقط پیشنهاد روی برگه است؛ ارجاع قطعی پس از دریافت نمونه و تأیید مسئول مجاز انجام می‌شود.</p><div>{laboratories.map(l=><label key={l.id}><input type="checkbox" name="requested_labs" value={l.id}/>{l.name}</label>)}</div></fieldset>
   <button disabled={busy} className="independent-primary"><Plus size={16}/> افزودن نمونه به برگه</button>
  </form>;
 }
