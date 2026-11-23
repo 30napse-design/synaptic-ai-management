@@ -22,16 +22,17 @@ export async function POST(req:Request){
     title:(b.source==='direct'?b.title.trim():b.topic).slice(0,240),
     subtype:b.topic,sourceBody:b.description,clientName:b.clientName,phone:b.phone,
     email:b.email,reference:b.reference,organization:b.organization||'',due:b.due,
+    unifiedCategory:b.category,unifiedTopic:b.topic,
     requestType:'unknown',clientKind:'unknown',intakeState:'unreviewed'
   });
   // Versioned taxonomy metadata is attached only to NEW tickets. Existing Gmail etc. unchanged.
   const id=result.id;
   const current=await db().prepare('SELECT source_labels FROM ops_items WHERE id=?').bind(id).first<any>();
   const existing=JSON.parse(current?.source_labels||'[]');
-  if(existing?.ticket_v===1){if(existing.ticket_topic_key!==meta.ticket_topic_key)return json({error:'این شناسه برای موضوع دیگری استفاده شده است'},409);return json({ok:true,id,replayed:true,source:meta.ticket_source,category:meta.ticket_category,topic:meta.ticket_topic})}
+  if(result.replayed&&existing?.ticket_v){if(existing.ticket_topic_key!==meta.ticket_topic_key)return json({error:'این شناسه برای موضوع دیگری استفاده شده است'},409);return json({ok:true,id,replayed:true,source:meta.ticket_source,category:meta.ticket_category,topic:meta.ticket_topic})}
   await db().batch([
-   db().prepare('UPDATE ops_items SET source_labels=? WHERE id=? AND source_key=?').bind(JSON.stringify(meta),id,'dispatch:'+id),
-   await eventStmt(id,u.email,'ticket-taxonomy-v1',JSON.stringify({...meta,source_key:key,by:u.email}))
+   db().prepare('UPDATE ops_items SET source_labels=? WHERE id=? AND source_key=?').bind(JSON.stringify({...existing,...meta}),id,'dispatch:'+id),
+   await eventStmt(id,u.email,'ticket-taxonomy-v2',JSON.stringify({...meta,source_key:key,by:u.email}))
   ]);
   return json({ok:true,id,source:meta.ticket_source,category:meta.ticket_category,topic:meta.ticket_topic,requires_attachment_review:true});
  }catch(e:any){console.error('ticket-create failed',e);return json({error:e?.status?e.message:'ثبت تیکت انجام نشد.'},e?.status||500)}
