@@ -49,6 +49,7 @@ export default function IndependentSampleIntake(){
     <h2><FlaskConical size={18}/> برگه مشخصات نمونه‌ها</h2>
     {data?.can_create&&<SampleForm busy={busy} onSubmit={e=>void submit('add_sample',e)} category={category} setCategory={setCategory}/>}
     <div className="independent-items">{selected.samples.map(s=><button type="button" key={s.id} className={sampleId===s.id?'current':''} onClick={()=>setSampleId(s.id)}><span>{s.name} · {s.sample_type}</span><small>{fa(s.quantity)} {s.unit} · {states[s.status]||s.status}</small></button>)}</div>
+    {!!selected.samples.length&&<div className="independent-table" aria-label="برگه ثبت نمونه"><table><thead><tr><th>نام نمونه</th><th>نوع</th><th>مقدار و تعداد</th><th>حمل و نگهداری</th><th>آزمایشگاه مقصد</th><th>وضعیت تحویل</th></tr></thead><tbody>{selected.samples.map(s=><tr key={s.id}><td>{s.name}<small>{s.id.slice(0,18)}</small></td><td>{s.category}<small>{s.sample_type}</small></td><td>{fa(s.quantity)} {s.unit}<small>{s.amount_per_unit||''}</small></td><td>{s.transport||'—'}<small>{s.storage||''}</small></td><td>{s.lab_name||'در انتظار تعیین مسئول مجاز'}</td><td>{states[s.status]||s.status}</td></tr>)}</tbody></table></div>}
     {!!selected.samples.length&&!sample&&<p className="independent-note">برای ثبت تحویل یا ارجاع، نمونه موردنظر را از برگه بالا انتخاب کنید.</p>}
   </div>}
   {selected&&sample&&<div className="independent-panel" key={sample.id}>
