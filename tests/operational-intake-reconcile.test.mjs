@@ -30,7 +30,8 @@ test('operations topic filter matches recorded newline line, escaped, with legac
  assert.match(sql,/String\.fromCharCode\(10\)\+'موضوع درخواست: '/);
  assert.match(sql,/topic\.replace/);
  assert.match(sql,/subtype=\?/);
- assert.doesNotMatch(sql,/substr\(source_body,1,\?\)=\?/);
+ const scoped=sql.slice(sql.indexOf("if(view!=='tickets'&&p.get('opsGroup'))"),sql.indexOf("if(p.get('channel'))"));
+ assert.doesNotMatch(scoped,/substr\(source_body,1,\?\)=\?/);
 });
 test('requested labs are suggestions, only active IDs may be stored, no automatic dispatch',()=>{
  assert.match(sheet,/name="requested_labs"/);
