@@ -147,3 +147,6 @@
  .reference-work-route #workspace-navigation.unified-sidebar{position:fixed;left:0;right:auto;width:min(305px,90vw);z-index:60}
  .reference-work-route .unified-page>main.work-app{padding:7px 9px 15px!important;min-width:0}
 }
+
+.reference-work-route #workspace-navigation .nav-group-title.wrd-work-active{background:linear-gradient(110deg,#35b6dc,#247bbb)!important;border:1px solid #63dcf2;border-radius:12px;box-shadow:inset 0 0 10px #ffffff41,0 0 8px #3bbce86b;color:#fff!important;font-weight:800}
+.reference-work-route #workspace-navigation .nav-group-title.wrd-work-active svg{color:#fff!important}
