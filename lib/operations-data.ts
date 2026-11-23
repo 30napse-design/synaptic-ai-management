@@ -15,7 +15,7 @@ export async function readOperationsData(u:any,p:URLSearchParams){
  const view=p.get('view')||'',contact=(p.get('contact')||'').trim().slice(0,200);
  let where=permitted;const args:any[]=[...scopeArgs];
  if(view==='history'&&contact){where+=' AND (lower(email)=? OR phone=?)';args.push(contact.toLowerCase(),contact)}else{where+=' AND direction=?';args.push(p.get('direction')||'inbound')}
- if(view==='tickets')where+=' AND '+ticketSQL;
+ if(view==='tickets'){where+=' AND '+ticketSQL;for(const [key,field] of [['ticketSource','ticket_source'],['ticketCategory','ticket_category'],['ticketTopic','ticket_topic']]){const v=(p.get(key)||'').trim();if(v){where+=` AND json_extract(source_labels,'$.${field}')=?`;args.push(v)}}}
  if(p.get('channel')){where+=' AND '+channelSQL+'=?';args.push(p.get('channel'))}
  for(const [key,column] of [['category','category'],['subtype','subtype'],['status','status'],['source','source_type'],['requestType','request_type'],['assignee','assignee'],['intakeState',"COALESCE(NULLIF(intake_state,''),'unreviewed')"]]){const value=p.get(key);if(value){where+=' AND '+column+'=?';args.push(value)}}
  const query=(p.get('q')||'').trim().slice(0,300);if(query){where+=" AND (title LIKE ? ESCAPE '\\' OR client_name LIKE ? ESCAPE '\\' OR phone LIKE ? ESCAPE '\\' OR email LIKE ? ESCAPE '\\' OR reference LIKE ? ESCAPE '\\' OR organization LIKE ? ESCAPE '\\' OR representative LIKE ? ESCAPE '\\' OR source_body LIKE ? ESCAPE '\\')";const escaped='%'+query.replace(/[\\%_]/g,'\\$&')+'%';args.push(...Array(8).fill(escaped))}
