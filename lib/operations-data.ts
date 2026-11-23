@@ -44,8 +44,7 @@ export async function readOperationsData(u:any,p:URLSearchParams){
   const [kind,id]=group.split(':');
   const directLegacy:Record<string,string>={collaboration:'internal',proposal:'projects',organization:'internal',general:'system'};
   const canonical=kind==='site'?legacyCategoryForSite[id]:kind==='direct'?directLegacy[id]:undefined;
-  const catalog=kind==='site'?siteTicketCategories:kind==='direct'?directTicketCategories:[];
-  const match=catalog.find(c=>c.id===id);
+  const match=kind==='site'?siteTicketCategories.find(c=>c.id===id):kind==='direct'?directTicketCategories.find(c=>c.id===id):undefined;
   if(!canonical||!match){where+=' AND 1=0';}
   else{
    where+=' AND category=?';args.push(canonical);
