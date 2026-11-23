@@ -1,0 +1,11 @@
+.ops-module .ops-call-action{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:42px;background:#188658;border:1px solid #188658;color:white;border-radius:10px;padding:10px 16px;font-size:12px;font-weight:700;box-shadow:0 3px 12px #18865824}
+.ops-module .ops-call-action:hover{background:#106e49}
+.ops-module .ops-intake-form .form-grid{gap:14px}
+.ops-module .ops-intake-form label{color:#213953;font-size:12px;font-weight:600}
+.ops-module .ops-intake-form :is(input,select,textarea){border:1px solid #cedbed;border-radius:11px;background:#fff;color:#193855;padding:11px 13px}
+.ops-module .ops-intake-form :is(input,select,textarea):focus{border-color:#4a8cd5;box-shadow:0 0 0 3px #4a8cd518}
+.ops-module .ops-intake-form label small{display:block;color:#6a85a0;font-weight:400;margin-top:5px}
+.ops-module .ops-intake-form textarea{min-height:108px;resize:vertical}
+.ops-module .ops-intake-form .required{color:#dc4545;font-weight:700}
+.ops-module .ops-intake-form .hint{padding:10px 12px;border-radius:9px;background:#e9f3ff;color:#3c5c7f}
+@media(max-width:700px){.ops-module .heading-buttons{flex-wrap:wrap}.ops-module .ops-call-action{flex:1}.ops-module .ops-intake-form .form-grid{grid-template-columns:minmax(0,1fr)}}
