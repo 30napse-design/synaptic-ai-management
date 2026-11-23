@@ -59,8 +59,8 @@ export async function readOperationsData(u:any,p:URLSearchParams){
      // The actual intake transcript starts with "دسته اصلی:" and only then
      // the "موضوع درخواست:" line. Exact line-boundary matching avoids matching
      // unrelated text and preserves legacy subtypes without a destructive rewrite.
-     where+=" AND (instr(char(10)||source_body, ?) > 0 OR subtype=?)";
-     args.push(String.fromCharCode(10)+'موضوع درخواست: '+topic+String.fromCharCode(10),topic);
+     where+=" AND (source_body LIKE ? OR subtype=?)";
+     args.push('%'+String.fromCharCode(10)+'موضوع درخواست: '+topic+String.fromCharCode(10)+'%',topic);
     }
    }
   }
