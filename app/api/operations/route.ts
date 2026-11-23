@@ -21,7 +21,20 @@ export async function POST(req:Request){
  if(!mutationAllowed(req))return json({error:'درخواست نامعتبر'},403);
  const u=await identity();if(!u)return json({error:'ابتدا وارد شوید'},401);
  if(Number(req.headers.get('content-length')||0)>50000)return json({error:'حجم درخواست زیاد است'},413);
- const rawBody=await req.text();if(rawBody.length>50000)return json({error:'حجم درخواست زیاد است'},413);let b:any;try{b=JSON.parse(rawBody)}catch{return json({error:'JSON معتبر نیست'},400)};if(b.action==='owner_accept'){try{return json(await acceptOperation(u,b))}catch(e:any){return json({error:e.status?e.message:'پذیرش ثبت نشد.'},e.status||400)}}if(b.action==='manual_assign'){try{return json(await assignOperationsManually(u,b))}catch(e:any){return json({error:e.status?e.message:'ارجاع ذخیره نشد.'},e.status||400)}}if(String(b.action).startsWith('dispatch_')||b.action==='create'&&await dispatchReady()){try{return json(await dispatchWrite(u,{...b,action:b.action==='create'?'dispatch_create':b.action}))}catch(e:any){return json({error:e.message},e.status||500)}}if(workflowActions.includes(b.action)){try{return json(await writeWorkflow(u,b))}catch(e){if(e instanceof WorkflowError)return json({error:e.message},e.status);console.error('workflow mutation failed',e);return json({error:'ثبت پرونده مرکزی انجام نشد.'},500)}}if(deletionAction(b.action)&&!canDeleteData(u))return json({error:'حذف فقط برای مالک اصلی سامانه مجاز است.'},403);
+ const rawBody=await req.text();if(rawBody.length>50000)return json({error:'حجم درخواست زیاد است'},413);let b:any;try{b=JSON.parse(rawBody)}catch{return json({error:'JSON معتبر نیست'},400)};if(b.action==='owner_accept'){try{return json(await acceptOperation(u,b))}catch(e:any){return json({error:e.status?e.message:'پذیرش ثبت نشد.'},e.status||400)}}if(b.action==='manual_assign'){try{return json(await assignOperationsManually(u,b))}catch(e:any){return json({error:e.status?e.message:'ارجاع ذخیره نشد.'},e.status||400)}}if(String(b.action).startsWith('dispatch_')||b.action==='create'&&await dispatchReady()){try{
+ const result=await dispatchWrite(u,{...b,action:b.action==='create'?'dispatch_create':b.action});
+ if(b.action==='create'&&String(b.sourceKey||'').startsWith('intake:')&&!result.replayed&&result.id){
+  await db().prepare("UPDATE ops_items SET call_date=? WHERE id=? AND created_by=? AND COALESCE(call_date,'')=''").bind(String(b.callDate||'').slice(0,80),result.id,u.email).run();
+ }
+ if(b.action==='create'&&String(b.sourceKey||'').startsWith('intake:')&&String(b.assignee||'').trim()&&result.id){
+  if(result.replayed)return json({...result,assignment_warning:'این ارتباط قبلاً ثبت شده است؛ برای تغییر مسئول، پرونده موجود را باز کنید.'});
+  const current=await db().prepare('SELECT revision FROM ops_items WHERE id=?').bind(result.id).first<any>();
+  if(!current)return json({...result,assignment_warning:'پرونده ثبت شد اما برای تخصیص دستی پیدا نشد؛ در فهرست بررسی کنید.'});
+  const transfer=await assignOperationsManually(u,{items:[{id:result.id,revision:Number(current.revision)}],assignee:String(b.assignee)});
+  if(!transfer.ok)return json({...result,assignment_warning:transfer.results?.[0]?.error||'ثبت شد اما ارجاع دستی کامل نشد.'});
+ }
+ return json(result);
+ }catch(e:any){return json({error:e.message},e.status||500)}}if(workflowActions.includes(b.action)){try{return json(await writeWorkflow(u,b))}catch(e){if(e instanceof WorkflowError)return json({error:e.message},e.status);console.error('workflow mutation failed',e);return json({error:'ثبت پرونده مرکزی انجام نشد.'},500)}}if(deletionAction(b.action)&&!canDeleteData(u))return json({error:'حذف فقط برای مالک اصلی سامانه مجاز است.'},403);
  if(b.action==='create'){
   const c=categoryFor(b.subtype),direction=String(b.direction||'inbound'),channel=String(b.channel||(b.sourceType==='incoming'?'phone':'manual')),visitPurpose=String(b.visitPurpose||'');
   if(!validCommunication(direction,channel,visitPurpose))return json({error:'روش ارتباط یا موضوع مراجعه معتبر نیست'},400);
