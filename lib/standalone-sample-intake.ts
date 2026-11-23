@@ -63,8 +63,11 @@ export async function writeStandaloneSampleIntake(u:any,b:any){allow(u);check(st
  if(b.action==='add_sample'){
   check(intakeAccess(u)&&!u.laboratory,'ثبت نمونه با مسئول پذیرش است.',403);
   check(str(b.name,180)&&str(b.category,120)&&intakeCategories[b.category]?.includes(b.sample_type)&&intakeUnits.includes(b.unit)&&intakeSuppliers.includes(b.supplier)&&intakePreparations.includes(b.preparation)&&optional(b.treatment||'',1000)&&whole(b.quantity,1)&&optional(b.amount_per_unit||'',50)&&optional(b.transport||'',1000)&&optional(b.storage||'',1000)&&optional(b.notes||'',4000),'مشخصات نمونه معتبر نیست.');
+  const requestedLabs=Array.isArray(b.requested_labs)?[...new Set(b.requested_labs.filter((id:any)=>typeof id==='string'&&id.length<160))]:[];
+  check(requestedLabs.length<=8,'حداکثر هشت آزمایشگاه پیشنهادی مجاز است.',400);
+  if(requestedLabs.length){const active=await db().prepare("SELECT id FROM laboratories WHERE status='active'").all();const allowedLabs=new Set(active.results.map((lab:any)=>lab.id));check(requestedLabs.every((id:any)=>allowedLabs.has(id)),'آزمایشگاه پیشنهادی باید از فهرست فعال انتخاب شود.',400)}
   const id='sample:'+await digest(row.id+':'+b.key);
-  d.samples.push({id,name:b.name.trim(),category:b.category,sample_type:b.sample_type,unit:b.unit,quantity:b.quantity,amount_per_unit:b.amount_per_unit||'',supplier:b.supplier,preparation:b.preparation,treatment:b.treatment||'',transport:b.transport||'',storage:b.storage||'',notes:b.notes||'',received:0,lab_id:'',lab_name:'',sent:0,lab_received:0,status:'registered',history:[]});
+  d.samples.push({id,name:b.name.trim(),category:b.category,sample_type:b.sample_type,unit:b.unit,quantity:b.quantity,amount_per_unit:b.amount_per_unit||'',supplier:b.supplier,preparation:b.preparation,treatment:b.treatment||'',transport:b.transport||'',storage:b.storage||'',notes:b.notes||'',requested_labs:requestedLabs,received:0,lab_id:'',lab_name:'',sent:0,lab_received:0,status:'registered',history:[]});
   event={...event,sample_id:id,quantity:b.quantity};
  }else if(b.action==='receive'){
   check(intakeAccess(u)&&!u.laboratory,'دریافت فیزیکی با پذیرش است.',403);
