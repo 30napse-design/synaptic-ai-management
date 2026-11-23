@@ -1,4 +1,4 @@
-import {getTicketCategories,hasTicketTopic,type TicketEntrySource} from './ticket-support-taxonomy';
+import {getTicketCategories,hasTicketTopic,type TicketEntrySource} from './ticket-support-taxonomy.ts';
 
 /** New ticket keys never overwrite the legacy ops_items category/subtype. */
 export const TICKET_CATALOG_VERSION=1;
