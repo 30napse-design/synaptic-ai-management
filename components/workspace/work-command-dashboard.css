@@ -118,3 +118,12 @@
 @media(max-width:740px){.work-reference-dashboard{padding:8px 2px}.wrd-title h1{font-size:20px}.wrd-title p{font-size:11px}.wrd-work-grid{grid-template-columns:1fr;direction:rtl}.wrd-calendar-panel{order:0}.wrd-board{order:1}.wrd-calendar-grid{max-width:420px;width:100%;margin:auto}.wrd-module{height:86px}.wrd-module-copy strong{font-size:14px}.wrd-module-copy small{font-size:10px}.wrd-metrics{gap:7px}.wrd-metric{height:59px;padding:6px 8px;grid-template-columns:30px 1fr}.wrd-metric svg{width:23px}.wrd-metric strong{font-size:18px}}
 @media(max-width:460px){.wrd-module-row{gap:7px}.wrd-module{padding:9px;min-height:90px}.wrd-module-icon{width:28px}.wrd-module-arrow svg{width:13px}.wrd-module-copy strong{font-size:12px}.wrd-module-copy small{font-size:9px;white-space:normal;line-height:1.5}.wrd-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.wrd-columns{gap:5px}.wrd-column{padding:4px}.wrd-column-heading{flex-wrap:wrap;font-size:9px}.wrd-task-card{padding:5px}.wrd-task-card b{font-size:9px}.wrd-board{padding:7px}.wrd-title-icon{width:42px;height:42px}.wrd-task-list-heading{flex-wrap:wrap}}
 @media(prefers-reduced-motion:reduce){.wrd-module,.wrd-metric{transition:none}.wrd-module:hover{transform:none}}
+
+/* The reference image places the bottom correspondence table on the RIGHT, directly below the board.
+   The left month calendar continues vertically alongside both right-hand cards. */
+.wrd-right-column{direction:rtl;min-width:0;display:grid;align-content:start;gap:13px}
+.wrd-right-column .wrd-board{min-height:348px}
+.wrd-right-column .wrd-correspondence{min-height:210px}
+.wrd-expand-tasks,.wrd-collapse-tasks{display:flex;justify-content:center;align-items:center;gap:6px;width:100%;min-height:29px;padding:5px;border:1px solid #d4e2f4;background:#f6faff;color:#286ba5;border-radius:9px;font-size:10px;font-weight:700}
+.wrd-expand-tasks:hover,.wrd-collapse-tasks:hover{background:#e8f4ff}
+@media(max-width:740px){.wrd-right-column{min-width:0}.wrd-right-column .wrd-board{min-height:0}}
