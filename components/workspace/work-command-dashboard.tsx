@@ -1,0 +1,131 @@
+'use client';
+import {useMemo,useState} from 'react';
+import Link from 'next/link';
+import {CalendarDays,ClipboardCheck,ShieldCheck,Mail,Layers3,Inbox,Clock3,Hourglass,AlarmClock,UserRoundX,ChevronRight,ChevronLeft,Plus,ArrowUpLeft,Search,Check,CheckCircle2,Play,FileText} from 'lucide-react';
+import {isWork,participant,isOverdue,executionDay,calendarDays} from '../../lib/work-policy';
+import {canReview} from '../../lib/staff-policy';
+import WorkCorrespondenceStrip from './work-correspondence-strip';
+import MyResponsibilities from './my-responsibilities';
+import './work-command-dashboard.css';
+
+type Props={data:any;today:string;open:(r:any)=>void;create:(kind:string,date?:string)=>void;manager:boolean};
+type Metric='all'|'new'|'today'|'waiting'|'overdue'|'unassigned';
+type Section='tasks'|'plans'|'approvals'|'mail';
+const fa=(n:number)=>Number(n||0).toLocaleString('fa-IR');
+const dayDate=(value:string)=>new Date(value+'T12:00:00Z');
+const moveDay=(value:string,days:number)=>{const d=dayDate(value);d.setUTCDate(d.getUTCDate()+days);return d.toISOString().slice(0,10)};
+const jalaliLong=(s:string)=>new Intl.DateTimeFormat('fa-IR-u-ca-persian',{year:'numeric',month:'long',day:'numeric',timeZone:'Asia/Dubai'}).format(dayDate(s));
+const jalaliMonth=(s:string)=>new Intl.DateTimeFormat('fa-IR-u-ca-persian',{year:'numeric',month:'long',timeZone:'Asia/Dubai'}).format(dayDate(s));
+const jalaliDay=(s:string)=>new Intl.DateTimeFormat('fa-IR-u-ca-persian',{day:'numeric',timeZone:'Asia/Dubai'}).format(dayDate(s));
+const weekday=(s:string)=>new Intl.DateTimeFormat('fa-IR',{weekday:'short',timeZone:'Asia/Dubai'}).format(dayDate(s));
+const statuses:Record<string,string>={todo:'برای انجام',doing:'در حال انجام',blocked:'منتظر دیگران',review:'منتظر تأیید',changes:'نیازمند اصلاح',done:'تکمیل‌شده'};
+const columns=[{id:'todo',label:'برای انجام',countLabel:'برای انجام',className:'todo',Icon:Clock3},{id:'doing',label:'در حال انجام',countLabel:'در حال انجام',className:'doing',Icon:Play},{id:'blocked',label:'منتظر دیگران',countLabel:'منتظر دیگران',className:'blocked',Icon:Hourglass},{id:'done',label:'تکمیلی',countLabel:'تکمیل‌شده',className:'done',Icon:CheckCircle2}] as const;
+
+function MonthCalendar({anchor,today,records,onChange,onOpen,onCreate,canCreate}:{anchor:string;today:string;records:any[];onChange:(s:string)=>void;onOpen:(r:any)=>void;onCreate:(d:string)=>void;canCreate:boolean}){
+ const days=calendarDays(anchor,'month');
+ const first=days[0]||anchor,last=days[days.length-1]||anchor;
+ const startPadding=(dayDate(first).getUTCDay()+1)%7;
+ const cells:Array<string|null>=[...Array.from({length:startPadding},()=>null),...days];
+ while(cells.length%7!==0)cells.push(null);
+ const dayRecords=records.filter(r=>executionDay(r)===anchor).slice(0,5);
+ const dayLabels=['ش','ی','د','س','چ','پ','ج'];
+ return <aside className="wrd-calendar-panel" aria-label="تقویم ماهانه و برنامه امروز">
+  <header className="wrd-month-head">
+   <button type="button" aria-label="ماه قبل" onClick={()=>onChange(moveDay(first,-1))}><ChevronRight size={18}/></button>
+   <strong>{jalaliMonth(anchor)}</strong>
+   <button type="button" aria-label="ماه بعد" onClick={()=>onChange(moveDay(last,1))}><ChevronLeft size={18}/></button>
+  </header>
+  <div className="wrd-calendar-grid" role="grid" aria-label="تقویم شمسی">
+   {dayLabels.map((label,i)=><div className="wrd-week-label" key={i}>{label}</div>)}
+   {cells.map((d,i)=>d?<button type="button" key={d} onClick={()=>onChange(d)} className={'wrd-calendar-day'+(d===anchor?' chosen':'')+(d===today?' is-today':'')} aria-pressed={d===anchor} aria-label={jalaliLong(d)}><span>{jalaliDay(d)}</span>{records.some(r=>executionDay(r)===d)&&<i aria-label="دارای برنامه"/>}</button>:<span className="wrd-calendar-pad" key={'pad-'+i}/>)}
+  </div>
+  <section className="wrd-day-agenda">
+   <header><strong>برنامه {anchor===today?'امروز':jalaliLong(anchor)}</strong><CalendarDays size={17}/></header>
+   <div className="wrd-agenda-items">
+    {dayRecords.map(r=><button type="button" key={r.id} onClick={()=>onOpen(r)}><span className="wrd-agenda-time">{r.startTime||'—'}</span><span>{r.title}</span><span className={'wrd-agenda-check'+(r.status==='done'?' done':'')}>{r.status==='done'?<Check size={13}/>:null}</span></button>)}
+    {!dayRecords.length&&<p className="wrd-empty">برنامه‌ای برای این روز ثبت نشده است.</p>}
+   </div>
+   {canCreate&&<button type="button" className="wrd-add-plan" onClick={()=>onCreate(anchor)}><Plus size={18}/> افزودن برنامه</button>}
+  </section>
+ </aside>;
+}
+
+export default function WorkCommandDashboard({data,today,open,create,manager}:Props){
+ const [section,setSection]=useState<Section>('tasks');
+ const [metric,setMetric]=useState<Metric>('all');
+ const [date,setDate]=useState(today);
+ const [query,setQuery]=useState('');
+ const [scope,setScope]=useState('mine');
+ const [boardStatus,setBoardStatus]=useState<string>('');
+ const [showTaskList,setShowTaskList]=useState(false);
+ const [unit,setUnit]=useState('');
+ const [project,setProject]=useState('');
+ const authorized=useMemo(()=>((data.records||[]) as any[]).filter(isWork),[data.records]);
+ const mine=useMemo(()=>authorized.filter(r=>participant(r,data.user)),[authorized,data.user]);
+ const pool=manager&&scope==='all'?authorized:mine;
+ const reviewable=authorized.filter(r=>r.status==='review'&&canReview(r,data.user));
+ const unassigned=manager?authorized.filter(r=>!r.assignee&&r.status!=='done'):[];
+ const counts={
+  all:pool.length,new:pool.filter(r=>r.status==='todo').length,today:pool.filter(r=>executionDay(r)===today).length,
+  waiting:pool.filter(r=>['blocked','review','changes'].includes(r.status)).length,
+  overdue:pool.filter(r=>isOverdue(r,today)).length,
+  unassigned:unassigned.length
+ };
+ const chosen=metric==='unassigned'&&manager?unassigned:pool;
+ const selected=chosen.filter(r=>{
+  const passes=metric==='all'||metric==='new'&&r.status==='todo'||metric==='today'&&executionDay(r)===today||metric==='waiting'&&['blocked','review','changes'].includes(r.status)||metric==='overdue'&&isOverdue(r,today)||metric==='unassigned'&&!r.assignee;
+  return passes&&(!unit||r.unit===unit)&&(!project||r.project===project)&&(!query||[r.title,r.body,r.ref,r.id].join(' ').toLowerCase().includes(query.trim().toLowerCase()));
+ });
+ const ranked=[...selected].sort((a,b)=>String(b.updated_at||b.updatedAt||b.created_at||'').localeCompare(String(a.updated_at||a.updatedAt||a.created_at||''))).slice(0,50);
+ const availableUnits=[...new Set(authorized.map(r=>String(r.unit||'').trim()).filter(Boolean))].sort();
+ const availableProjects=[...new Set(authorized.map(r=>String(r.project||'').trim()).filter(Boolean))].sort();
+ const statusRows=(id:string)=>ranked.filter(r=>id==='blocked'?['blocked','review','changes'].includes(r.status):r.status===id);
+ const memberLabel=(email:string)=>{
+  if(!email)return 'بدون مسئول';
+  const m=(data.members||[]).find((m:any)=>m.email===email);
+  return m?String(m.name||'').split(' | ')[0]||'مسئول سازمانی':'مسئول ثبت‌شده';
+ };
+ const modules=[
+  {id:'mail',label:'مکاتبات داخلی',sub:'مکاتبات بین واحدها و تاریخچه',Icon:Mail},
+  {id:'approvals',label:'بررسی و تأیید',sub:'درخواست‌ها و موارد نیازمند تأیید',Icon:ShieldCheck},
+  {id:'tasks',label:'کارتابل وظایف',sub:'همه وظایف، وظایف امروز، برد وظایف',Icon:ClipboardCheck},
+  {id:'plans',label:'برنامه‌ریزی',sub:'تقویم، برنامه‌های روزانه و آتی',Icon:CalendarDays}
+ ] as const;
+ const metrics=[
+  {id:'all',label:'همه موارد',Icon:Layers3},
+  {id:'new',label:'جدید',Icon:Mail},
+  {id:'today',label:'امروز',Icon:CalendarDays},
+  {id:'waiting',label:'منتظر اقدام',Icon:Hourglass},
+  {id:'overdue',label:'موعد گذشته',Icon:AlarmClock},
+  ...(manager?[{id:'unassigned',label:'بدون مسئول',Icon:UserRoundX}]:[])
+ ] as const;
+ return <div className="work-command work-reference-dashboard" dir="rtl">
+  <header className="wrd-title"><div className="wrd-title-icon"><CalendarDays size={38}/></div><div><h1>کارتابل و برنامه‌ریزی</h1><p>مدیریت وظایف، برنامه‌ها، تیکت‌ها و مکاتبات سازمانی</p></div></header>
+  <nav className="wrd-module-row" aria-label="بخش‌های کارتابل و برنامه‌ریزی">{modules.map(({id,label,sub,Icon})=><button type="button" key={id} onClick={()=>setSection(id)} aria-pressed={section===id} className={'wrd-module wrd-module-'+id+(section===id?' active':'')}><span className="wrd-module-arrow"><ChevronLeft size={23}/></span><Icon className="wrd-module-icon" size={49} strokeWidth={1.8}/><span className="wrd-module-copy"><strong>{label}</strong><small>{sub}</small></span></button>)}</nav>
+  <section className="wrd-metrics" aria-label="آمار قابل کلیک کارتابل">{metrics.map(({id,label,Icon})=><button type="button" key={id} className={'wrd-metric wrd-metric-'+id+(metric===id&&section==='tasks'?' selected':'')} onClick={()=>{setSection('tasks');setMetric(id);setBoardStatus('');setShowTaskList(true)}} aria-pressed={section==='tasks'&&metric===id}><Icon size={31} strokeWidth={1.7}/><span>{label}</span><strong>{fa(counts[id as Metric])}</strong></button>)}</section>
+  {section==='tasks'&&<div className="wrd-work-grid">
+   <MonthCalendar anchor={date} today={today} records={mine} onChange={setDate} onOpen={open} onCreate={d=>create('plan',d)} canCreate={manager}/>
+   <div className="wrd-right-column"><section className="wrd-board" aria-label="برد وظایف من">
+    <header className="wrd-board-top"><h2><ClipboardCheck size={23}/> برد وظایف من</h2><div className="wrd-board-filters">
+     {manager&&<select aria-label="دامنه وظایف" value={scope} onChange={e=>setScope(e.target.value)}><option value="mine">وظایف من</option><option value="all">همه وظایف مجاز</option></select>}
+     <select aria-label="فیلتر واحد" value={unit} onChange={e=>setUnit(e.target.value)}><option value="">همه واحدها</option>{availableUnits.map(x=><option key={x} value={x}>{x}</option>)}</select>
+     <select aria-label="فیلتر پروژه" value={project} onChange={e=>setProject(e.target.value)}><option value="">همه پروژه‌ها</option>{availableProjects.map(x=><option key={x} value={x}>{x}</option>)}</select>
+     <label className="wrd-board-search"><Search size={16}/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="جستجوی وظایف، تیکت‌ها، فاکتور..." aria-label="جست‌وجوی وظایف"/></label>
+    </div></header>
+    <div className="wrd-columns">{columns.map(({id,label,Icon})=><section className={'wrd-column wrd-col-'+id} key={id}>
+     <button type="button" className="wrd-column-heading" onClick={()=>{setBoardStatus(boardStatus===id?'':id);setShowTaskList(true)}} aria-pressed={boardStatus===id}><Icon size={17}/><span>{label}</span><strong>({fa(statusRows(id).length)})</strong></button>
+     <div className="wrd-column-items">{statusRows(id).slice(0,3).map(r=><button key={r.id} type="button" className="wrd-task-card" onClick={()=>open(r)}><b>{r.title}</b><span>{memberLabel(r.assignee)} · {r.ref||r.project||'بدون شناسه مرجع'}</span>{r.status==='doing'&&<span className="wrd-progress"><i style={{width:Math.max(0,Math.min(100,Number(r.progress||0)))+'%'}}/></span>}{r.status==='done'&&<CheckCircle2 size={17} className="wrd-complete"/>}</button>)}{!statusRows(id).length&&<p className="wrd-small-empty">موردی در این وضعیت نیست.</p>}</div>
+     <button className="wrd-column-action" onClick={()=>{setBoardStatus(id);setMetric('all');setShowTaskList(true)}}>{id==='todo'||id==='doing'?'مشاهده همه':'مشاهده موارد'} <ArrowUpLeft size={13}/></button>
+    </section>)}</div>
+    {!showTaskList&&<button className="wrd-expand-tasks" onClick={()=>setShowTaskList(true)}>مشاهده فهرست آخرین وظایف <ChevronLeft size={15}/></button>}
+    {showTaskList&&<div className="wrd-task-list"><div className="wrd-task-list-heading"><strong>{boardStatus?'وظایف: '+(columns.find(c=>c.id===boardStatus)?.label||''):'آخرین وظایف من'}</strong><span>{fa((boardStatus?statusRows(boardStatus):ranked).length)} مورد از حداکثر ۵۰ وظیفه اخیر</span></div>{(boardStatus?statusRows(boardStatus):ranked).slice(0,8).map(r=><button type="button" key={r.id} onClick={()=>open(r)}><span>{r.title}<small>{memberLabel(r.assignee)} · {r.ref||r.id}</small></span><span className={'wrd-task-state wrd-state-'+r.status}>{statuses[r.status]||r.status}</span></button>)}{!ranked.length&&<p className="wrd-empty">برای این فیلتر وظیفه‌ای ثبت نشده است.</p>}<button className="wrd-collapse-tasks" onClick={()=>setShowTaskList(false)}>بستن فهرست</button></div>}
+   </section><WorkCorrespondenceStrip records={authorized} user={data.user} onOpen={open}/></div>
+  </div>}
+  {section==='plans'&&<div className="wrd-work-grid wrd-plan-view"><MonthCalendar anchor={date} today={today} records={mine} onChange={setDate} onOpen={open} onCreate={d=>create('plan',d)} canCreate={manager}/><section className="wrd-board"><header className="wrd-board-top"><h2><CalendarDays size={23}/> برنامه‌ریزی روزانه و آینده</h2><Link href="/staff?view=plans">برنامه‌ریزی کامل <ArrowUpLeft size={15}/></Link></header><div className="wrd-plan-date">برنامه‌های {jalaliLong(date)}</div>{mine.filter(r=>executionDay(r)===date).map(r=><button className="wrd-plan-item" key={r.id} onClick={()=>open(r)}>{r.title}<small>{statuses[r.status]||r.status}</small></button>)}{!mine.some(r=>executionDay(r)===date)&&<p className="wrd-empty">برنامه‌ای برای تاریخ انتخاب‌شده وجود ندارد.</p>}</section></div>}
+  {section==='approvals'&&<section className="wrd-secondary"><header><h2><ShieldCheck/> بررسی و تأیید</h2><Link href="/staff?view=approvals">صفحه کامل تأییدیه‌ها <ArrowUpLeft size={16}/></Link></header><div className="wrd-review-count">در انتظار بررسی شما: <strong>{fa(reviewable.length)}</strong></div>{reviewable.slice(0,50).map(r=><button className="wrd-plan-item" key={r.id} onClick={()=>open(r)}>{r.title}<small>منتظر تصمیم</small></button>)}{!reviewable.length&&<p className="wrd-empty">درخواست منتظر تأییدی برای حساب شما وجود ندارد.</p>}</section>}
+  {section==='mail'&&<section className="wrd-secondary"><header><h2><Mail/> مکاتبات داخلی</h2><Link href="/work/mail">دفتر کامل مکاتبات <ArrowUpLeft size={16}/></Link></header><p>مکاتبات و پیوست‌ها از سامانه اصلی با رعایت دسترسی‌ها خوانده می‌شوند.</p><Link className="wrd-mail-link" href="/work/mail">مشاهده دریافتی‌ها، ارسالی‌ها و سابقه گفتگوها</Link></section>}
+  {section!=='tasks'&&<WorkCorrespondenceStrip records={authorized} user={data.user} onOpen={open}/>}
+  <details className="wrd-responsibilities"><summary><FileText size={16}/> نقش و مسئولیت‌های سازمانی من</summary><MyResponsibilities user={data.user} organization={data.organization}/></details>
+  <footer className="wrd-footnote">آمار و محتوا از پرونده‌های واقعی قابل‌دسترسی خوانده می‌شوند. ثبت ایمیل یا تماس به‌تنهایی وظیفه جدید ایجاد نمی‌کند.</footer>
+ </div>;
+}
