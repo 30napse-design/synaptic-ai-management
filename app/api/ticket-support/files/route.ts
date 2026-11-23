@@ -17,7 +17,7 @@ async function record(user:any,id:string){
  const r=await db().prepare('SELECT * FROM ops_items WHERE id=?').bind(id).first<any>();
  assert(r&&canSeeOps(user,r),'تیکت پیدا نشد یا دسترسی ندارید',404);
  const meta=JSON.parse(r.source_labels||'[]');
- assert(meta?.ticket_v===1,'این مسیر فقط برای تیکت‌های نسخه جدید است',400);
+ assert([1,2].includes(Number(meta?.ticket_v)),'این مسیر فقط برای تیکت‌های نسخه‌دار است',400);
  return r;
 }
 export async function POST(req:Request){

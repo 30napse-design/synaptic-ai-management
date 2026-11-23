@@ -1,4 +1,7 @@
 import {organizationalCode} from './organizational-logins';
+import {hasDataAccess} from './auth-policy';
+import {unifiedRequiredAccess} from './unified-intake-routing';
+import {seniorResearchMayReview} from './unified-intake-taxonomy';
 export const requestFamilies=[
  ['A01','ثبت سفارش و پذیرش','customer_manager'],['A02','مشاوره علمی پیش از سفارش','scientific_manager'],['A03','پیش‌فاکتور و فاکتور','finance_manager'],['A04','پرداخت‌ها و امور بانکی','finance_manager'],['A05','تحویل و پذیرش نمونه','customer_manager'],['A06','انتقال و جابه‌جایی نمونه','customer_manager'],['A07','پیگیری اجرای سفارش','customer_manager'],['A08','دریافت نتایج از آزمایشگاه','research_specialist'],['A09','تحویل نتیجه به مشتری','customer_manager'],['A10','مشاوره پس از نتیجه و رفع اشکال','research_manager'],['A11','اصلاح، تکمیل یا تغییر سفارش','scientific_manager'],['A12','لغو سفارش، شکایت و اختلاف','customer_manager'],['A13','درخواست‌های مستقیم آزمایشگاه','research_specialist'],['A14','مکاتبات و امور اداری','administration_manager'],['A15','منابع انسانی و درخواست کارکنان','administration_manager'],['A16','هزینه، تنخواه و تأمین خدمات','administration_manager'],['A17','فناوری اطلاعات و پشتیبانی','it_security_manager'],['A18','توسعه، همکاری و سایر ارتباطات','executive_director']
 ].map(([id,title,role])=>({id,title,role}));
@@ -13,10 +16,19 @@ export function classifyCommunication(b:any){const text=String(b.title||'')+' '+
  return {family:family.id,role,roles:[...roles],triage:family.id==='A18',sensitive:['A04','A15','A16'].includes(id)||/رمز|کد ورود|گردش حساب|محرمانه/.test(text),unsafe:/\.(exe|js|bat|cmd|scr|ps1)(\?|$)/i.test(JSON.stringify(b.attachments||[]))||/هرزنامه|اسپم|فیشینگ/.test(text)};
 }
 export function requestRouting(r:any){try{return typeof r.routing==='string'?JSON.parse(r.routing):r.routing||null}catch{return null}}
-export function mayReadRequest(u:any,r:any){if(!u)return false;const m=requestRouting(r);if(!m)return false;if(u.manager&&u.email==='ekramiihamid@gmail.com')return true;if(u.laboratory)return !!m.laboratoryId&&m.laboratoryId===u.laboratoryId&&(m.sourceLab===true||!!m.jobId);const role=organizationalCode(u.username||u.organizationalUsername||'');return r.created_by===u.email||m.roles?.includes(role)||(!m.sensitive&&m.ownerRole===role);}
+export function mayReadRequest(u:any,r:any){if(!u)return false;const m=requestRouting(r);if(!m)return false;if(u.manager&&u.email==='ekramiihamid@gmail.com')return true;if(u.laboratory)return !!m.laboratoryId&&m.laboratoryId===u.laboratoryId&&(m.sourceLab===true||!!m.jobId);const role=organizationalCode(u.username||u.organizationalUsername||'');
+ if(m.unifiedIntake){
+  const senior=role==='research_manager'&&hasDataAccess(u,'research_supervision')&&seniorResearchMayReview(m.unifiedIntake.category);
+  if(!senior&&!hasDataAccess(u,unifiedRequiredAccess(m.unifiedIntake.category)))return false;
+  return senior||r.created_by===u.email||r.assignee===u.email||m.roles?.includes(role);
+ }
+ return r.created_by===u.email||m.roles?.includes(role)||(!m.sensitive&&m.ownerRole===role);}
 export function requestLegacyCategory(family:string){return ['A03','A04'].includes(family)?'billing':['A08','A09','A10'].includes(family)?'results':['A14','A15','A16'].includes(family)?'internal':family==='A17'?'system':family==='A07'||family==='A13'?'projects':'customers'}
 
-export function mayReadRequestSource(u:any,r:any){const m=requestRouting(r);if(!m)return true;if(u.manager&&u.email==='ekramiihamid@gmail.com'||r.created_by===u.email)return true;const role=organizationalCode(u.username||u.organizationalUsername||'');return !m.sensitive||(m.dataRoles||[m.ownerRole]).includes(role);}
+export function mayReadRequestSource(u:any,r:any){const m=requestRouting(r);if(!m)return true;if(u.manager&&u.email==='ekramiihamid@gmail.com'||r.created_by===u.email)return true;const role=organizationalCode(u.username||u.organizationalUsername||'');if(m.unifiedIntake){
+ const senior=role==='research_manager'&&hasDataAccess(u,'research_supervision')&&seniorResearchMayReview(m.unifiedIntake.category);
+ return senior||hasDataAccess(u,unifiedRequiredAccess(m.unifiedIntake.category))&&(r.assignee===u.email||(m.dataRoles||[m.ownerRole]).includes(role));
+}return !m.sensitive||(m.dataRoles||[m.ownerRole]).includes(role);}
 export function redactRequest(u:any,r:any){return mayReadRequestSource(u,r)?r:{...r,title:'اقدام مرتبط با درخواست '+r.id.slice(-8),source_body:'جزئیات محرمانه فقط در واحد مجاز نمایش داده می‌شود.',attachments:'[]',resolution:'',client_name:'',phone:'',email:'',intake_notes:''};}
 
 export function ticketNoteVisible(u:any,e:any){if(e.action!=='internal-ticket-note')return true;if(u?.manager&&u.email==='ekramiihamid@gmail.com')return true;try{return JSON.parse(e.body).role===organizationalCode(u?.username||u?.organizationalUsername||'')}catch{return false}}

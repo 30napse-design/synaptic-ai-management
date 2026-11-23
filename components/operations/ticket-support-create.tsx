@@ -2,10 +2,10 @@
 import {useState} from 'react';
 import {TicketCategorySelector,type TicketCategorySelection} from './ticket-category-selector';
 import styles from './ticket-category-selector.module.css';
-type Props={manager:boolean;onSaved:()=>void;onCancel:()=>void};
-const empty:TicketCategorySelection={source:'site',category:'orders',topic:'',description:'',title:''};
-export function TicketSupportCreate({manager,onSaved,onCancel}:Props){
- const [requestKey]=useState(()=>crypto.randomUUID()),[uploaded,setUploaded]=useState<string[]>([]);const [value,setValue]=useState<TicketCategorySelection>(empty),[clientName,setName]=useState(''),[phone,setPhone]=useState(''),[email,setEmail]=useState(''),[reference,setReference]=useState(''),[organization,setOrganization]=useState(''),[due,setDue]=useState('');
+type Props={manager:boolean;onSaved:()=>void;onCancel:()=>void;inline?:boolean};
+const empty:TicketCategorySelection={source:'site',group:'services',category:'service_orders',topic:'',description:'',title:''};
+export function TicketSupportCreate({manager,onSaved,onCancel,inline=false}:Props){
+ const [requestKey,setRequestKey]=useState(()=>crypto.randomUUID()),[uploaded,setUploaded]=useState<string[]>([]);const [value,setValue]=useState<TicketCategorySelection>(empty),[clientName,setName]=useState(''),[phone,setPhone]=useState(''),[email,setEmail]=useState(''),[reference,setReference]=useState(''),[organization,setOrganization]=useState(''),[due,setDue]=useState('');
  const [files,setFiles]=useState<File[]>([]),[createdId,setCreatedId]=useState(''),[busy,setBusy]=useState(false),[message,setMessage]=useState(''),[done,setDone]=useState(false);
  async function submit(e:React.FormEvent){
   e.preventDefault();if(busy||done)return;setBusy(true);setMessage('');
@@ -25,8 +25,8 @@ export function TicketSupportCreate({manager,onSaved,onCancel}:Props){
     if(!response.ok)throw Error('تیکت '+id+' ثبت شد، اما پیوست «'+file.name+'» ذخیره نشد: '+(data.error||'خطا'));
     setUploaded(prev=>[...prev,identity]);
    }
-   setDone(true);setMessage('تیکت با شناسه '+id+' ثبت و به کارتابل ارجاع شد.'+(files.length?' پیوست‌ها برای بررسی امنیتی ذخیره شدند.':''));
-   onSaved();
+   setDone(true);setMessage('تیکت با شناسه '+id+' ثبت شد و برای ارجاع و پیگیری در موتور مشترک قرار گرفت.'+(files.length?' پیوست‌ها برای بررسی امنیتی ذخیره شدند.':''));
+   onSaved();setRequestKey(crypto.randomUUID());setCreatedId('');setUploaded([]);setValue(empty);setName('');setPhone('');setEmail('');setReference('');setOrganization('');setDue('');setFiles([]);setDone(false);
   }catch(err:any){setMessage(err.message||'خطای ثبت');}finally{setBusy(false)}
  }
  return <form className={styles.createForm} onSubmit={submit} dir="rtl">
@@ -48,7 +48,7 @@ export function TicketSupportCreate({manager,onSaved,onCancel}:Props){
   {message&&<p role="status" className={styles.statusText}>{message}</p>}
   <div className={styles.actions}>
    <button type="submit" className="primary" disabled={busy||done||!value.topic||!clientName||(!email&&!phone)||value.source==='direct'&&!value.title.trim()}>{busy?'در حال ثبت…':createdId?'تلاش مجدد برای پیوست‌ها':'ثبت و ارجاع تیکت'}</button>
-   <button type="button" className="secondary" disabled={busy} onClick={onCancel}>بستن</button>
+   {!inline&&<button type="button" className="secondary" disabled={busy} onClick={onCancel}>بستن</button>}
   </div>
  </form>;
 }

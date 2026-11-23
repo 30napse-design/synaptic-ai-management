@@ -24,7 +24,7 @@ test('six approved domains preserve laboratory cases and all eight finance desti
 });
 test('active route resolves calls, dispatch, work views, laboratory domains and aliases exactly',()=>{
  assert.equal(activeNavigation('/operations',new URLSearchParams('source=incoming'),'/operations'),false);
- for(const [path,query,title]of [['/operations','source=incoming','دفتر تماس‌های ورودی'],['/operations','view=dispatch','مدیریت و پیگیری درخواست‌ها'],['/staff','','امروز من'],['/staff','view=cases','پرونده‌های ارجاع‌شده'],['/laboratories','','ثبت پرونده و مدیریت پروژه'],['/work/finance','','داشبورد مالی'],['/manage/finance','resources=1','منابع و سوابق مالی']])assert.equal(resolveWorkspaceRoute(path,new URLSearchParams(query),owner).label,title);
+ for(const [path,query,title]of [['/operations','source=incoming','پذیرش، ارتباط و پشتیبانی'],['/operations','view=dispatch','مدیریت و پیگیری درخواست‌ها'],['/staff','','امروز من'],['/staff','view=cases','پرونده‌های ارجاع‌شده'],['/laboratories','','ثبت پرونده و مدیریت پروژه'],['/work/finance','','داشبورد مالی'],['/manage/finance','resources=1','منابع و سوابق مالی']])assert.equal(resolveWorkspaceRoute(path,new URLSearchParams(query),owner).label,title);
  assert.equal(activeNavigation('/staff',new URLSearchParams('view=board'),'/staff?view=plans'),false);
 });
 test('home previews expose only existing enabled destinations without granting API access',()=>{
@@ -47,10 +47,9 @@ test('legacy new-case and project destinations remain implemented despite remove
  assert.ok(nav.find(g=>g.id==='work').items.some(i=>i.href==='/work/mail'));
 });
 
-test('acceptance and communications sidebar keeps exactly four approved entries for all user types',()=>{
+test('acceptance and communications sidebar keeps three approved entries without separate phone notebook for all user types',()=>{
  const approved=[
   ['پذیرش، ارتباط و پشتیبانی','/operations'],
-  ['دفتر تماس‌های ورودی','/operations?source=incoming'],
   ['پذیرش نمونه محققین','/sample-intake'],
   ['تیکت و پشتیبانی','/operations?view=tickets'],
  ];
@@ -67,6 +66,6 @@ test('legacy outbound and visit URLs remain routable independently of sidebar li
   const route=resolveWorkspaceRoute('/operations',new URLSearchParams(query),owner);
   assert.ok(route&&route.group==='operations');
  }
- assert.equal(resolveWorkspaceRoute('/operations',new URLSearchParams('source=incoming'),owner).label,'دفتر تماس‌های ورودی');
+ assert.equal(resolveWorkspaceRoute('/operations',new URLSearchParams('source=incoming'),owner).label,'پذیرش، ارتباط و پشتیبانی');
  assert.equal(resolveWorkspaceRoute('/operations',new URLSearchParams('view=tickets'),owner).label,'تیکت و پشتیبانی');
 });
