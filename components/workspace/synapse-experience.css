@@ -1,0 +1,28 @@
+/* SYNAPSE 2026 experience layer — intentionally visual-only and scoped to the
+   existing workspace. No DOM replacement, new navigation, or RBAC changes. */
+.unified-workspace{--sx-ink:#182d51;--sx-muted:#577297;--sx-line:#dce8f7;--sx-sky:#4297d9;--sx-lilac:#8772d6;--sx-teal:#40a5a1;--sx-radius:15px;--sx-shadow:0 4px 17px #173b6911;color:var(--sx-ink);background:linear-gradient(145deg,#f6faff,#f2f6fd 55%,#f8f7ff)}
+.unified-workspace .unified-topbar{background:linear-gradient(120deg,#fbfdffff,#f1f7ffef);border-color:var(--sx-line);box-shadow:0 1px 9px #133d7810}
+.unified-workspace .unified-sidebar{background:linear-gradient(160deg,#ffffff,#f6f9ff);border-color:var(--sx-line)}
+.unified-sidebar .nav-group-title{border-radius:11px;min-height:43px;transition:background .17s,color .17s}
+.unified-sidebar .nav-group-title:hover{background:#eaf4ff;color:#225c9b}
+.unified-sidebar .nav-group-links>a{border-radius:10px;min-height:39px;transition:background .16s,box-shadow .16s}
+.unified-sidebar .nav-group-links>a:hover{background:#eaf3ff;box-shadow:inset 3px 0 #7faeeb}
+.unified-workspace:not(.home-route) .unified-page .panel,.unified-workspace:not(.home-route) .unified-page .card{border-color:var(--sx-line);border-radius:var(--sx-radius);box-shadow:var(--sx-shadow);background-clip:padding-box}
+.unified-workspace .unified-page :is(.primary,.secondary){transition:background-color .17s,border-color .17s,box-shadow .17s,transform .17s}
+.unified-workspace .unified-page :is(.primary,.secondary):not(:disabled):hover{box-shadow:0 5px 15px #2549791a;transform:translateY(-1px)}
+.unified-workspace .unified-page :is(input,textarea,select){max-width:100%;min-width:0;accent-color:#367fbc}
+.unified-workspace .unified-page :is(input,textarea,select):focus-visible{outline:2px solid #80bde6;outline-offset:2px}
+.unified-workspace .unified-page :is(.panel,.card,.modal,.work-dialog){overflow-wrap:anywhere}
+.unified-workspace .unified-page :is(h1,h2,h3){text-wrap:pretty}
+.unified-workspace .unified-page a:not(.primary):not(.secondary):focus-visible{outline:3px solid #79bfea;outline-offset:3px;border-radius:6px}
+.unified-workspace .home-toolbar-popover,.unified-workspace .work-notification-panel{border:1px solid #bbd5ed;background:linear-gradient(155deg,#ffffff,#f5f9ff);border-radius:17px;box-shadow:0 18px 42px #173e6c35;backdrop-filter:blur(9px);z-index:98}
+.unified-workspace .home-toolbar-popover a,.unified-workspace .work-notification-panel a{transition:background .16s;border-radius:9px;padding-inline:9px}
+.unified-workspace .home-toolbar-popover a:hover,.unified-workspace .work-notification-panel a:hover{background:#edf5ff}
+.unified-workspace .home-toolbar-icon,.unified-workspace .work-notifications>.icon-button{transition:background-color .17s,transform .17s}
+.unified-workspace .home-toolbar-icon:hover,.unified-workspace .work-notifications>.icon-button:hover{transform:translateY(-1px);background:#dcecff}
+.unified-workspace .page-heading{gap:14px}
+.unified-workspace .page-heading h1{letter-spacing:-.03em;line-height:1.45}
+.unified-workspace .work-notification-panel a:not(.read){border-inline-start:3px solid #47a0df;background:#eff7ff}
+.unified-workspace .work-notification-panel .read{opacity:.78}
+@media(max-width:760px){.unified-workspace .unified-page :is(.primary,.secondary){min-height:40px}.unified-workspace .unified-page :is(.form-grid,.work-form-grid) :is(input,select,textarea){width:100%}.unified-workspace .home-toolbar-popover,.unified-workspace .work-notification-panel{max-height:min(70dvh,580px)}}
+@media(prefers-reduced-motion:reduce){.unified-workspace *, .unified-workspace *::before,.unified-workspace *::after{transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important}.unified-workspace .unified-page :is(.primary,.secondary):hover{transform:none}}
