@@ -38,3 +38,57 @@
 .home-domain-menu{margin-top:16px;border-top:1px solid #e4e9f4;padding-top:12px}.home-domain-menu>summary{cursor:pointer;color:#596a92;font-size:.875rem}.home-domain-menu .workspace-previews{grid-template-columns:repeat(2,minmax(0,1fr));margin-bottom:0}.home-domain-menu .workspace-preview{padding:12px}.home-domain-menu .workspace-preview-links{display:none}@media(max-width:760px){.home-domain-menu .workspace-previews{grid-template-columns:1fr}}
 
 @media(max-width:1000px){.home-route #workspace-navigation:not(.open){visibility:hidden}.home-route #workspace-navigation.open{visibility:visible}}
+
+
+/* 2026-11-23: compact, single-scroll, consistent workspace navigation.
+   All navigation and account permissions remain owned by existing handlers. */
+.unified-workspace #workspace-navigation.unified-sidebar{
+  height:100dvh;overflow:hidden;scrollbar-gutter:auto;
+  display:flex;flex-direction:column;
+  background:linear-gradient(165deg,#203c61 0%,#152d4d 55%,#10233f 100%);
+  color:#edf4ff;border-inline-end:1px solid #526c9444;
+  padding:12px 12px max(12px,env(safe-area-inset-bottom,0px));
+}
+.unified-workspace #workspace-navigation>.unified-brand{flex:0 0 auto;padding:0 5px}
+.unified-workspace #workspace-navigation>.unified-brand img{
+  max-height:67px;width:100%;object-fit:contain;
+  background:#ffffff;border-radius:10px;padding:3px;
+}
+.unified-workspace #workspace-navigation>.unified-caption{
+  flex:0 0 auto;margin:5px 0 8px;color:#c7d6ef;font-size:10px;
+}
+.unified-workspace #workspace-navigation>nav{
+  display:block;flex:1 1 auto;min-height:0;overflow-x:hidden;overflow-y:auto;
+  overscroll-behavior-y:contain;scrollbar-gutter:stable;scroll-behavior:smooth;
+  padding-inline:2px;
+  scrollbar-width:thin;scrollbar-color:#6686af88 transparent;
+}
+.unified-workspace #workspace-navigation>nav::-webkit-scrollbar{width:5px}
+.unified-workspace #workspace-navigation>nav::-webkit-scrollbar-thumb{background:#7796be80;border-radius:10px}
+.unified-workspace #workspace-navigation .unified-home{
+  margin-bottom:5px;padding:9px 11px;color:#edf4ff;
+}
+.unified-workspace #workspace-navigation .nav-group{border-top:1px solid #a8bfdf24;padding:2px 0}
+.unified-workspace #workspace-navigation .nav-group-title{
+  color:#eaf2ff;min-height:39px;padding:7px 9px;font-size:12px;
+}
+.unified-workspace #workspace-navigation .nav-group-title svg,
+.unified-workspace #workspace-navigation .nav-subgroup-title svg{color:#b6ccef}
+.unified-workspace #workspace-navigation .nav-group-links{gap:1px;padding-bottom:4px}
+.unified-workspace #workspace-navigation .nav-group-links>a,
+.unified-workspace #workspace-navigation .nav-subgroup-links>a{
+  color:#e3edfc;min-height:37px;padding:6px 9px;line-height:1.7;
+}
+.unified-workspace #workspace-navigation .nav-subgroup-title{color:#dae7fa}
+.unified-workspace #workspace-navigation :is(.unified-home.selected,.nav-group-links>a.selected,.nav-subgroup-links>a.selected){
+  background:linear-gradient(110deg,#436cc7,#328cc2);color:#fff;
+}
+.unified-workspace #workspace-navigation :is(.unified-home:hover,.nav-group-title:hover,.nav-subgroup-title:hover,.nav-group-links>a:hover,.nav-subgroup-links>a:hover){
+  background:#4c87c040;color:#fff;
+}
+.unified-workspace #workspace-navigation .locked{color:#aebddb}
+@media(max-height:720px){
+ .unified-workspace #workspace-navigation{padding-top:8px}
+ .unified-workspace #workspace-navigation>.unified-brand img{max-height:52px}
+ .unified-workspace #workspace-navigation>.unified-caption{margin:3px 0 5px}
+}
