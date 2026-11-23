@@ -15,6 +15,8 @@ export default function PersonalHome({u,d,message}:{u:any,d:any,message:string[]
  ...(u.manager?[{label:'ثبت وظیفه',Icon:ClipboardCheck,tone:'green',href:'/staff?view=all&new=task',hint:'ثبت و ارجاع وظیفه'}]:[{label:'وظایف من',Icon:ClipboardCheck,tone:'green',href:'/staff?view=all',hint:'مشاهده کارهای ارجاع‌شده'}]),
  {label:'برنامه امروز',Icon:CalendarDays,tone:'blue',href:'/staff?view=plans',hint:'برنامه و تقویم من'},
  {label:'درخواست مشتری',Icon:Layers,tone:'purple',href:'/operations?new=request',hint:'ثبت درخواست مشتری'},
+ ...(u.manager||hasAccess(u,'sample_intake')||hasAccess(u,'research_supervision')?[{label:'برگه نمونه',Icon:FlaskConical,tone:'green',href:'/sample-intake',hint:'ثبت مستقیم برگه نمونه و تیک آزمایشگاه پیشنهادی؛ بدون Google Sheets'}]:[]),
+ {label:'کارتابل من',Icon:ClipboardList,tone:'blue',href:'/staff?view=dashboard',hint:'مشاهده کارهای ثبت و ارجاع‌شده به حساب من'},
  ];
  const previews=workspacePreviews(u);
  return <main className="home-v2" dir="rtl">
