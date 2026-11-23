@@ -1,10 +1,10 @@
 'use client';
 import {useEffect,useState} from 'react';
 import {ClipboardList,CheckCircle2,PackageCheck,Send,Search,Plus,FlaskConical,RefreshCw} from 'lucide-react';
-import {intakeCategories,intakeUnits} from '../../lib/sample-intake-catalog';
+import {intakeCategories,intakeUnits,intakeSuppliers,intakePreparations} from '../../lib/sample-intake-catalog';
 import './independent-sample-intake.css';
 
-type Sample={id:string;name:string;category:string;sample_type:string;quantity:number;unit:string;amount_per_unit:string;transport:string;storage:string;notes:string;received:number;lab_id:string;lab_name:string;sent:number;lab_received:number;status:string;receipt?:any;dispatch?:any;lab_receipt?:any;history:any[]};
+type Sample={id:string;name:string;category:string;sample_type:string;quantity:number;unit:string;amount_per_unit:string;supplier:string;preparation:string;treatment:string;transport:string;storage:string;notes:string;received:number;lab_id:string;lab_name:string;sent:number;lab_received:number;status:string;receipt?:any;dispatch?:any;lab_receipt?:any;history:any[]};
 type Entry={id:string;revision:number;researcher_name:string;researcher_phone:string;researcher_email:string;organization:string;project_title:string;notes:string;samples:Sample[];history:any[]};
 const states:Record<string,string>={registered:'ثبت اولیه',received:'دریافت پژوهشکده',sent:'ارسال به آزمایشگاه',lab_received:'تأیید آزمایشگاه',lab_issue:'مغایرت دریافت آزمایشگاه'};
 const fa=(n:number)=>Number(n||0).toLocaleString('fa-IR');
@@ -49,7 +49,7 @@ export default function IndependentSampleIntake(){
     <h2><FlaskConical size={18}/> برگه مشخصات نمونه‌ها</h2>
     {data?.can_create&&<SampleForm busy={busy} onSubmit={e=>void submit('add_sample',e)} category={category} setCategory={setCategory}/>}
     <div className="independent-items">{selected.samples.map(s=><button type="button" key={s.id} className={sampleId===s.id?'current':''} onClick={()=>setSampleId(s.id)}><span>{s.name} · {s.sample_type}</span><small>{fa(s.quantity)} {s.unit} · {states[s.status]||s.status}</small></button>)}</div>
-    {!!selected.samples.length&&<div className="independent-table" aria-label="برگه ثبت نمونه"><table><thead><tr><th>نام نمونه</th><th>نوع</th><th>مقدار و تعداد</th><th>حمل و نگهداری</th><th>آزمایشگاه مقصد</th><th>وضعیت تحویل</th></tr></thead><tbody>{selected.samples.map(s=><tr key={s.id}><td>{s.name}<small>{s.id.slice(0,18)}</small></td><td>{s.category}<small>{s.sample_type}</small></td><td>{fa(s.quantity)} {s.unit}<small>{s.amount_per_unit||''}</small></td><td>{s.transport||'—'}<small>{s.storage||''}</small></td><td>{s.lab_name||'در انتظار تعیین مسئول مجاز'}</td><td>{states[s.status]||s.status}</td></tr>)}</tbody></table></div>}
+    {!!selected.samples.length&&<div className="independent-table" aria-label="برگه ثبت نمونه"><table><thead><tr><th>نام نمونه</th><th>نوع</th><th>مقدار و تعداد</th><th>حمل و نگهداری</th><th>آزمایشگاه مقصد</th><th>وضعیت تحویل</th></tr></thead><tbody>{selected.samples.map(s=><tr key={s.id}><td>{s.name}<small>{s.id.slice(0,18)}</small></td><td>{s.category}<small>{s.sample_type}</small></td><td>{fa(s.quantity)} {s.unit}<small>{s.amount_per_unit||''}</small></td><td>{s.transport||'—'}<small>{s.storage||''} · {s.preparation||''} · {s.supplier||''}</small></td><td>{s.lab_name||'در انتظار تعیین مسئول مجاز'}</td><td>{states[s.status]||s.status}</td></tr>)}</tbody></table></div>}
     {!!selected.samples.length&&!sample&&<p className="independent-note">برای ثبت تحویل یا ارجاع، نمونه موردنظر را از برگه بالا انتخاب کنید.</p>}
   </div>}
   {selected&&sample&&<div className="independent-panel" key={sample.id}>
@@ -97,6 +97,9 @@ function SampleForm({busy,onSubmit,category,setCategory}:{busy:boolean;onSubmit:
   <label>تعداد<input type="number" name="quantity" required min={1} max={100000}/></label>
   <label>واحد<select name="unit" required defaultValue=""><option value="">انتخاب واحد</option>{intakeUnits.map(u=><option key={u}>{u}</option>)}</select></label>
   <label>مقدار هر واحد (در صورت لزوم)<input name="amount_per_unit" maxLength={50}/></label>
+  <label>تأمین‌کننده نمونه<select name="supplier" required defaultValue=""><option value="">انتخاب تأمین‌کننده</option>{intakeSuppliers.map(v=><option key={v}>{v}</option>)}</select></label>
+  <label>روش آماده‌سازی<select name="preparation" required defaultValue=""><option value="">انتخاب وضعیت</option>{intakePreparations.map(v=><option key={v}>{v}</option>)}</select></label>
+  <label>تیمار نمونه یا دارو<input name="treatment" maxLength={1000}/></label>
   <label>شرایط حمل<input name="transport" maxLength={1000}/></label>
   <label>شرایط نگهداری<input name="storage" maxLength={1000}/></label>
   <label className="wide">توضیحات تخصصی<input name="notes" maxLength={4000}/></label>
