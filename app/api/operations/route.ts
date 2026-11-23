@@ -28,6 +28,7 @@ export async function POST(req:Request){
   if(!validPersianContactName(b.clientName)||!validOptionalEmail(String(b.email||'')))return json({error:'نام فارسی و ایمیل معتبر وارد کنید.'},400);
   if(b.channel==='phone'&&!normalizeIranPhone(String(b.phone||'')))return json({error:'شماره موبایل ایرانی معتبر وارد کنید.'},400);
   if(!String(b.customerRequest||'').trim()||!String(b.staffResponse||'').trim())return json({error:'درخواست و پاسخ پشتیبانی را تکمیل کنید.'},400);
+  if(b.assignee&&String(b.assignmentReason||'').trim().length<4)return json({error:'برای تعیین مسئول دستی باید دلیل ثبت شود.'},400);
   b.phone=b.phone?normalizeIranPhone(String(b.phone)):'';b.email=String(b.email||'').trim().toLowerCase();
  }
  if(b.action==='owner_accept'){try{return json(await acceptOperation(u,b))}catch(e:any){return json({error:e.status?e.message:'پذیرش ثبت نشد.'},e.status||400)}}if(b.action==='manual_assign'){try{return json(await assignOperationsManually(u,b))}catch(e:any){return json({error:e.status?e.message:'ارجاع ذخیره نشد.'},e.status||400)}}if(String(b.action).startsWith('dispatch_')||b.action==='create'&&await dispatchReady()){try{
@@ -39,7 +40,7 @@ export async function POST(req:Request){
   if(result.replayed)return json({...result,assignment_warning:'این ارتباط قبلاً ثبت شده است؛ برای تغییر مسئول، پرونده موجود را باز کنید.'});
   const current=await db().prepare('SELECT revision FROM ops_items WHERE id=?').bind(result.id).first<any>();
   if(!current)return json({...result,assignment_warning:'پرونده ثبت شد اما برای تخصیص دستی پیدا نشد؛ در فهرست بررسی کنید.'});
-  const transfer=await assignOperationsManually(u,{items:[{id:result.id,revision:Number(current.revision)}],assignee:String(b.assignee)});
+  const transfer=await assignOperationsManually(u,{items:[{id:result.id,revision:Number(current.revision)}],assignee:String(b.assignee),reason:String(b.assignmentReason||'')});
   if(!transfer.ok)return json({...result,assignment_warning:transfer.results?.[0]?.error||'ثبت شد اما ارجاع دستی کامل نشد.'});
  }
  return json(result);
