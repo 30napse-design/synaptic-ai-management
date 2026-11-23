@@ -42,7 +42,7 @@
 
 /* 2026-11-23: compact, single-scroll, consistent workspace navigation.
    All navigation and account permissions remain owned by existing handlers. */
-.unified-workspace #workspace-navigation{
+.unified-workspace #workspace-navigation.unified-sidebar{
   height:100dvh;overflow:hidden;scrollbar-gutter:auto;
   display:flex;flex-direction:column;
   background:linear-gradient(165deg,#203c61 0%,#152d4d 55%,#10233f 100%);
