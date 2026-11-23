@@ -28,8 +28,8 @@ test('Colored cards have interactive filters, keyboard accessibility and mobile 
  assert.match(styles,/ticket-card-today/);
  assert.match(styles,/ticket-card-waiting/);
  assert.match(styles,/ticket-card-new/);
- assert.match(styles,/max-width:860px/);
- assert.match(app,/setFollowup\(id==='today'/);
+ assert.match(styles,/max-width:850px/);
+ assert.ok(app.includes("setFollowup(['today'"));
  assert.match(app,/setStatus\(id==='waiting'/);
 });
 
