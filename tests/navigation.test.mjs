@@ -24,7 +24,7 @@ test('six approved domains preserve laboratory cases and all eight finance desti
 });
 test('active route resolves calls, dispatch, work views, laboratory domains and aliases exactly',()=>{
  assert.equal(activeNavigation('/operations',new URLSearchParams('source=incoming'),'/operations'),false);
- for(const [path,query,title]of [['/operations','source=incoming','دفتر تماس‌های ورودی'],['/operations','view=dispatch','مدیریت و پیگیری درخواست‌ها'],['/staff','','امروز من'],['/staff','view=cases','پرونده‌های ارجاع‌شده'],['/laboratories','','ثبت پرونده و مدیریت پروژه'],['/work/finance','','داشبورد مالی'],['/manage/finance','resources=1','منابع و سوابق مالی']])assert.equal(resolveWorkspaceRoute(path,new URLSearchParams(query),owner).label,title);
+ for(const [path,query,title]of [['/operations','source=incoming','دفتر تماس‌های ورودی'],['/operations','view=dispatch','مدیریت و پیگیری درخواست‌ها'],['/staff','','برنامه‌ریزی'],['/staff','view=cases','پرونده‌های ارجاع‌شده'],['/laboratories','','ثبت پرونده و مدیریت پروژه'],['/work/finance','','داشبورد مالی'],['/manage/finance','resources=1','منابع و سوابق مالی']])assert.equal(resolveWorkspaceRoute(path,new URLSearchParams(query),owner).label,title);
  assert.equal(activeNavigation('/staff',new URLSearchParams('view=board'),'/staff?view=plans'),false);
 });
 test('home previews expose only existing enabled destinations without granting API access',()=>{
