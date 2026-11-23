@@ -75,3 +75,11 @@ test('sample-sheet lab preference checkboxes are only suggestions and require la
  assert.match(sampleData,/original\.status==='received'/);
  assert.match(sampleData,/assignAccess\(u\)/);
 });
+
+test('record detail no longer exposes redundant customer type, request type, ticket kind and document preflight',()=>{
+ assert.doesNotMatch(app,/<EntryMetadata/);
+ assert.doesNotMatch(app,/نوع تیکت<select/);
+ assert.doesNotMatch(app,/بررسی اولیه مدارک<select/);
+ assert.match(app,/گفتگو و سابقه اقدام/);
+ assert.match(app,/ذخیره پیگیری و ارجاع/);
+});
