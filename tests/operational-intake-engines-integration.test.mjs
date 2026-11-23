@@ -24,7 +24,7 @@ test('approved admissions form for incoming, outgoing and visits, no duplicate b
  assert.match(form,/پاسخ پشتیبان \/ اقدام یا قول داده‌شده/);
 });
 test('operations SQL filters exact selected topic as line inside persisted transcript, no incorrect start-of-body assumption',()=>{
- assert.match(ops,/instr\(char\(10\)\|\|source_body, \?\)/);
+ assert.match(ops,/source_body LIKE \?/);
  assert.match(ops,/موضوع درخواست: /);
  assert.doesNotMatch(ops,/substr\(source_body,1,\?\)=\?/);
 });
