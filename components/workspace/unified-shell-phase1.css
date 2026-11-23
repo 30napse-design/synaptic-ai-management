@@ -106,3 +106,11 @@
     transform:translateX(0)!important;visibility:visible!important;pointer-events:auto
   }
 }
+
+/* Home switches to a drawer at 1000px in existing UI. Remove desktop gutter
+   throughout that intermediate tablet range as well as phone layouts. */
+@media(min-width:761px) and (max-width:1000px){
+  .unified-workspace.home-route .unified-shell{margin-right:0;margin-left:0}
+  .unified-workspace.home-route #workspace-navigation:not(.open){transform:translateX(105%);visibility:hidden;pointer-events:none}
+  .unified-workspace.home-route #workspace-navigation.open{right:0;left:auto;transform:translateX(0);visibility:visible;pointer-events:auto}
+}
