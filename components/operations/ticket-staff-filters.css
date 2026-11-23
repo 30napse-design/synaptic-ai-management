@@ -23,3 +23,33 @@
 
 .ops-module .heading-buttons .ops-ticket-create{background:linear-gradient(115deg,#2c6dce,#458dd7);border-color:#377bcf;color:#fff;box-shadow:0 4px 12px #346fc52b;border-radius:11px}
 .ops-module .heading-buttons .ops-ticket-create:hover{background:linear-gradient(115deg,#2059b3,#2877c7)}
+
+/* Compact ticket-only workdesk. All legacy reception UI outside ticket view stays untouched. */
+.ops-module .ticket-staff-panel{gap:9px;margin:6px 0 11px;padding:12px 14px;border-radius:13px;box-shadow:none;background:#fbfdff}
+.ops-module .ticket-staff-heading{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.ops-module .ticket-staff-heading strong{font-size:12px;color:#234f81}
+.ops-module .ticket-staff-source{margin-inline-start:auto;max-width:255px}
+.ops-module .ticket-staff-source label{display:flex;align-items:center;gap:8px;color:#607d9b;font-size:11px;white-space:nowrap}
+.ops-module .ticket-staff-source select{min-height:34px;border-radius:9px;border:1px solid #d2dfef;padding:6px;background:#fff;color:#325b85;width:180px;font:inherit}
+.ops-module .ticket-staff-search{border-radius:9px}
+.ops-module .ticket-staff-search input{min-height:38px;font-size:11px}
+.ops-module .ticket-staff-grid{gap:8px}
+.ops-module .ticket-staff-grid select{min-height:38px;border-radius:9px}
+.ops-module .ticket-staff-clear{font-size:10px;padding:6px 10px}
+.ops-module .ticket-bulk-trigger{display:inline-flex;align-items:center;gap:6px;border:1px solid #d1dded;background:#f7fbff;color:#416c97;border-radius:9px;padding:7px 11px;font-size:11px;font-weight:700;cursor:pointer;margin:0 0 10px}
+.ops-module .ticket-bulk-trigger:hover{background:#e9f2ff}
+.ops-module .ticket-bulk-panel{margin-bottom:12px;padding:12px;border:1px solid #d8e5f4;border-radius:12px;background:#f7faff}
+.ops-module .ticket-bulk-panel .hint{font-size:10px;color:#647c96}
+.ops-module .ticket-dashboard+.ticket-staff-panel{margin-top:2px}
+.ops-module .ops-list{margin-top:6px;border:1px solid #e1e9f2;border-radius:14px;overflow:hidden;box-shadow:none}
+.ops-module .ops-item-row{border-bottom:1px solid #e7eff7}
+.ops-module .ops-item{padding:12px 14px}
+.ops-module .ops-item-content h3{font-size:13px;line-height:1.6}
+.ops-module .ops-item-content small{color:#6d829d;font-size:10px}
+.ops-module .ticket-compact-detail{width:min(920px,95vw);max-height:min(88vh,850px);overflow:auto;border-radius:16px}
+.ops-module .ticket-compact-detail .detail-columns{gap:18px}
+.ops-module .ticket-compact-detail .detail-info{display:flex;gap:8px;flex-wrap:wrap}
+.ops-module .ticket-compact-detail .ops-source-body{max-height:260px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.8;background:#f8fbff;border:1px solid #e0e9f4;border-radius:11px;padding:13px}
+.ops-module .ticket-compact-detail .form-grid{gap:9px}
+.ops-module .ticket-compact-detail .conversation .events{max-height:350px;overflow-y:auto}
+@media(max-width:740px){.ops-module .ticket-staff-heading{align-items:stretch;flex-wrap:wrap}.ops-module .ticket-staff-source{margin:0;width:100%;max-width:none}.ops-module .ticket-staff-source select{width:100%}.ops-module .ticket-compact-detail{width:97vw;max-height:92dvh}}
