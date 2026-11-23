@@ -8,7 +8,7 @@ async function privatePath(key:string){
  if(!/^ticket-support\/[a-zA-Z0-9_-]{10,160}\/[a-f0-9-]{36}$/.test(key))throw Object.assign(new Error('شناسه مسیر فایل نامعتبر است'),{status:400});
  await mkdir(root,{recursive:true,mode:0o700});
  const real=await realpath(root),cwd=await realpath(process.cwd());
- if(real===cwd||real.startsWith(cwd+sep)||real.includes(sep+'public'+sep)||real.includes(sep+'public_html'+sep)||real==='/tmp')throw Object.assign(new Error('محل فایل نباید داخل پوشه عمومی سایت یا محل انتشار برنامه باشد'),{status:503});
+ if(real===cwd||real.startsWith(cwd+sep)||real.split(sep).some(part=>['public','public_html','www','htdocs'].includes(part))||real==='/tmp')throw Object.assign(new Error('محل فایل نباید داخل پوشه عمومی سایت یا محل انتشار برنامه باشد'),{status:503});
  const file=resolve(real,key);
  if(!file.startsWith(real+sep))throw Object.assign(new Error('مسیر فایل نامعتبر است'),{status:400});
  return file;
