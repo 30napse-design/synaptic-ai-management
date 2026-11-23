@@ -11,8 +11,8 @@ const sampleData=read('lib/standalone-sample-intake.ts');
 const work=read('app/staff/work-app.tsx');
 const nav=read('lib/navigation.ts');
 test('approved admissions form for incoming, outgoing and visits, no duplicate bulk-selection controls',()=>{
- assert.match(app,/tickets\?<form onSubmit=/);
- assert.doesNotMatch(app,/tickets\|\|isVisit\|\|isOutbound\?<form/);
+ assert.match(app,/modal==='create'\?\(<OperationsIntakeForm/);
+ assert.doesNotMatch(app,/tickets\?<form onSubmit=/);
  assert.match(app,/false&&data\.manualAssignment/);
  assert.match(app,/false&&assignable\(item\)/);
  assert.match(form,/label>دسته اصلی<select/);
