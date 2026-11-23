@@ -31,3 +31,23 @@
 .ops-module .detail-modal{background:linear-gradient(160deg,#fff,#f8fbff);border:1px solid #d5e6f8;border-radius:17px}
 @media(max-width:700px){.ops-module .ops-intake-form .form-grid>label{padding:10px}.ops-module .ops-intake-form .form-grid{gap:9px}.ops-module .ops-intake-form .modal-actions>*{flex:1}}
 @media(prefers-reduced-motion:reduce){.ops-module .ops-list .ops-item-row{transition:none}}
+
+.ops-module .ops-nine-groups{display:grid;gap:13px;margin:14px 0;background:linear-gradient(130deg,#fff,#f4f9ff);border:1px solid #d5e3f5;border-radius:18px;padding:16px;box-shadow:0 5px 18px #254b7b12}
+.ops-nine-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;color:#254a7c}
+.ops-nine-heading b{display:block;font-size:14px;font-weight:800}
+.ops-nine-heading small{display:block;font-size:10px;color:#728ca8;line-height:1.8;margin-top:3px}
+.ops-nine-heading>span{background:#edf5ff;border-radius:9px;padding:7px 10px;font-size:11px;white-space:nowrap}
+.ops-nine-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.ops-nine-grid button{display:flex;justify-content:flex-start;align-items:center;gap:7px;min-height:47px;padding:9px 11px;border:1px solid #d5e3f5;border-radius:11px;background:#fff;color:#34537b;text-align:right;font-size:11px;font-weight:650;line-height:1.65;transition:background .15s,box-shadow .15s}
+.ops-nine-grid button span{flex:none;color:#467cc3;background:#eaf4ff;border-radius:7px;padding:3px 6px;font:700 10px Arial,sans-serif}
+.ops-nine-grid button:nth-child(4n+2){background:#eff8ff}
+.ops-nine-grid button:nth-child(4n+3){background:#f4f0ff}
+.ops-nine-grid button:nth-child(4n+4){background:#f1fbf8}
+.ops-nine-grid button.active{background:linear-gradient(115deg,#316dbc,#5772d6);color:white;border-color:#316dbc;box-shadow:0 5px 14px #27549b35}
+.ops-nine-grid button.active span{color:#1b5c98}
+.ops-nine-grid button.needs-review{background:#bb593b;color:#fff}
+.ops-nine-label{display:inline-flex;align-items:center;padding:3px 7px;border-radius:8px;background:#e9f2ff;color:#315e98;font-size:10px;line-height:1.5;max-width:100%}
+@media(max-width:1150px){.ops-nine-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:750px){.ops-nine-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.ops-nine-heading{flex-wrap:wrap}.ops-nine-grid button{min-height:55px;padding:9px;font-size:10px}.ops-module .ops-nine-groups{padding:12px}}
+@media(max-width:400px){.ops-nine-grid{grid-template-columns:1fr 1fr;gap:6px}}
+@media(prefers-reduced-motion:reduce){.ops-nine-grid button{transition:none}}
