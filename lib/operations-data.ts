@@ -67,10 +67,10 @@ export async function readOperationsData(u:any,p:URLSearchParams){
   }
  }
  if(p.get('channel')){where+=' AND '+channelSQL+'=?';args.push(p.get('channel'))}
- for(const [key,column] of [['category','category'],['subtype','subtype'],['status','status'],['source','source_type'],['requestType','request_type'],['assignee','assignee'],['intakeState',"COALESCE(NULLIF(intake_state,''),'unreviewed')"]]){const value=p.get(key);if(value&&!(view==='tickets'&&key==='status')){where+=' AND '+column+'=?';args.push(value)}}
+ for(const [key,column] of [['category','category'],['subtype','subtype'],['status','status'],['source','source_type'],['requestType','request_type'],['assignee','assignee'],['intakeState',"COALESCE(NULLIF(intake_state,''),'unreviewed')"]]){const value=p.get(key);if(value&&!(view==='tickets'&&key==='status')){where+=key==='status'&&value==='awaiting_assignment'?" AND request_state='awaiting_assignment'":' AND '+column+'=?';if(!(key==='status'&&value==='awaiting_assignment'))args.push(value)}}
  const query=(p.get('q')||'').trim().slice(0,200);if(query){where+=" AND (title LIKE ? ESCAPE '\\' OR client_name LIKE ? ESCAPE '\\' OR phone LIKE ? ESCAPE '\\' OR email LIKE ? ESCAPE '\\' OR reference LIKE ? ESCAPE '\\' OR organization LIKE ? ESCAPE '\\' OR representative LIKE ? ESCAPE '\\' OR source_body LIKE ? ESCAPE '\\')";const escaped='%'+query.replace(/[\\%_]/g,'\\$&')+'%';args.push(...Array(8).fill(escaped))}
  const ticketBaseWhere=where,ticketBaseArgs=[...args];
- if(view==='tickets'&&p.get('status')){where+=' AND status=?';args.push(p.get('status'))}
+ if(view==='tickets'&&p.get('status')){if(p.get('status')==='awaiting_assignment')where+=" AND request_state='awaiting_assignment'";else{where+=' AND status=?';args.push(p.get('status'))}}
  const baseWhere=where,baseArgs=[...args];
  const today=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Dubai',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
  const followup=p.get('followup');if(followup==='today'){where+=" AND status!='closed' AND due=?";args.push(today)}else if(followup==='overdue'){where+=" AND status!='closed' AND due!='' AND due<?";args.push(today)}else if(followup==='unassigned'){where+=" AND status!='closed' AND (trim(assignee)='' OR json_extract(routing,'$.acceptanceNeedsAssignment')=1)"}else if(followup==='unanswered'){where+=" AND status!='closed' AND trim(resolution)=''"}else if(followup==='calls_pending'){where+=" AND status!='closed' AND "+channelSQL+"='phone' AND trim(resolution)=''"}
@@ -89,7 +89,7 @@ export async function readOperationsData(u:any,p:URLSearchParams){
  if(view==='tickets'&&['site','direct'].includes(p.get('ticketSource')||'')){facetWhere+=" AND json_extract(source_labels,'$.ticket_source')=?";facetArgs.push(p.get('ticketSource'))}
  if(p.get('channel')){facetWhere+=' AND '+channelSQL+'=?';facetArgs.push(p.get('channel'))}
  if(p.get('assignee')){facetWhere+=' AND assignee=?';facetArgs.push(p.get('assignee'))}
- if(p.get('status')){facetWhere+=' AND status=?';facetArgs.push(p.get('status'))}
+ if(p.get('status')){if(p.get('status')==='awaiting_assignment')facetWhere+=" AND request_state='awaiting_assignment'";else{facetWhere+=' AND status=?';facetArgs.push(p.get('status'))}}
  if(p.get('unifiedGroup')){facetWhere+=" AND (json_extract(source_labels,'$.intake_group')=? OR json_extract(source_labels,'$.ticket_group')=?)";facetArgs.push(p.get('unifiedGroup'),p.get('unifiedGroup'))}
  const facetQ=(p.get('q')||'').trim().slice(0,200);
  if(facetQ){facetWhere+=" AND (client_name LIKE ? OR phone LIKE ? OR email LIKE ? OR reference LIKE ? OR title LIKE ?)";facetArgs.push(...Array(5).fill('%'+facetQ.replace(/[%_]/g,'')+'%'))}
