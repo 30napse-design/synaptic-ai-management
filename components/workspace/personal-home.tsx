@@ -23,6 +23,18 @@ export default function PersonalHome({u,d,message}:{u:any,d:any,message:string[]
   </div>
 
   <section className="home-v2-stats" aria-label="خلاصه کارهای من">{[{label:'اولویت امروز',n:counts.today,description:'کارهای مهم و برنامه‌ریزی‌شده',Icon:ClipboardList,tone:'green',href:'/staff?view=overview'},{label:'تصمیم منتظر',n:counts.decisions,description:'در انتظار بررسی و تأیید شما',Icon:ClipboardCheck,tone:'orange',href:'/staff?view=approvals'},{label:'موعدگذشته',n:counts.overdue,description:'نیازمند اقدام و پیگیری',Icon:Clock3,tone:'red',href:'/staff?view=all&scope=mine&filter=overdue'}].map(s=><a href={s.href} key={s.label} className={'home-v2-stat '+s.tone}><span className={'home-v2-icon '+s.tone}><s.Icon size={27}/></span><div><strong>{fa(s.n)}</strong><b>{s.label}</b><small>{s.description}</small></div><ChevronLeft size={18}/></a>)}</section>
+  {d.operationsOverview&&<section className="home-operational-board" aria-label="وضعیت واقعی پذیرش و ارتباطات">
+   <header><div><h2>وضعیت زنده عملیات و ارتباطات</h2><p>آمار واقعی در محدوده دسترسی شما، از Gmail و تماس‌های ثبت‌شده؛ نمایش بدون تغییر داده‌ها</p></div><a href="/operations">مشاهده پرونده‌ها <ChevronLeft size={16}/></a></header>
+   <div className="home-operational-cards">{[
+    {key:'all',label:'کل ارتباطات',tone:'sky',href:'/operations'},
+    {key:'new',label:'جدید',tone:'violet',href:'/operations?status=open'},
+    {key:'doing',label:'در حال پیگیری',tone:'blue',href:'/operations?status=doing'},
+    {key:'waiting',label:'منتظر بررسی / پاسخ',tone:'amber',href:'/operations?status=waiting'},
+    {key:'unassigned',label:'بدون مسئول',tone:'rose',href:'/operations?followup=unassigned'},
+    {key:'closed',label:'بسته‌شده',tone:'mint',href:'/operations?status=closed'}
+   ].map(c=><a href={c.href} key={c.key} className={'home-operational-metric '+c.tone}><span>{c.label}</span><b>{fa(d.operationsOverview[c.key]||0)}</b><ChevronLeft size={14}/></a>)}</div>
+   <footer><span>Gmail: <b>{fa(d.operationsOverview.gmail)}</b></span><span>تماس‌های ورودی: <b>{fa(d.operationsOverview.incoming)}</b></span><span>مسئولیت‌ها و وضعیت‌ها از سوابق اصلی خوانده می‌شوند</span></footer>
+  </section>}
   <div className="home-v2-body">
    <div className="home-v2-main">
     <section className="home-v2-panel home-v2-priorities"><div className="home-v2-section-title"><h2><span className="home-v2-icon purple"><Target size={23}/></span>اولویت‌های من</h2><a href="/staff?view=all&scope=mine">مشاهده همه<ChevronLeft size={15}/></a></div>
