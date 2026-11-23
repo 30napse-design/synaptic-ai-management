@@ -21,5 +21,18 @@ test('common staff navigation does not bypass per-record access enforcement',()=
  for(const name of ['پذیرش، ارتباط و پشتیبانی','کارتابل و برنامه‌ریزی','برد وظایف','مکاتبات داخلی'])assert.ok(approvals.includes(name),name);
  assert.match(approvals,/Never authorize a permission from a title/);
  assert.match(page,/approvedAccountOverview\.map/);
- assert.match(page,/کنترل دسترسی در سرور و روی هر رکورد/);
+ assert.match(page,/نمایش مسیر، مجوز خواندن همه رکوردها نیست/);
+});
+
+test('existing actions survive inside accessible accordion rows',()=>{
+ assert.match(page,/<details className="synapse-account-row"/);
+ assert.match(page,/<summary className="synapse-account-bar"/);
+ assert.match(page,/managed_edit/);
+ assert.match(page,/managed_reset/);
+ assert.match(page,/initial_credentials/);
+ assert.match(page,/password/);
+ assert.match(page,/data\.organization_accounts\.filter/);
+ const css=read('app/accounts/accounts-accordion.css');
+ assert.match(css,/focus-visible/);
+ assert.match(css,/max-width:620px/);
 });
