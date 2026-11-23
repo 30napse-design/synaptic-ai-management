@@ -92,3 +92,61 @@
  .unified-workspace #workspace-navigation>.unified-brand img{max-height:52px}
  .unified-workspace #workspace-navigation>.unified-caption{margin:3px 0 5px}
 }
+
+/* Work dashboard reference screenshot: dark 68px neuron header, navy left sidebar, 185px desktop width.
+   Scoped to /staff?view=dashboard so all other modules keep their own approved chrome. */
+.unified-workspace.reference-work-route{background:#e8f2ff}
+.unified-workspace.reference-work-route .unified-topbar{
+ min-height:68px;height:68px;background-color:#113865!important;
+ background-image:linear-gradient(100deg,#113e6ecc 0%,#10345dcc 38%,#123c72bd 75%,#0b2b51e8 100%),url('/brand/synapse-neural-header.svg')!important;
+ background-position:center;background-size:cover,auto 112px;background-repeat:no-repeat,repeat-x;
+ color:#fff!important;border-bottom:1px solid #3974ad9c;box-shadow:0 3px 13px #06224322;
+ padding:0 19px;gap:12px
+}
+.reference-work-route .unified-topbar-identity{gap:15px;min-width:0;flex-wrap:nowrap}
+.reference-work-route .unified-topbar-identity>a{color:#fff!important;font-weight:850;font-size:21px;letter-spacing:.4px;text-decoration:none}
+.reference-work-route .wrd-institute-identity{display:grid;gap:4px;min-width:0;border-inline-start:1px solid #95b8da62;padding-inline-start:16px;line-height:1.15}
+.reference-work-route .wrd-institute-identity strong{font-size:15px;font-weight:750;color:#fff;white-space:nowrap}
+.reference-work-route .wrd-institute-identity small{font-size:10px;color:#d1e9fa;direction:ltr;text-align:right;white-space:nowrap}
+.reference-work-route .unified-topbar .home-toolbar{background:transparent}
+.reference-work-route .unified-topbar .home-toolbar-profile{background:#ffffff13;border-color:#c4dff341;color:#fff}
+.reference-work-route .unified-topbar .home-toolbar-profile b{color:#fff}
+.reference-work-route .unified-topbar .home-toolbar-profile small{color:#bdd8ef}
+.reference-work-route .unified-topbar .home-toolbar-icon.ai-trigger{color:#e0aaff;background:radial-gradient(circle,#133a73,#603cb3);border:1px solid #db8fff;box-shadow:0 0 8px #be6aff,0 0 18px #b065ff7c}
+.reference-work-route .unified-topbar .work-notifications>.icon-button{background:#ffffff12;color:#ffe366;border-color:#f9e57a9c;box-shadow:0 0 11px #f9d33d67}
+.reference-work-route .unified-topbar .home-toolbar-icon.mail-blue{color:#b2ffd0;border-color:#6be8a6;background:#15865c66;box-shadow:0 0 9px #50eea27a}
+.reference-work-route .unified-topbar .account-quick-settings{color:#f0f5ff!important;background:#ffffff19;border:1px solid #bed8f67a}
+.reference-work-route #workspace-navigation.unified-sidebar{background:linear-gradient(165deg,#143d72,#0b2b55 69%,#0e3562)!important;border:0;color:#fff}
+.reference-work-route #workspace-navigation .unified-brand img{border-radius:10px}
+.reference-work-route #workspace-navigation .nav-group-title,.reference-work-route #workspace-navigation .nav-group-links>a,.reference-work-route #workspace-navigation .unified-home{color:#eff7ff}
+.reference-work-route #workspace-navigation a.selected{background:linear-gradient(90deg,#1caadd,#3a87da)!important;color:#fff!important;border:1px solid #61dbf2;box-shadow:0 0 8px #25b5f790;border-radius:12px}
+.reference-work-route #workspace-navigation :where(.nav-group-title,.unified-home,.nav-group-links>a):hover{background:#328bd744}
+.reference-work-route .unified-page{background:radial-gradient(ellipse at 50% 5%,#f5faff,#e6f2ff 74%,#e5effb);min-width:0}
+@media(min-width:1200px){.reference-work-route .unified-topbar-identity>a{font-size:23px}}
+@media(max-width:1100px){.reference-work-route .wrd-institute-identity strong{font-size:12px}.reference-work-route .wrd-institute-identity small{font-size:9px}}
+@media(max-width:790px){.unified-workspace.reference-work-route .unified-topbar{height:auto;min-height:64px;padding:8px 10px;flex-wrap:wrap}.reference-work-route .unified-topbar-identity{flex:1}.reference-work-route .wrd-institute-identity{display:none}}
+
+/* Reference geometry at 1536 x 1024: 68px universal topbar, 185px NAVY sidebar ON LEFT below header.
+   Only the /staff dashboard uses this desktop composition. The rest of SYNAPSE is unchanged. */
+@media(min-width:791px){
+ .reference-work-route .unified-shell{margin-left:185px!important;margin-right:0!important;min-width:0;padding-top:68px}
+ .reference-work-route .unified-topbar{position:fixed!important;top:0!important;left:0!important;right:0!important;width:100%!important;z-index:51!important;direction:ltr}
+ .reference-work-route .unified-topbar-identity{direction:ltr;flex:0 1 auto}
+ .reference-work-route #workspace-navigation.unified-sidebar{top:68px!important;bottom:0!important;left:0!important;right:auto!important;width:185px!important;height:calc(100dvh - 68px)!important;position:fixed!important}
+ .reference-work-route .unified-page>main.work-app{padding:0 4px 17px!important;max-width:none!important;margin:0!important;min-width:0}
+ .reference-work-route .unified-page{min-height:calc(100dvh - 68px)}
+ .reference-work-route #workspace-navigation .unified-brand{display:none}
+ .reference-work-route #workspace-navigation>.unified-caption{display:none}
+ .reference-work-route #workspace-navigation>nav{padding-top:16px}
+ .reference-work-route #workspace-navigation .nav-group-title{font-size:11px;padding:8px 7px;line-height:1.5}
+ .reference-work-route #workspace-navigation .nav-group-links>a{font-size:10px}
+ .reference-work-route #workspace-navigation .unified-home{font-size:12px}
+}
+@media(max-width:790px){
+ .reference-work-route .unified-shell{margin:0!important;min-width:0}
+ .reference-work-route #workspace-navigation.unified-sidebar{position:fixed;left:0;right:auto;width:min(305px,90vw);z-index:60}
+ .reference-work-route .unified-page>main.work-app{padding:7px 9px 15px!important;min-width:0}
+}
+
+.reference-work-route #workspace-navigation .nav-group-title.wrd-work-active{background:linear-gradient(110deg,#35b6dc,#247bbb)!important;border:1px solid #63dcf2;border-radius:12px;box-shadow:inset 0 0 10px #ffffff41,0 0 8px #3bbce86b;color:#fff!important;font-weight:800}
+.reference-work-route #workspace-navigation .nav-group-title.wrd-work-active svg{color:#fff!important}
