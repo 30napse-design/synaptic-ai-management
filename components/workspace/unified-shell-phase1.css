@@ -85,7 +85,7 @@
   }
   .unified-workspace.reference-work-route .unified-topbar-identity{direction:rtl!important}
 }
-@media(min-width:761px) and (max-width:1000px){
+@media(min-width:791px) and (max-width:1000px){
   .unified-workspace.reference-work-route .unified-shell{
     margin-right:var(--shell-sidebar-width)!important;margin-left:0!important;
   }
@@ -94,7 +94,7 @@
   }
   .unified-workspace.reference-work-route .unified-topbar{direction:rtl!important}
 }
-@media(max-width:760px){
+@media(max-width:790px){
   .unified-workspace.reference-work-route #workspace-navigation.unified-sidebar{
     left:auto!important;right:0!important;width:min(86vw,304px)!important;
   }
