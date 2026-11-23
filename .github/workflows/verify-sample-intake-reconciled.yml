@@ -19,6 +19,6 @@ jobs:
           node-version: '22'
       - run: npm install --global pnpm@11.25.0
       - run: pnpm install --frozen-lockfile
-      - run: node --test tests/sample-intake-ux-regression.test.mjs tests/ticket-compact-final.test.mjs tests/ticket-source-role-reconcile.test.mjs tests/ticket-dashboard.test.mjs tests/navigation.test.mjs tests/operations-intake-ui.test.mjs
+      - run: node --test tests/account-profile-sample-regression.test.mjs tests/sample-intake-ux-regression.test.mjs tests/ticket-compact-final.test.mjs tests/ticket-source-role-reconcile.test.mjs tests/ticket-dashboard.test.mjs tests/navigation.test.mjs tests/operations-intake-ui.test.mjs
       - run: pnpm exec tsc --noEmit
       - run: pnpm build
