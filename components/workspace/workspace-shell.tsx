@@ -2,6 +2,7 @@
 import './shared-toolbar.css';
 import './workspace-repair.css';
 import './synapse-experience.css';
+import './unified-shell-phase1.css';
 import HomeToolbar from './home-toolbar';
 import {usePathname,useRouter,useSearchParams} from 'next/navigation';
 import {useEffect,useState,useRef} from 'react';
