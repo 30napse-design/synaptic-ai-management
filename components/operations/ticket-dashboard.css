@@ -32,3 +32,7 @@
 .ops-module .ticket-detail-modal .conversation{max-height:60vh;overflow:auto}
 @media(max-width:1160px){.ticket-dashboard-cards{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:660px){.ticket-dashboard-cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.ticket-dashboard-card{min-height:63px;padding:8px}.ticket-dashboard-card span{font-size:10px}.ops-module .ticket-staff-panel .form-grid{grid-template-columns:1fr}.ops-module .ticket-staff-heading{flex-wrap:wrap}}
+
+.ops-module .ticket-detail-extra{grid-column:1/-1;border:1px solid #e0e8f0;border-radius:9px;background:#f8fbff;padding:8px 10px}
+.ops-module .ticket-detail-extra>summary{cursor:pointer;color:#42638a;font-size:12px;font-weight:700}
+.ops-module .ticket-detail-extra>.wide,.ops-module .ticket-detail-extra>label{display:block;margin-top:8px}
