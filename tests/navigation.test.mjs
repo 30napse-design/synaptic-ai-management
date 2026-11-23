@@ -46,3 +46,27 @@ test('legacy new-case and project destinations remain implemented despite remove
  assert.ok(nav.find(g=>g.id==='operations').items.some(i=>i.href==='/sample-intake'));
  assert.ok(nav.find(g=>g.id==='work').items.some(i=>i.href==='/work/mail'));
 });
+
+test('acceptance and communications sidebar keeps exactly four approved entries for all user types',()=>{
+ const approved=[
+  ['پذیرش، ارتباط و پشتیبانی','/operations'],
+  ['دفتر تماس‌های ورودی','/operations?source=incoming'],
+  ['پذیرش نمونه محققین','/sample-intake'],
+  ['تیکت و پشتیبانی','/operations?view=tickets'],
+ ];
+ for(const user of [owner,{laboratory:true,laboratoryType:'internal',permissions:[]},{email:'staff:test',permissions:['calls'],dataPermissions:[]}]){
+  const group=workspaceNavigation(user).find(g=>g.id==='operations');
+  assert.equal(group.label,'پذیرش و ارتباطات');
+  assert.deepEqual(group.items.map(i=>[i.label,i.href]),approved);
+  assert.ok(!group.items.some(i=>i.href.includes('direction=outbound')||i.href.includes('direction=visit')));
+ }
+});
+test('legacy outbound and visit URLs remain routable independently of sidebar links',()=>{
+ assert.ok(existsSync('app/(workspace)/operations/page.tsx'));
+ for(const query of ['direction=outbound','direction=visit']){
+  const route=resolveWorkspaceRoute('/operations',new URLSearchParams(query),owner);
+  assert.ok(route&&route.group==='operations');
+ }
+ assert.equal(resolveWorkspaceRoute('/operations',new URLSearchParams('source=incoming'),owner).label,'دفتر تماس‌های ورودی');
+ assert.equal(resolveWorkspaceRoute('/operations',new URLSearchParams('view=tickets'),owner).label,'تیکت و پشتیبانی');
+});
