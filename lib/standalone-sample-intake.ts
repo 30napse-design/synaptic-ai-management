@@ -54,10 +54,10 @@ export async function writeStandaloneSampleIntake(u:any,b:any){allow(u);check(st
   check(result[0].meta.changes||result[1].meta.changes,'برگه ثبت نشد.',409);return {ok:true,id};
  }
  const {row,d}=await getRecord(u,String(b.id||''));
- check(Number(b.revision)===row.revision,'برگه توسط کاربر دیگری تغییر کرده است؛ بازخوانی کنید.',409);
  const key='sample-event:'+await digest(row.id+':'+b.key);
  const prev=await db().prepare('SELECT id FROM staff_events WHERE id=?').bind(key).first<any>();
  if(prev)return {ok:true,id:row.id,replayed:true};
+ check(Number(b.revision)===row.revision,'برگه توسط کاربر دیگری تغییر کرده است؛ بازخوانی کنید.',409);
  const original=d.samples.find((s:any)=>s.id===b.sample_id);
  let event:any={actor:u.email,at:now,action:b.action};
  if(b.action==='add_sample'){
@@ -80,7 +80,7 @@ export async function writeStandaloneSampleIntake(u:any,b:any){allow(u);check(st
   original.dispatch={at:now,actor:u.email,quantity:b.quantity,notes:String(b.notes||'').slice(0,2000)};
   event={...event,sample_id:original.id,lab_id:lab.id,quantity:b.quantity};
  }else if(b.action==='lab_receive'){
-  check(u.laboratory&&original&&original.lab_id===u.laboratoryId&&original.status==='sent','تأیید دریافت فقط توسط حساب آزمایشگاه مقصد مجاز است.',403);
+  check(u.laboratory&&u.laboratoryStatus==='active'&&original&&original.lab_id===u.laboratoryId&&original.status==='sent','تأیید دریافت فقط توسط حساب آزمایشگاه مقصد مجاز است.',403);
   check(whole(b.quantity,0,original.sent)&&optional(b.notes||'',2000),'تعداد دریافتی معتبر نیست.',400);
   original.lab_received=b.quantity;original.status=b.quantity===original.sent?'lab_received':'lab_issue';
   original.lab_receipt={at:now,actor:u.email,quantity:b.quantity,notes:b.notes||'',discrepancy:b.quantity!==original.sent};
