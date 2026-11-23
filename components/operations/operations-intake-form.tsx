@@ -4,8 +4,8 @@ import {communicationChannels,visitPurposes} from '../../lib/communication-polic
 import {communicationModes,messengerChannels,modeTransport,siteCategoriesForAuthorized,matchingLegacySubtype,communicationTranscript} from '../../lib/operations-intake-ui';
 import './operations-intake.css';
 
-type Props={form:any;setForm:(value:any)=>void;user:any;allowed:any[];eligible:(record:any)=>any[];busy:boolean;feedback:string;onCancel:()=>void;onSubmit:(payload:any)=>Promise<boolean>};
-export default function OperationsIntakeForm({form,setForm,user,allowed,eligible,busy,feedback,onCancel,onSubmit}:Props){
+type Props={form:any;setForm:(value:any)=>void;user:any;allowed:any[];eligible:(record:any)=>any[];canCall:boolean;busy:boolean;feedback:string;onCancel:()=>void;onSubmit:(payload:any)=>Promise<boolean>};
+export default function OperationsIntakeForm({form,setForm,user,allowed,eligible,canCall,busy,feedback,onCancel,onSubmit}:Props){
  const [submitting,setSubmitting]=useState(false);
  const cats=siteCategoriesForAuthorized(allowed);
  const cat=cats.find(c=>c.id===form.siteCategory)||cats[0];
@@ -26,7 +26,7 @@ export default function OperationsIntakeForm({form,setForm,user,allowed,eligible
  return <form className="ops-intake-form" onSubmit={save}>
   <p className="hint">ثبت‌کننده: {user.name} · فرم مشترک ثبت ارتباط و تماس تلفنی.</p>
   <div className="form-grid">
-   <label>نوع ارتباط<select value={mode.id} onChange={e=>{const m=modeTransport(e.target.value);change({communicationMode:m.id,direction:m.direction,channel:m.channel})}}>{communicationModes.map(m=><option key={m.id} value={m.id}>{m.title}</option>)}</select></label>
+   <label>نوع ارتباط<select value={mode.id} onChange={e=>{const m=modeTransport(e.target.value);change({communicationMode:m.id,direction:m.direction,channel:m.channel})}}>{communicationModes.filter(m=>canCall||m.channel!=='phone').map(m=><option key={m.id} value={m.id}>{m.title}</option>)}</select></label>
    {mode.id==='messaging'&&<label>پیام‌رسان<select value={form.channel||'whatsapp'} onChange={e=>change({channel:e.target.value})}>{messengerChannels.map(id=><option value={id} key={id}>{communicationChannels.find(c=>c.id===id)?.name||id}</option>)}</select></label>}
    {mode.id==='visit'&&<label>علت مراجعه<select value={form.visitPurpose} onChange={e=>change({visitPurpose:e.target.value})}>{visitPurposes.map(v=><option key={v}>{v}</option>)}</select></label>}
    <label>دسته اصلی<select required value={cat?.id||''} onChange={e=>change({siteCategory:e.target.value,siteTopic:''})}>{cats.map(c=><option value={c.id} key={c.id}>{c.title}</option>)}</select></label>
