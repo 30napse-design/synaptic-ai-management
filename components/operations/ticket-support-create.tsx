@@ -2,9 +2,9 @@
 import {useState} from 'react';
 import {TicketCategorySelector,type TicketCategorySelection} from './ticket-category-selector';
 import styles from './ticket-category-selector.module.css';
-type Props={manager:boolean;onSaved:()=>void;onCancel:()=>void};
+type Props={manager:boolean;onSaved:()=>void;onCancel:()=>void;inline?:boolean};
 const empty:TicketCategorySelection={source:'site',group:'services',category:'service_orders',topic:'',description:'',title:''};
-export function TicketSupportCreate({manager,onSaved,onCancel}:Props){
+export function TicketSupportCreate({manager,onSaved,onCancel,inline=false}:Props){
  const [requestKey,setRequestKey]=useState(()=>crypto.randomUUID()),[uploaded,setUploaded]=useState<string[]>([]);const [value,setValue]=useState<TicketCategorySelection>(empty),[clientName,setName]=useState(''),[phone,setPhone]=useState(''),[email,setEmail]=useState(''),[reference,setReference]=useState(''),[organization,setOrganization]=useState(''),[due,setDue]=useState('');
  const [files,setFiles]=useState<File[]>([]),[createdId,setCreatedId]=useState(''),[busy,setBusy]=useState(false),[message,setMessage]=useState(''),[done,setDone]=useState(false);
  async function submit(e:React.FormEvent){
@@ -48,7 +48,7 @@ export function TicketSupportCreate({manager,onSaved,onCancel}:Props){
   {message&&<p role="status" className={styles.statusText}>{message}</p>}
   <div className={styles.actions}>
    <button type="submit" className="primary" disabled={busy||done||!value.topic||!clientName||(!email&&!phone)||value.source==='direct'&&!value.title.trim()}>{busy?'در حال ثبت…':createdId?'تلاش مجدد برای پیوست‌ها':'ثبت و ارجاع تیکت'}</button>
-   <button type="button" className="secondary" disabled={busy} onClick={onCancel}>بستن</button>
+   {!inline&&<button type="button" className="secondary" disabled={busy} onClick={onCancel}>بستن</button>}
   </div>
  </form>;
 }
