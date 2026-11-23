@@ -10,12 +10,34 @@ import {operationPayments} from './finance-data';
 import {hasDataAccess} from './auth-policy';
 import {intakeMembers} from './intake-server';
 import {ticketSQL,isTicket} from './intake-policy';
+import {legacyTicketGroup,ticketTopicAllowed} from './ticket-staff-desk';
 export async function readOperationsData(u:any,p:URLSearchParams){
  const routingReady=await dispatchReady();const {sql:permitted,args:scopeArgs}=operationsScope(u,routingReady);
  const view=p.get('view')||'',contact=(p.get('contact')||'').trim().slice(0,200);
  let where=permitted;const args:any[]=[...scopeArgs];
  if(view==='history'&&contact){where+=' AND (lower(email)=? OR phone=?)';args.push(contact.toLowerCase(),contact)}else{where+=' AND direction=?';args.push(p.get('direction')||'inbound')}
  if(view==='tickets')where+=' AND '+ticketSQL;
+ if(view==='tickets'){
+  const ticketCategory=(p.get('ticketCategory')||'').slice(0,80),ticketTopic=(p.get('ticketTopic')||'').slice(0,120);
+  if(ticketCategory){
+   const legacy=legacyTicketGroup(ticketCategory);
+   if(!legacy){where+=' AND 1=0';}
+   else{where+=' AND category=?';args.push(legacy)}
+  }
+  if(ticketTopic){
+   if(!ticketCategory||!ticketTopicAllowed(ticketCategory,ticketTopic)){where+=' AND 1=0';}
+   else{
+    // New selections use the exact recorded display topic in source_body.
+    // Old Gmail entries remain accessible by category, and only equal legacy
+    // topic labels are included when a specific topic is requested.
+    where+=" AND (source_body LIKE ? ESCAPE '\\' OR subtype=?)";
+    const literal='موضوع درخواست: '+ticketTopic+'\n';
+    const escaped=literal.replace(/[\\%_]/g,'\\ if(view==='tickets')where+=' AND '+ticketSQL;')+'%';
+    args.push(escaped,ticketTopic);
+   }
+  }
+ }
+
  if(p.get('channel')){where+=' AND '+channelSQL+'=?';args.push(p.get('channel'))}
  for(const [key,column] of [['category','category'],['subtype','subtype'],['status','status'],['source','source_type'],['requestType','request_type'],['assignee','assignee'],['intakeState',"COALESCE(NULLIF(intake_state,''),'unreviewed')"]]){const value=p.get(key);if(value){where+=' AND '+column+'=?';args.push(value)}}
  const query=(p.get('q')||'').trim().slice(0,300);if(query){where+=" AND (title LIKE ? ESCAPE '\\' OR client_name LIKE ? ESCAPE '\\' OR phone LIKE ? ESCAPE '\\' OR email LIKE ? ESCAPE '\\' OR reference LIKE ? ESCAPE '\\' OR organization LIKE ? ESCAPE '\\' OR representative LIKE ? ESCAPE '\\' OR source_body LIKE ? ESCAPE '\\')";const escaped='%'+query.replace(/[\\%_]/g,'\\$&')+'%';args.push(...Array(8).fill(escaped))}
