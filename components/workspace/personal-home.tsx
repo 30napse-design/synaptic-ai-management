@@ -2,6 +2,7 @@ import {Home,CalendarDays,ArrowLeft,ChevronLeft,ClipboardList,ClipboardCheck,Clo
 import {workspacePreviews} from '../../lib/navigation';
 import {hasAccess} from '../../lib/auth-policy';
 import {workStatuses} from '../../lib/work-policy';
+import {intakeNineGroups} from '../../lib/intake-nine-groups';
 const fa=(n:number)=>n.toLocaleString('fa-IR');
 const date=(s:string)=>{const value=new Date(s+'T12:00:00Z');return Number.isFinite(value.getTime())?new Intl.DateTimeFormat('fa-IR',{dateStyle:'long',timeZone:'Asia/Dubai'}).format(value):'تاریخ نیازمند بررسی'};
 const href=(r:any)=>'/staff?id='+encodeURIComponent(r.id);
@@ -34,6 +35,11 @@ export default function PersonalHome({u,d,message}:{u:any,d:any,message:string[]
     {key:'closed',label:'بسته‌شده',tone:'mint',href:'/operations?status=closed'}
    ].map(c=><a href={c.href} key={c.key} className={'home-operational-metric '+c.tone}><span>{c.label}</span><b>{fa(d.operationsOverview[c.key]||0)}</b><ChevronLeft size={14}/></a>)}</div>
    <footer><span>Gmail: <b>{fa(d.operationsOverview.gmail)}</b></span><span>تماس‌های ورودی: <b>{fa(d.operationsOverview.incoming)}</b></span><span>مسئولیت‌ها و وضعیت‌ها از سوابق اصلی خوانده می‌شوند</span></footer>
+  </section>}
+  {d.operationsOverview&&<section className="home-nine-map" aria-label="نه حوزه اصلی دسته‌بندی ارتباطات">
+    <div><h2>۹ حوزه اصلی پیگیری ارتباطات</h2><p>ورود به فهرست واقعی هر حوزه، با حفظ نام مسئول و وضعیت ثبت‌شده</p></div>
+    <div className="home-nine-map-grid">{intakeNineGroups.map((g,i)=><a href={'/operations?nineGroup='+g.id} key={g.id}><span>{String(i+1).padStart(2,'0')}</span><b>{g.label}</b><ChevronLeft size={15}/></a>)}</div>
+    <small>موردهای مبهم بدون ارجاع خودکار برای بازبینی مدیریت باقی می‌مانند. <a href="/operations?nineGroup=unclassified">فهرست نیازمند بررسی</a></small>
   </section>}
   <div className="home-v2-body">
    <div className="home-v2-main">
