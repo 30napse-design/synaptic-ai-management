@@ -18,13 +18,17 @@ export function classifyCommunication(b:any){const text=String(b.title||'')+' '+
 export function requestRouting(r:any){try{return typeof r.routing==='string'?JSON.parse(r.routing):r.routing||null}catch{return null}}
 export function mayReadRequest(u:any,r:any){if(!u)return false;const m=requestRouting(r);if(!m)return false;if(u.manager&&u.email==='ekramiihamid@gmail.com')return true;if(u.laboratory)return !!m.laboratoryId&&m.laboratoryId===u.laboratoryId&&(m.sourceLab===true||!!m.jobId);const role=organizationalCode(u.username||u.organizationalUsername||'');
  if(m.unifiedIntake){
-  if(!hasDataAccess(u,unifiedRequiredAccess(m.unifiedIntake.category)))return false;
-  return r.created_by===u.email||r.assignee===u.email||m.roles?.includes(role)||(role==='research_manager'&&hasDataAccess(u,'research_supervision')&&seniorResearchMayReview(m.unifiedIntake.category));
+  const senior=role==='research_manager'&&hasDataAccess(u,'research_supervision')&&seniorResearchMayReview(m.unifiedIntake.category);
+  if(!senior&&!hasDataAccess(u,unifiedRequiredAccess(m.unifiedIntake.category)))return false;
+  return senior||r.created_by===u.email||r.assignee===u.email||m.roles?.includes(role);
  }
  return r.created_by===u.email||m.roles?.includes(role)||(!m.sensitive&&m.ownerRole===role);}
 export function requestLegacyCategory(family:string){return ['A03','A04'].includes(family)?'billing':['A08','A09','A10'].includes(family)?'results':['A14','A15','A16'].includes(family)?'internal':family==='A17'?'system':family==='A07'||family==='A13'?'projects':'customers'}
 
-export function mayReadRequestSource(u:any,r:any){const m=requestRouting(r);if(!m)return true;if(u.manager&&u.email==='ekramiihamid@gmail.com'||r.created_by===u.email)return true;const role=organizationalCode(u.username||u.organizationalUsername||'');return m.unifiedIntake?(hasDataAccess(u,unifiedRequiredAccess(m.unifiedIntake.category))&&(r.assignee===u.email||(m.dataRoles||[m.ownerRole]).includes(role)||(role==='research_manager'&&hasDataAccess(u,'research_supervision')&&seniorResearchMayReview(m.unifiedIntake.category)))):!m.sensitive||(m.dataRoles||[m.ownerRole]).includes(role);}
+export function mayReadRequestSource(u:any,r:any){const m=requestRouting(r);if(!m)return true;if(u.manager&&u.email==='ekramiihamid@gmail.com'||r.created_by===u.email)return true;const role=organizationalCode(u.username||u.organizationalUsername||'');if(m.unifiedIntake){
+ const senior=role==='research_manager'&&hasDataAccess(u,'research_supervision')&&seniorResearchMayReview(m.unifiedIntake.category);
+ return senior||hasDataAccess(u,unifiedRequiredAccess(m.unifiedIntake.category))&&(r.assignee===u.email||(m.dataRoles||[m.ownerRole]).includes(role));
+}return !m.sensitive||(m.dataRoles||[m.ownerRole]).includes(role);}
 export function redactRequest(u:any,r:any){return mayReadRequestSource(u,r)?r:{...r,title:'اقدام مرتبط با درخواست '+r.id.slice(-8),source_body:'جزئیات محرمانه فقط در واحد مجاز نمایش داده می‌شود.',attachments:'[]',resolution:'',client_name:'',phone:'',email:'',intake_notes:''};}
 
 export function ticketNoteVisible(u:any,e:any){if(e.action!=='internal-ticket-note')return true;if(u?.manager&&u.email==='ekramiihamid@gmail.com')return true;try{return JSON.parse(e.body).role===organizationalCode(u?.username||u?.organizationalUsername||'')}catch{return false}}
