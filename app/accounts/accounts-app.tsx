@@ -1,7 +1,7 @@
 'use client';
 import {useEffect,useState} from 'react';
 import AccountTransferPanel from '../../components/workspace/account-transfer-panel';
-import {roleTitle} from '../../lib/org-role-catalog';
+import {roleTitle,organizationCatalog} from '../../lib/org-role-catalog';
 import {approvedAccountOverview,sharedStaffSurfaces} from '../../lib/approved-account-responsibilities';
 import './accounts-accordion.css';
 export default function AccountsApp({initialData=null}:{initialData?:any}={}){
@@ -16,7 +16,8 @@ export default function AccountsApp({initialData=null}:{initialData?:any}={}){
 }
 function OrganizationAccount({a,minimum,busy,action,copy,credential,clear}:any){
  const [edit,setEdit]=useState(false),[reset,setReset]=useState(false);
- const d=a.definition;
+ // Keep current database-derived identity/permissions, but show the latest approved role duties and restrictions.
+ const d=organizationCatalog.find(r=>r.role_key===a.definition.role_key)||a.definition;
  const responsibility=approvedAccountOverview.find(r=>r.orgRole===d.role_key);
  const assignedName=a.username==='owner'?'حمید اکرامی':a.username==='executive'?'دکتر مظاهری (انتصاب در انتظار انتقال امن)':a.username==='scientific'?'در انتظار بازتعیین سمت؛ حساب فعلی محفوظ است':a.name&&a.name!==d.title_fa&&a.name!==a.definition.title_en?a.name:'تعیین نشده';
  return <details className="synapse-account-row" aria-label={d.title_fa}>
