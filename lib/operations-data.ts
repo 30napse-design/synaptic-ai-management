@@ -56,9 +56,11 @@ export async function readOperationsData(u:any,p:URLSearchParams){
    if(topic){
     if(!match.topics.some(t=>t===topic))where+=' AND 1=0';
     else{
-     where+=' AND (substr(source_body,1,?)=? OR subtype=?)';
-     const prefix='موضوع درخواست: '+topic+String.fromCharCode(10);
-     args.push(prefix.length,prefix,topic);
+     // The actual intake transcript starts with "دسته اصلی:" and only then
+     // the "موضوع درخواست:" line. Exact line-boundary matching avoids matching
+     // unrelated text and preserves legacy subtypes without a destructive rewrite.
+     where+=" AND (instr(char(10)||source_body, ?) > 0 OR subtype=?)";
+     args.push(String.fromCharCode(10)+'موضوع درخواست: '+topic+String.fromCharCode(10),topic);
     }
    }
   }
