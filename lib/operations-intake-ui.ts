@@ -53,7 +53,7 @@ export function matchingLegacySubtype(categoryId:string,topic:string,allowed:Arr
   'مشکل حساب کاربری':'امنیت حساب و دسترسی سامانه','سایر درخواست‌ها':'نیازمند بررسی',
  };
  const candidate=names[topic];
- return candidate&&group.items.includes(candidate)?candidate:group.items[0];
+ return candidate&&group.items.includes(candidate)?candidate:'';
 }
 export function communicationTranscript(topic:string,request:string,reply:string){
  return 'موضوع درخواست: '+topic+'\n\nشرح تماس / درخواست مشتری:\n'+request.trim()+'\n\nپاسخ پشتیبان / اقدام یا قول داده‌شده:\n'+reply.trim();
