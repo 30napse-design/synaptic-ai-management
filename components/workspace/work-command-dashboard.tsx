@@ -85,10 +85,10 @@ export default function WorkCommandDashboard({data,today,open,create,manager}:Pr
   return m?String(m.name||'').split(' | ')[0]||'مسئول سازمانی':'مسئول ثبت‌شده';
  };
  const modules=[
-  {id:'plans',label:'برنامه‌ریزی',sub:'تقویم، برنامه‌های روزانه و آتی',Icon:CalendarDays},
-  {id:'tasks',label:'کارتابل وظایف',sub:'همه وظایف، وظایف امروز، برد وظایف',Icon:ClipboardCheck},
+  {id:'mail',label:'مکاتبات داخلی',sub:'مکاتبات بین واحدها و تاریخچه',Icon:Mail},
   {id:'approvals',label:'بررسی و تأیید',sub:'درخواست‌ها و موارد نیازمند تأیید',Icon:ShieldCheck},
-  {id:'mail',label:'مکاتبات داخلی',sub:'مکاتبات بین واحدها و تاریخچه',Icon:Mail}
+  {id:'tasks',label:'کارتابل وظایف',sub:'همه وظایف، وظایف امروز، برد وظایف',Icon:ClipboardCheck},
+  {id:'plans',label:'برنامه‌ریزی',sub:'تقویم، برنامه‌های روزانه و آتی',Icon:CalendarDays}
  ] as const;
  const metrics=[
   {id:'all',label:'همه موارد',Icon:Layers3},
