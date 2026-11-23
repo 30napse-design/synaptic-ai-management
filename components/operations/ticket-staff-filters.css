@@ -1,0 +1,17 @@
+.ops-module .ticket-staff-panel{display:grid;gap:14px;padding:18px 20px;margin:15px 0 18px;border:1px solid #d6e3f3;border-radius:17px;background:linear-gradient(135deg,#ffffff,#f4f8ff);box-shadow:0 4px 22px #245d9210;color:#223f61}
+.ticket-staff-heading{display:flex;align-items:center;gap:11px}
+.ticket-staff-heading-icon{width:42px;height:42px;display:grid;place-items:center;border-radius:13px;background:#dceaff;color:#2968bd}
+.ticket-staff-heading strong{display:block;font-size:14px}
+.ticket-staff-heading small{display:block;margin-top:3px;font-size:11px;color:#617b99}
+.ticket-staff-total{margin-right:auto;background:#dfefff;color:#23539b;border-radius:22px;padding:6px 11px;font-size:11px;white-space:nowrap}
+.ticket-staff-search{display:flex;align-items:center;gap:10px;border:1px solid #bfcfe6;border-radius:12px;background:#fff;padding:0 14px;color:#5480b6}
+.ticket-staff-search input{border:0!important;outline:0!important;box-shadow:none!important;min-height:43px;background:transparent;flex:1;min-width:0;color:#203e60;font:inherit}
+.ticket-staff-filter-title{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:#335c8d}
+.ticket-staff-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.ticket-staff-grid label{display:grid;gap:6px;color:#435d7a;font-size:11px;font-weight:700}
+.ticket-staff-grid select{width:100%;min-height:43px;border:1px solid #c8d8eb;border-radius:11px;padding:8px 10px;background:#fff;color:#2d4a70;font:inherit}
+.ticket-staff-grid select:disabled{background:#f0f3f8;color:#9cabc0}
+.ticket-staff-clear{justify-self:start;border:1px solid #cddcf0;border-radius:9px;color:#315f9f;background:#fff;padding:7px 13px;font-weight:600;font-size:11px}
+.ticket-staff-clear:hover{background:#eaf2fc}
+@media(max-width:850px){.ticket-staff-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:580px){.ops-module .ticket-staff-panel{padding:14px}.ticket-staff-grid{grid-template-columns:1fr}.ticket-staff-heading{flex-wrap:wrap}.ticket-staff-total{margin-right:0}}
