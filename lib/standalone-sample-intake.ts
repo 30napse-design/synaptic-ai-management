@@ -3,7 +3,7 @@ import {hasDataAccess} from './auth-policy';
 import {canCoordinate} from './lab-execution-policy';
 import {digest} from './staff-auth';
 import {check,stamp} from './integration-store';
-import {intakeCategories,intakeUnits} from './sample-intake-catalog';
+import {intakeCategories,intakeUnits,intakeSuppliers,intakePreparations} from './sample-intake-catalog';
 
 /** Independent administrative sample ledger. This is NOT a scientific order or approved project. */
 const intakeAccess=(u:any)=>!!u&&(u.manager||!u.laboratory&&(hasDataAccess(u,'sample_intake')||canCoordinate(u)||hasDataAccess(u,'research_supervision')));
@@ -62,9 +62,9 @@ export async function writeStandaloneSampleIntake(u:any,b:any){allow(u);check(st
  let event:any={actor:u.email,at:now,action:b.action};
  if(b.action==='add_sample'){
   check(intakeAccess(u)&&!u.laboratory,'ثبت نمونه با مسئول پذیرش است.',403);
-  check(str(b.name,180)&&str(b.category,120)&&intakeCategories[b.category]?.includes(b.sample_type)&&intakeUnits.includes(b.unit)&&whole(b.quantity,1)&&optional(b.amount_per_unit||'',50)&&optional(b.transport||'',1000)&&optional(b.storage||'',1000)&&optional(b.notes||'',4000),'مشخصات نمونه معتبر نیست.');
+  check(str(b.name,180)&&str(b.category,120)&&intakeCategories[b.category]?.includes(b.sample_type)&&intakeUnits.includes(b.unit)&&intakeSuppliers.includes(b.supplier)&&intakePreparations.includes(b.preparation)&&optional(b.treatment||'',1000)&&whole(b.quantity,1)&&optional(b.amount_per_unit||'',50)&&optional(b.transport||'',1000)&&optional(b.storage||'',1000)&&optional(b.notes||'',4000),'مشخصات نمونه معتبر نیست.');
   const id='sample:'+await digest(row.id+':'+b.key);
-  d.samples.push({id,name:b.name.trim(),category:b.category,sample_type:b.sample_type,unit:b.unit,quantity:b.quantity,amount_per_unit:b.amount_per_unit||'',transport:b.transport||'',storage:b.storage||'',notes:b.notes||'',received:0,lab_id:'',lab_name:'',sent:0,lab_received:0,status:'registered',history:[]});
+  d.samples.push({id,name:b.name.trim(),category:b.category,sample_type:b.sample_type,unit:b.unit,quantity:b.quantity,amount_per_unit:b.amount_per_unit||'',supplier:b.supplier,preparation:b.preparation,treatment:b.treatment||'',transport:b.transport||'',storage:b.storage||'',notes:b.notes||'',received:0,lab_id:'',lab_name:'',sent:0,lab_received:0,status:'registered',history:[]});
   event={...event,sample_id:id,quantity:b.quantity};
  }else if(b.action==='receive'){
   check(intakeAccess(u)&&!u.laboratory,'دریافت فیزیکی با پذیرش است.',403);
