@@ -12,7 +12,7 @@ const prettyDate=(s:string)=>{try{return s?new Intl.DateTimeFormat('fa-IR-u-ca-p
 export default function WorkCorrespondenceStrip({records=[],user,onOpen}:{records?:any[];user?:any;onOpen?:(r:any)=>void}){
  const [response,setResponse]=useState<{tickets:Ticket[],user:{email:string}}|null>(null);
  const [error,setError]=useState(''),[tab,setTab]=useState('all');
- async function load(){try{const r=await fetch('/api/internal-tickets',{cache:'no-store'});const d=await r.json();if(!r.ok)throw Error(d.error||'خطای دریافت مکاتبات');setResponse(d);setError('')}catch(e:any){setError(e.message||'دریافت مکاتبات ممکن نشد.')}}
+ async function load(){try{const r=await fetch('/api/internal-tickets',{cache:'no-store'});const d:any=await r.json();if(!r.ok)throw Error(d.error||'خطای دریافت مکاتبات');setResponse(d);setError('')}catch(e:any){setError(e.message||'دریافت مکاتبات ممکن نشد.')}}
  useEffect(()=>{void load()},[]);
  const email=user?.email||response?.user?.email||'';
  const rows=useMemo(()=>{
