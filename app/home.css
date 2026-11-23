@@ -142,3 +142,18 @@
 @media(max-width:1200px){.home-operational-cards{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:650px){.home-operational-board{padding:14px;gap:11px}.home-operational-board>header{align-items:flex-start}.home-operational-board h2{font-size:14px}.home-operational-board p{font-size:10px}.home-operational-cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.home-operational-metric{min-height:75px;padding:10px}.home-operational-metric b{font-size:21px}}
 @media(prefers-reduced-motion:reduce){.home-operational-metric:hover{transform:none}}
+
+.home-nine-map{padding:18px;border:1px solid #d7e3f8;border-radius:19px;background:linear-gradient(116deg,#fcfeff,#f6f7ff);box-shadow:0 5px 20px #234d8310;display:grid;gap:12px}
+.home-nine-map h2{margin:0;color:#22477b;font-size:16px}
+.home-nine-map p,.home-nine-map>small{font-size:11px;color:#6b82a1;line-height:1.8;margin:4px 0 0}
+.home-nine-map-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.home-nine-map-grid>a{display:flex;gap:9px;align-items:center;min-height:45px;background:#fff;border:1px solid #dce8f7;border-radius:11px;padding:10px 11px;color:#30517d;transition:box-shadow .16s,transform .16s}
+.home-nine-map-grid>a:nth-child(4n+1){background:#edf7ff}.home-nine-map-grid>a:nth-child(4n+2){background:#f3f0ff}.home-nine-map-grid>a:nth-child(4n+3){background:#eaf9f7}
+.home-nine-map-grid>a span{flex:none;font:750 10px Arial;color:#317ba9;background:#dceefa;border-radius:6px;padding:5px}
+.home-nine-map-grid>a b{flex:1;min-width:0;font-size:11px;font-weight:750;line-height:1.7}
+.home-nine-map-grid>a svg{flex:none;color:#6b93bd}
+.home-nine-map-grid>a:hover{transform:translateY(-2px);box-shadow:0 6px 14px #254e7f16}
+.home-nine-map>small a{color:#2e69b0;font-weight:800}
+@media(max-width:800px){.home-nine-map-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:450px){.home-nine-map{padding:12px}.home-nine-map-grid>a{gap:6px;padding:8px}.home-nine-map-grid>a b{font-size:10px}}
+@media(prefers-reduced-motion:reduce){.home-nine-map-grid>a:hover{transform:none}}
