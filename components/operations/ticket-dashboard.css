@@ -16,3 +16,14 @@
 @media(max-width:860px){.ticket-dashboard-cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:480px){.ticket-dashboard-card{min-height:106px;padding:12px;gap:8px}.ticket-dashboard-card strong{font-size:19px}.ticket-dashboard-head{flex-direction:column;gap:2px}}
 @media(prefers-reduced-motion:reduce){.ticket-dashboard-card{transition:none}.ticket-dashboard-card:hover{transform:none}}
+
+/* Shared ticket desk filters without changing the reception forms. */
+.ops-module .ticket-staff-panel{display:grid;gap:13px;margin:15px 0 18px;padding:18px;border:1px solid #d6e3f3;border-radius:17px;background:linear-gradient(135deg,#fff,#f4f8ff);color:#223f61}
+.ops-module .ticket-staff-panel h3{font-size:16px;margin:0;color:#25476e}
+.ops-module .ticket-staff-search{display:flex;align-items:center;gap:10px;background:white;border:1px solid #bfd3ec;border-radius:12px;padding:2px 12px;color:#4779b8}
+.ops-module .ticket-staff-search input{width:100%;min-width:0;min-height:40px;outline:0;border:0;background:transparent;color:#1e4167;font:inherit}
+.ops-module .ticket-staff-panel .form-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.ops-module .ticket-staff-panel .form-grid label{display:grid;gap:5px;color:#405976;font-size:12px;font-weight:650}
+.ops-module .ticket-staff-panel .form-grid select{min-width:0;width:100%;background:#fff;border:1px solid #c6d8ee;border-radius:10px;min-height:40px;padding:7px}
+@media(max-width:1050px){.ops-module .ticket-staff-panel .form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.ops-module .ticket-staff-panel .form-grid{grid-template-columns:1fr}.ops-module .ticket-staff-panel{padding:13px}}
