@@ -66,3 +66,12 @@ test('existing APIs are preserved and sample endpoint requires authenticated mut
  assert.match(api,/mutationAllowed\(req\)/);
  assert.match(api,/identity\(\)/);
 });
+
+test('sample-sheet lab preference checkboxes are only suggestions and require later approved physical dispatch',()=>{
+ assert.match(sample,/name="requested_labs"/);
+ assert.match(sample,/requested_labs=fd\.getAll/);
+ assert.match(sampleData,/requested_labs:requestedLabs/);
+ assert.match(sampleData,/activeLabs|allowedLabs/);
+ assert.match(sampleData,/original\.status==='received'/);
+ assert.match(sampleData,/assignAccess\(u\)/);
+});
