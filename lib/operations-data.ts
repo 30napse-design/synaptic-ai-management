@@ -30,10 +30,9 @@ export async function readOperationsData(u:any,p:URLSearchParams){
     // New selections use the exact recorded display topic in source_body.
     // Old Gmail entries remain accessible by category, and only equal legacy
     // topic labels are included when a specific topic is requested.
-    where+=" AND (source_body LIKE ? ESCAPE '\\' OR subtype=?)";
-    const literal='موضوع درخواست: '+ticketTopic+'\n';
-    const escaped=literal.replace(/[\\%_]/g,'\\ if(view==='tickets')where+=' AND '+ticketSQL;')+'%';
-    args.push(escaped,ticketTopic);
+    where+=' AND (substr(source_body,1,?)=? OR subtype=?)';
+    const prefix='موضوع درخواست: '+ticketTopic+'\\n';
+    args.push(prefix.length,prefix,ticketTopic);
    }
   }
  }
