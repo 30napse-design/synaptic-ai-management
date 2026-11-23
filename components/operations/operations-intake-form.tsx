@@ -1,6 +1,9 @@
 'use client';
 import {useState,type FormEvent} from 'react';
 import {communicationChannels,visitPurposes} from '../../lib/communication-policy';
+import {memberPositionLabel} from '../../lib/ticket-staff-desk';
+import {orgRoleCatalog} from '../../lib/org-role-catalog';
+import {organizationalCode} from '../../lib/organizational-logins';
 import {communicationModes,messengerChannels,modeTransport,siteCategoriesForAuthorized,matchingLegacySubtype,communicationTranscript} from '../../lib/operations-intake-ui';
 import './operations-intake.css';
 
@@ -42,7 +45,7 @@ export default function OperationsIntakeForm({form,setForm,user,allowed,eligible
    <label>موعد پیگیری / مهلت پاسخ<input type="date" value={form.due||''} onChange={e=>change({due:e.target.value})}/></label>
    <label className="wide">شرح تماس / درخواست مشتری <span className="required">*</span><textarea required rows={4} maxLength={7000} value={form.customerRequest||''} onChange={e=>change({customerRequest:e.target.value})} placeholder="صحبت‌ها و درخواست مطرح‌شده توسط مخاطب را ثبت کنید…"/></label>
    <label className="wide">پاسخ پشتیبان / اقدام یا قول داده‌شده <span className="required">*</span><textarea required rows={4} maxLength={7000} value={form.staffResponse||''} onChange={e=>change({staffResponse:e.target.value})} placeholder="پاسخ، تعهد یا اقدام بعدی را دقیق ثبت کنید…"/></label>
-   <label className="wide">مسئول پیگیری<select value={form.assignee||''} onChange={e=>change({assignee:e.target.value})}><option value="">بعداً تعیین شود</option>{eligible({...form,subtype:mode.direction==='visit'?form.visitPurpose:matchingLegacySubtype(cat?.id||'',form.siteTopic,allowed),category:mode.direction==='visit'?'visits':undefined,channel:mode.id==='messaging'?form.channel:mode.channel,sourceType:mode.channel==='phone'?'incoming':'manual'}).map(m=><option key={m.email} value={m.email}>{m.name}</option>)}</select></label>
+   <label className="wide">مسئول پیگیری<select value={form.assignee||''} onChange={e=>change({assignee:e.target.value})}><option value="">بعداً تعیین شود</option>{eligible({...form,subtype:mode.direction==='visit'?form.visitPurpose:matchingLegacySubtype(cat?.id||'',form.siteTopic,allowed),category:mode.direction==='visit'?'visits':undefined,channel:mode.id==='messaging'?form.channel:mode.channel,sourceType:mode.channel==='phone'?'incoming':'manual'}).map(m=><option key={m.email} value={m.email}>{memberPositionLabel(m,orgRoleCatalog,organizationalCode)}</option>)}</select></label>
   </div>
   {feedback&&<div className="error-banner">{feedback}</div>}
   <div className="modal-actions"><button className="primary" disabled={busy||submitting||!cat||!form.siteTopic}>{busy||submitting?'در حال ثبت…':'ثبت و ارجاع'}</button><button type="button" className="secondary" disabled={busy||submitting} onClick={onCancel}>انصراف</button></div>
