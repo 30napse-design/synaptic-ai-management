@@ -10,7 +10,7 @@ export function TicketCategorySelector({value,onChange,showInternal=false}:Props
  const [expanded,setExpanded]=useState(false);
  const category=unifiedIntakeCategories.find(c=>c.id===value.category);
  const activeGroup=value.group||category?.group||'services';
- const cats=unifiedIntakeCategories.filter(c=>c.group===activeGroup&&(showInternal||c.id!=='service_admin'));
+ const cats=unifiedIntakeCategories.filter(c=>c.group===activeGroup);
  const group=cats.find(x=>x.id===value.category)||cats[0];
  const responsibility=intakeDefaultResponsibility(group.id,value.topic);
  const set=(update:Partial<TicketCategorySelection>)=>onChange({...value,...update});
