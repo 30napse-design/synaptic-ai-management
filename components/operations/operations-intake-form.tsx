@@ -17,7 +17,7 @@ export default function OperationsIntakeForm({form,setForm,user,allowed,eligible
   if(!form.siteTopic||!form.customerRequest?.trim()||!form.staffResponse?.trim())return;
   const legacy=matchingLegacySubtype(cat.id,form.siteTopic,allowed);
   if(!legacy)return;
-  const body=communicationTranscript(form.siteTopic,form.customerRequest,form.staffResponse);
+  const body='دسته اصلی: '+cat.title+'\n'+communicationTranscript(form.siteTopic,form.customerRequest,form.staffResponse);
   const title=form.siteTopic+' — '+(form.clientName||form.phone||'درخواست جدید');
   const channel=mode.id==='messaging'?form.channel:mode.channel;
   setSubmitting(true);
