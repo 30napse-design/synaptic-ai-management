@@ -2,7 +2,7 @@ import {getTicketCategories,hasTicketTopic,type TicketEntrySource} from './ticke
 
 /** New ticket keys never overwrite the legacy ops_items category/subtype. */
 export const TICKET_CATALOG_VERSION=1;
-export type TicketEntry={source:TicketEntrySource;category:string;topic:string;description:string;title:string;clientName:string;phone:string;email:string;reference:string;due:string;organization?:string};
+export type TicketEntry={source:TicketEntrySource;category:string;topic:string;description:string;title:string;clientName:string;phone:string;email:string;reference:string;due:string;requestKey:string;organization?:string};
 export function validTicketEntry(b:any,manager=false):b is TicketEntry{
  if(!b||!['site','direct'].includes(b.source)||typeof b.category!=='string'||typeof b.topic!=='string')return false;
  if(!hasTicketTopic(b.source,b.category,b.topic))return false;
