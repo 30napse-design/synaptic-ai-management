@@ -1,3 +1,5 @@
+> **IMPORTANT UPDATE 2026-11-24:** Read `docs/unified-intake-current-ui-ticket-task-followup.md` FIRST. It supersedes any prior instructions to redesign the current header, sidebar, intake visual appearance, source tiles, or form entry modes. Use `lib/unified-intake-taxonomy.ts` for the approved central routing matrix. The existing site UI must be preserved; task routing and both intake/ticket workflows require real integration and tests.
+
 # SYNAPSE — Unified Intake, Search, Filters, Routing & Staff Work Handoff
 Date: 2026-11-24
 Status: APPROVED REQUIREMENTS / IMPLEMENTATION NOT YET EXECUTED
