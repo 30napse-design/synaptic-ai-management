@@ -44,7 +44,17 @@ export async function readOperationsData(u:any,p:URLSearchParams){
 }
  if(p.get('channel')){where+=' AND '+channelSQL+'=?';args.push(p.get('channel'))}
  for(const [key,column] of [['category','category'],['subtype','subtype'],['status','status'],['source','source_type'],['requestType','request_type'],['assignee','assignee'],['intakeState',"COALESCE(NULLIF(intake_state,''),'unreviewed')"]]){const value=p.get(key);if(value&&!(view==='tickets'&&key==='status')){where+=' AND '+column+'=?';args.push(value)}}
- const query=(p.get('q')||'').trim().slice(0,300);if(query){const escaped='%'+query.replace(/[\\%_]/g,'\\const query=(p.get('q')||'').trim().slice(0,300);if(query){where+=" AND (title LIKE ? ESCAPE '\\' OR client_name LIKE ? ESCAPE '\\' OR phone LIKE ? ESCAPE '\\' OR email LIKE ? ESCAPE '\\' OR reference LIKE ? ESCAPE '\\' OR organization LIKE ? ESCAPE '\\' OR representative LIKE ? ESCAPE '\\' OR source_body LIKE ? ESCAPE '\\')";const escaped='%'+query.replace(/[\\%_]/g,'\\$&')+'%';args.push(...Array(8).fill(escaped))}')+'%';if(view==='tickets'){where+=" AND (client_name LIKE ? ESCAPE '\\' OR phone LIKE ? ESCAPE '\\' OR email LIKE ? ESCAPE '\\' OR reference LIKE ? ESCAPE '\\')";args.push(...Array(4).fill(escaped))}else{where+=" AND (title LIKE ? ESCAPE '\\' OR client_name LIKE ? ESCAPE '\\' OR phone LIKE ? ESCAPE '\\' OR email LIKE ? ESCAPE '\\' OR reference LIKE ? ESCAPE '\\' OR organization LIKE ? ESCAPE '\\' OR representative LIKE ? ESCAPE '\\' OR source_body LIKE ? ESCAPE '\\')";args.push(...Array(8).fill(escaped))}}
+ const query=(p.get('q')||'').trim().slice(0,300);
+ if(query){
+  const escaped='%'+query.replace(/[\\%_]/g,'\\$&')+'%';
+  if(view==='tickets'){
+   where+=" AND (client_name LIKE ? ESCAPE '\\' OR phone LIKE ? ESCAPE '\\' OR email LIKE ? ESCAPE '\\' OR reference LIKE ? ESCAPE '\\')";
+   args.push(...Array(4).fill(escaped));
+  }else{
+   where+=" AND (title LIKE ? ESCAPE '\\' OR client_name LIKE ? ESCAPE '\\' OR phone LIKE ? ESCAPE '\\' OR email LIKE ? ESCAPE '\\' OR reference LIKE ? ESCAPE '\\' OR organization LIKE ? ESCAPE '\\' OR representative LIKE ? ESCAPE '\\' OR source_body LIKE ? ESCAPE '\\')";
+   args.push(...Array(8).fill(escaped));
+  }
+ }
  const ticketBaseWhere=where,ticketBaseArgs=[...args];
  if(view==='tickets'&&p.get('status')){where+=' AND status=?';args.push(p.get('status'))}
  const baseWhere=where,baseArgs=[...args];
