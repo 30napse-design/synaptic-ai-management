@@ -8,3 +8,10 @@
 .ops-staff-fields select:disabled{background:#f1f5fa;color:#95a7bd}
 .ops-staff-foot{display:flex;justify-content:space-between;align-items:center;gap:12px}.ops-staff-foot small{font-size:10px;color:#738ba7}.ops-staff-foot button{background:#fff;color:#2c6bb0;border:1px solid #bed6f1;border-radius:10px;padding:8px 12px;font-size:11px}
 @media(max-width:760px){.ops-staff-fields{grid-template-columns:1fr}.ops-staff-foot{align-items:flex-start;flex-direction:column}.ops-module .ops-staff-filters{padding:14px}}
+
+/* Compact unified category chips inside existing intake filter card only. */
+.ops-unified-chips{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.ops-unified-chips button{border:1px solid #d1dff0;background:#f9fcff;color:#355a7f;border-radius:999px;padding:5px 10px;cursor:pointer;font-size:10px}
+.ops-unified-chips button.selected{background:#176c8b;color:#fff;border-color:#176c8b}
+.ops-unified-chips button small{margin-inline-start:5px;font-size:10px}
+.ops-unified-chips button:focus-visible{outline:2px solid #19b4c9;outline-offset:2px}
