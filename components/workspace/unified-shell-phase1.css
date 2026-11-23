@@ -4,24 +4,24 @@
 
 /* Explicit RTL and physical right anchoring across route-specific stylesheets. */
 .unified-workspace{direction:rtl;--shell-sidebar-width:264px;--shell-navy:#102b49;--shell-navy-deep:#0a1f39;--shell-cyan:#18a9c7;--shell-border:#d7e5f2;min-width:0}
-.unified-workspace #workspace-navigation{
+.unified-workspace:is(.home-route,:not(.home-route)) #workspace-navigation{
   direction:rtl;position:fixed;inset-block-start:0;inset-inline-start:auto;inset-inline-end:0;
   top:0;right:0;left:auto;width:var(--shell-sidebar-width);height:100dvh;
   background:linear-gradient(172deg,#1b4b70 0%,var(--shell-navy) 32%,var(--shell-navy-deep) 100%);
   border:0;border-left:1px solid #557b9e66;box-shadow:-2px 0 22px #06152b12;
   color:#edf6ff;z-index:40
 }
-.unified-workspace #workspace-navigation .unified-caption{color:#b8cfe0}
-.unified-workspace #workspace-navigation :is(.unified-home,.nav-group-title,.nav-group-links>a,.nav-subgroup-title,.nav-subgroup-links>a){color:#e5effa}
-.unified-workspace #workspace-navigation :is(.unified-home,.nav-group-title,.nav-subgroup-title){text-align:right}
-.unified-workspace #workspace-navigation :is(.nav-group,.unified-user){border-color:#8ab4d13a}
-.unified-workspace #workspace-navigation :is(.unified-home.selected,.nav-group-links>a.selected,.nav-subgroup-links>a.selected){
+.unified-workspace:is(.home-route,:not(.home-route)) #workspace-navigation .unified-caption{color:#b8cfe0}
+.unified-workspace:is(.home-route,:not(.home-route)) #workspace-navigation :is(.unified-home,.nav-group-title,.nav-group-links>a,.nav-subgroup-title,.nav-subgroup-links>a){color:#e5effa}
+.unified-workspace:is(.home-route,:not(.home-route)) #workspace-navigation :is(.unified-home,.nav-group-title,.nav-subgroup-title){text-align:right}
+.unified-workspace:is(.home-route,:not(.home-route)) #workspace-navigation :is(.nav-group,.unified-user){border-color:#8ab4d13a}
+.unified-workspace:is(.home-route,:not(.home-route)) #workspace-navigation :is(.unified-home.selected,.nav-group-links>a.selected,.nav-subgroup-links>a.selected){
   background:linear-gradient(100deg,#1c7199a8,#2d5f8f);color:#fff;
   border-radius:11px;box-shadow:inset -3px 0 #36dbe5
 }
-.unified-workspace #workspace-navigation :is(.unified-home,.nav-group-title,.nav-group-links>a,.nav-subgroup-title,.nav-subgroup-links>a):hover{background:#ffffff17;color:#fff}
-.unified-workspace #workspace-navigation .locked{color:#aac0d1}
-.unified-workspace #workspace-navigation .nav-group-title svg,.unified-workspace #workspace-navigation .nav-subgroup-title svg{color:#bdd7e8}
+.unified-workspace:is(.home-route,:not(.home-route)) #workspace-navigation :is(.unified-home,.nav-group-title,.nav-group-links>a,.nav-subgroup-title,.nav-subgroup-links>a):hover{background:#ffffff17;color:#fff}
+.unified-workspace:is(.home-route,:not(.home-route)) #workspace-navigation .locked{color:#aac0d1}
+.unified-workspace:is(.home-route,:not(.home-route)) #workspace-navigation .nav-group-title svg,.unified-workspace:is(.home-route,:not(.home-route)) #workspace-navigation .nav-subgroup-title svg{color:#bdd7e8}
 .unified-workspace .unified-shell{margin-right:var(--shell-sidebar-width);margin-left:0;min-width:0;direction:rtl}
 .unified-workspace .unified-page{min-width:0;direction:rtl}
 
@@ -51,19 +51,19 @@
 .unified-workspace .unified-topbar :is(.home-toolbar-popover,.work-notification-panel){direction:rtl;text-align:right;max-height:min(70dvh,580px)}
 
 /* Keep sidebar a right-hand drawer on compact viewports; never leave an invisible overlay. */
-@media(max-width:900px){
+@media(max-width:760px){
   .unified-workspace .unified-shell{margin-right:0;margin-left:0}
-  .unified-workspace #workspace-navigation{right:0;left:auto;max-width:min(86vw,304px)}
-  .unified-workspace #workspace-navigation:not(.open){transform:translateX(105%);visibility:hidden;pointer-events:none}
-  .unified-workspace #workspace-navigation.open{transform:translateX(0);visibility:visible;pointer-events:auto}
+  .unified-workspace:is(.home-route,:not(.home-route)) #workspace-navigation{right:0;left:auto;max-width:min(86vw,304px)}
+  .unified-workspace:is(.home-route,:not(.home-route)) #workspace-navigation:not(.open){transform:translateX(105%);visibility:hidden;pointer-events:none}
+  .unified-workspace:is(.home-route,:not(.home-route)) #workspace-navigation.open{transform:translateX(0);visibility:visible;pointer-events:auto}
 }
 @media(max-width:700px){
   .unified-workspace .unified-topbar{gap:8px;flex-wrap:wrap;padding:10px 12px}
-  .unified-workspace .home-toolbar{flex-wrap:wrap;min-width:0}
+  .unified-workspace .home-toolbar{flex-direction:row;flex-wrap:wrap;align-items:center;min-width:0}
   .unified-workspace .home-search{flex-basis:100%;max-width:none;min-width:0}
   .unified-workspace .home-toolbar-user{margin-inline-start:auto}
   .unified-workspace .home-toolbar-icon,.unified-workspace .work-notifications>.icon-button{width:36px;height:36px;min-width:36px}
 }
 @media(prefers-reduced-motion:reduce){
-  .unified-workspace #workspace-navigation{transition:none!important}
+  .unified-workspace:is(.home-route,:not(.home-route)) #workspace-navigation{transition:none!important}
 }
