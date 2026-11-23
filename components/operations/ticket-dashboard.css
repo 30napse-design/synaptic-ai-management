@@ -1,18 +1,20 @@
-.ops-module .ticket-dashboard{margin:16px 0 14px;display:grid;gap:11px}
-.ticket-dashboard-head{display:flex;gap:10px;align-items:baseline;justify-content:space-between;color:#274a73;font-size:13px}
-.ticket-dashboard-head span{color:#70849c;font-size:11px}
-.ticket-dashboard-cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px}
-.ticket-dashboard-card{display:grid;align-content:start;justify-items:start;text-align:right;gap:10px;min-height:121px;border:1px solid var(--tborder);background:var(--tbg);color:var(--tcolor);border-radius:15px;padding:15px 16px;box-shadow:0 4px 13px #133f7108;cursor:pointer;transition:transform .15s,border-color .15s,box-shadow .15s}
-.ticket-dashboard-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px #1645791c}
-.ticket-dashboard-card.is-current{outline:2px solid var(--tcolor);outline-offset:0}
-.ticket-dashboard-card:focus-visible{outline:3px solid #4584ca;outline-offset:3px}
-.ticket-dashboard-icon{display:grid;place-items:center;width:33px;height:33px;background:#fff9;border-radius:9px}
-.ticket-dashboard-label{font-size:11px;font-weight:650}
-.ticket-dashboard-card strong{font-size:23px;font-variant-numeric:tabular-nums;line-height:1}
-.ticket-card-all{--tbg:#edf4ff;--tborder:#cbdcf8;--tcolor:#326cbd}
-.ticket-card-today{--tbg:#e9f7f0;--tborder:#bde8ce;--tcolor:#1d8959}
-.ticket-card-waiting{--tbg:#fff5e7;--tborder:#f8deb3;--tcolor:#a56820}
-.ticket-card-new{--tbg:#f2ecff;--tborder:#dacafb;--tcolor:#7551b9}
-@media(max-width:860px){.ticket-dashboard-cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:480px){.ticket-dashboard-card{min-height:106px;padding:12px;gap:8px}.ticket-dashboard-card strong{font-size:19px}.ticket-dashboard-head{flex-direction:column;gap:2px}}
-@media(prefers-reduced-motion:reduce){.ticket-dashboard-card{transition:none}.ticket-dashboard-card:hover{transform:none}}
+.ops-module .ticket-dashboard{margin:8px 0 10px;display:grid;gap:7px}
+.ticket-dashboard-head{display:flex;gap:9px;align-items:baseline;justify-content:space-between;color:#29496e;font-size:12px}
+.ticket-dashboard-head span{font-size:10px;color:#778ba2}
+.ticket-dashboard-cards{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:7px}
+.ticket-dashboard-card{min-width:0;min-height:72px;display:grid;grid-template-columns:auto 1fr;grid-template-rows:22px 1fr;align-items:center;gap:5px 7px;text-align:right;border-radius:11px;background:var(--tbg);border:1px solid var(--tborder);color:var(--tcolor);padding:10px;cursor:pointer;transition:border-color .15s,background .15s;box-shadow:none}
+.ticket-dashboard-icon{display:grid;place-items:center;width:25px;height:25px;border-radius:7px;background:#fff9}
+.ticket-dashboard-label{font-size:10px;line-height:1.45;font-weight:700;min-width:0}
+.ticket-dashboard-card strong{font-size:20px;line-height:1.05;font-variant-numeric:tabular-nums;grid-column:1 / -1}
+.ticket-dashboard-card:hover{filter:brightness(.98)}
+.ticket-dashboard-card.is-current{outline:2px solid var(--tcolor);outline-offset:-2px}
+.ticket-dashboard-card:focus-visible{outline:3px solid #347ccd;outline-offset:2px}
+.ticket-card-all{--tbg:#edf4ff;--tborder:#d5e2f5;--tcolor:#316bb5}
+.ticket-card-new{--tbg:#f3efff;--tborder:#e2d9f7;--tcolor:#7656b1}
+.ticket-card-today{--tbg:#eaf7ef;--tborder:#ccead9;--tcolor:#25865b}
+.ticket-card-waiting{--tbg:#fff5e6;--tborder:#f3e0bf;--tcolor:#a26b2e}
+.ticket-card-overdue{--tbg:#fff0ed;--tborder:#f2d7d0;--tcolor:#b76155}
+.ticket-card-unassigned{--tbg:#eff3f8;--tborder:#d5dfeb;--tcolor:#5c728b}
+@media(max-width:1100px){.ticket-dashboard-cards{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:550px){.ticket-dashboard-cards{grid-template-columns:repeat(2,minmax(0,1fr))}.ticket-dashboard-head span{display:none}}
+@media(prefers-reduced-motion:reduce){.ticket-dashboard-card{transition:none}}
