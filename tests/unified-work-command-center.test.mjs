@@ -27,6 +27,15 @@ test('task views remain functional and display every loaded filtered item rather
  assert.doesNotMatch(dashboard,/boardStatus\?statusRows\(boardStatus\):ranked\)\.slice\(0,8\)/);
  for(const label of ['کارتابل وظایف','برنامه‌ریزی','بررسی و تأیید','مکاتبات داخلی'])assert.ok(dashboard.includes(label),label);
 });
+test('work sidebar title opens integrated dashboard and chevron keeps four original submenu links accessible',()=>{
+ const shell=read('components/workspace/workspace-shell.tsx');
+ const style=read('components/workspace/unified-shell-phase1.css');
+ assert.match(shell,/g\.id==='work'\?<div className="nav-group-title nav-group-hub"/);
+ assert.match(shell,/className="nav-group-hub-link" href="\/staff\?view=dashboard"/);
+ assert.match(shell,/className="nav-group-chevron" aria-expanded=\{open===g\.id\}/);
+ assert.match(shell,/setOpen\(open===g\.id\?'':g\.id\)/);
+ assert.match(style,/\.nav-group-hub-link/);
+});
 test('four original sidebar destinations and standalone work editor remain unchanged',()=>{
  for(const href of ['/staff?view=plans','/staff?view=dashboard','/staff?view=approvals','/work/mail'])assert.ok(nav.includes(href),href);
  assert.match(work,/<WorkCommandDashboard data=\{data\}/);
