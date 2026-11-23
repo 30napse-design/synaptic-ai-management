@@ -1,0 +1,22 @@
+name: Verify SYNAPSE command center phase 2 on Hostinger
+on:
+  push:
+    branches: [test/command-center-phase2-hostinger-2026-11-23]
+  pull_request:
+    branches: [hostinger-nextjs-fix]
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 28
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --global pnpm@11.25.0
+      - run: pnpm install --frozen-lockfile
+      - run: node --test tests/unified-command-phase2-hostinger.test.mjs tests/navigation.test.mjs tests/unified-work-dashboard.test.mjs tests/unified-workspace-shell-reconciled.test.mjs tests/login-home-ui-regression.test.mjs
+      - run: pnpm exec tsc --noEmit
+      - run: pnpm build
