@@ -1,0 +1,44 @@
+name: SYNAPSE comprehensive isolated audit
+on:
+  push:
+    branches: [test/comprehensive-isolated-audit-2026-11-25, hostinger-nextjs-fix]
+  pull_request:
+    branches: [hostinger-nextjs-fix]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: npm install --global pnpm@11.25.0
+      - run: pnpm install --frozen-lockfile
+      - name: Isolated regression inventory (no production secrets)
+        env:
+          SYNAPSE_ISOLATED_AUDIT: '1'
+        run: node scripts/audit-isolated.mjs
+      - name: TypeScript
+        if: always()
+        run: pnpm exec tsc --noEmit
+      - name: Production build
+        if: always()
+        run: pnpm build
+      - name: Publish audit summary
+        if: always()
+        run: |
+          if test -f audit-results/summary.md; then cat audit-results/summary.md >> "$GITHUB_STEP_SUMMARY"; fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: isolated-audit
+          path: audit-results/
