@@ -1,6 +1,6 @@
 const numericPaths = new Set([
   "'$.acceptanceNeedsAssignment'", "'$.active'", "'$.aggregate_revision'", "'$.approved'",
-  "'$.amount_rial'", "'$.expires'", "'$.progress'", "'$.requested_rial'", "'$.revision'", "'$.synthetic'", "'$.work_version'", "'$.unifiedIntake.version'",
+  "'$.amount_rial'", "'$.expires'", "'$.progress'", "'$.requested_rial'", "'$.revision'", "'$.synthetic'", "'$.work_version'", "'$.unifiedIntake.version'", "'$.intake_v'", "'$.ticket_v'",
 ]);
 
 // Parse only the legacy constructs used by the application, leaving quoted SQL

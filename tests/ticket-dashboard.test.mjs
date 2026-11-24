@@ -10,7 +10,7 @@ test('Ticket desk loads 100 real recent rows, other operations retain page size 
  assert.match(source,/view==='tickets'\?100:50/);
  assert.match(source,/LIMIT '\+initialPageSize\+' OFFSET/);
  assert.match(source,/nextOffset:offset\+initialPageSize<total/);
- assert.match(source,/ORDER BY COALESCE/);
+ assert.match(source,/ORDER BY '\+orderSQL\+orderDirection/);
 });
 test('Dashboard counts are server-derived, not hard-coded or based on current page only',()=>{
  assert.match(source,/COUNT\(\*\) AS all_count/);
