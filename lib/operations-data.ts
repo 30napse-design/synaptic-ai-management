@@ -1,3 +1,4 @@
+import {filterCategorySQL,filterGroupSQL,filterRoleSQL,filterTopicSQL} from './operations-filter-classification';
 import {canManualAssignOperations} from './operations-manual-assignment';
 import {ticketNoteVisible,redactRequest,mayReadRequestSource} from './dispatch-policy';
 import {dispatchReady} from './dispatch-engine';
@@ -55,10 +56,10 @@ export async function readOperationsData(u:any,p:URLSearchParams){
 }
  const unifiedGroup=(p.get('unifiedGroup')||'').slice(0,30),unifiedCategory=(p.get('unifiedCategory')||'').slice(0,80),unifiedTopic=(p.get('unifiedTopic')||'').slice(0,160);
  const unifiedRole=(p.get('unifiedRole')||'').slice(0,80);
- if(unifiedRole){if(intakeResponsibleRoles.some(r=>r.id===unifiedRole)){where+=" AND (json_extract(source_labels,'$.intake_role')=? OR json_extract(source_labels,'$.ticket_role')=?)";args.push(unifiedRole,unifiedRole)}else where+=' AND 1=0'}
- if(unifiedGroup){if(['services','consultation'].includes(unifiedGroup)){where+=" AND (json_extract(source_labels,'$.intake_group')=? OR json_extract(source_labels,'$.ticket_group')=?)";args.push(unifiedGroup,unifiedGroup)}else where+=' AND 1=0'}
- if(unifiedCategory){if(intakeCategory(unifiedCategory)){where+=" AND (json_extract(source_labels,'$.intake_category')=? OR json_extract(source_labels,'$.ticket_category')=?)";args.push(unifiedCategory,unifiedCategory)}else where+=' AND 1=0'}
- if(unifiedTopic){if(intakeCategory(unifiedCategory)?.topics.some(t=>t.title===unifiedTopic)){where+=" AND (json_extract(source_labels,'$.intake_topic')=? OR json_extract(source_labels,'$.ticket_topic')=?)";args.push(unifiedTopic,unifiedTopic)}else where+=' AND 1=0'}
+ if(unifiedRole){if(unifiedRole==='unclassified')where+=' AND '+filterRoleSQL+' IS NULL';else if(intakeResponsibleRoles.some(r=>r.id===unifiedRole)){where+=' AND '+filterRoleSQL+'=?';args.push(unifiedRole)}else where+=' AND 1=0'}
+ if(unifiedGroup){if(['services','consultation'].includes(unifiedGroup)){where+=' AND '+filterGroupSQL+'=?';args.push(unifiedGroup)}else where+=' AND 1=0'}
+ if(unifiedCategory){if(unifiedCategory==='unclassified')where+=' AND '+filterCategorySQL+' IS NULL';else if(intakeCategory(unifiedCategory)){where+=' AND '+filterCategorySQL+'=?';args.push(unifiedCategory)}else where+=' AND 1=0'}
+ if(unifiedTopic){if(intakeCategory(unifiedCategory)?.topics.some(t=>t.title===unifiedTopic)){where+=' AND '+filterTopicSQL+'=?';args.push(unifiedTopic)}else where+=' AND 1=0'}
  if(view!=='tickets'&&p.get('opsGroup')){
   const group=String(p.get('opsGroup')||'').slice(0,90);
   const [kind,id]=group.split(':');
@@ -101,11 +102,11 @@ export async function readOperationsData(u:any,p:URLSearchParams){
  if(p.get('channel')){facetWhere+=' AND '+channelSQL+'=?';facetArgs.push(p.get('channel'))}
  if(p.get('assignee')){facetWhere+=' AND assignee=?';facetArgs.push(p.get('assignee'))}
  if(p.get('status')){if(p.get('status')==='awaiting_assignment')facetWhere+=" AND "+assignmentStateSQL;else{facetWhere+=' AND status=?';facetArgs.push(p.get('status'))}}
- if(p.get('unifiedGroup')){facetWhere+=" AND (json_extract(source_labels,'$.intake_group')=? OR json_extract(source_labels,'$.ticket_group')=?)";facetArgs.push(p.get('unifiedGroup'),p.get('unifiedGroup'))}
+ if(p.get('unifiedGroup')){facetWhere+=' AND '+filterGroupSQL+'=?';facetArgs.push(p.get('unifiedGroup'))}
  const facetQ=(p.get('q')||'').trim().slice(0,200);
  if(facetQ){facetWhere+=" AND (client_name LIKE ? OR phone LIKE ? OR email LIKE ? OR reference LIKE ? OR title LIKE ?)";facetArgs.push(...Array(5).fill('%'+facetQ.replace(/[%_]/g,'')+'%'))}
- let facetRows:any[]=[];try{facetRows=(await db().prepare("SELECT COALESCE(json_extract(source_labels,'$.intake_category'),json_extract(source_labels,'$.ticket_category')) AS id,COUNT(*) AS n FROM ops_items WHERE "+facetWhere+" GROUP BY 1").bind(...facetArgs).all()).results as any[]}catch(e:any){console.error('operations category summary unavailable',e?.code||e?.message||'unknown')}
- const unifiedCounts=Object.fromEntries(unifiedIntakeCategories.map(c=>[c.id,Number(facetRows.find(x=>x.id===c.id)?.n||0)]));
+ let facetRows:any[]=[];try{facetRows=(await db().prepare("SELECT "+filterCategorySQL+" AS id,COUNT(*) AS n FROM ops_items WHERE "+facetWhere+" GROUP BY 1").bind(...facetArgs).all()).results as any[]}catch(e:any){console.error('operations category summary unavailable',e?.code||e?.message||'unknown')}
+ const unifiedCounts=Object.fromEntries([...unifiedIntakeCategories.map(c=>[c.id,Number(facetRows.find(x=>x.id===c.id)?.n||0)]),['unclassified',Number(facetRows.find(x=>x.id==null)?.n||0)]]);
  const total=Number((rr[1].results[0] as any)?.total||0);const counts=Object.fromEntries(operationCategories.map(c=>[c.id,Number((rr[2].results.find((r:any)=>r.category===c.id) as any)?.total||0)]));
  let coverage:any=null;try{coverage=await db().prepare("SELECT MAX(call_date) AS lastCallDate,MAX(source_at) AS lastSourceAt,COUNT(*) AS count FROM ops_items WHERE "+permitted+" AND source_type='incoming' AND source_key LIKE 'calls:incoming:%'").bind(...scopeArgs).first()}catch(e:any){console.error('operations coverage unavailable',e?.code||e?.message||'unknown')}
  return {coverage,unifiedCounts,financialDataUnavailable,manualAssignment:canManualAssignOperations(u),user:u,items:rr[0].results.filter((r:any)=>canSeeOps(u,r)).map(map),total,offset,nextOffset:offset+initialPageSize<total?offset+initialPageSize:null,counts,followups:rr[3]?.results?.[0]||{},ticketSummary:view==='tickets'?{all:Number((rr[5]?.results?.[0] as any)?.all_count||0),today:Number((rr[5]?.results?.[0] as any)?.today_count||0),new:Number((rr[5]?.results?.[0] as any)?.new_count||0),waiting:Number((rr[5]?.results?.[0] as any)?.waiting_count||0),overdue:Number((rr[5]?.results?.[0] as any)?.overdue_count||0),unassigned:Number((rr[5]?.results?.[0] as any)?.unassigned_count||0)}:null,categories:operationCategories.map(c=>({...c,allowed:u.manager||c.items.some(subtype=>canUseOpsCategory(u,{category:c.id,subtype,access_scope:requestedAccessScope(u,{category:c.id,subtype},'')})),items:c.items.filter(subtype=>u.manager||canUseOpsCategory(u,{category:c.id,subtype,access_scope:requestedAccessScope(u,{category:c.id,subtype},'')}))})),selected:allowedItem?map(allowedItem):null,events:allowedItem&&!mayReadRequestSource(u,allowedItem)?events.map((e:any)=>({...e,body:'{}'})):events,members:await intakeMembers(),sync:u.manager?rr[4]?.results||[]:[]};
