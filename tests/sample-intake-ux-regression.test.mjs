@@ -38,8 +38,8 @@ test('responsive layout and account toolbar still expose existing profile and ac
  assert.match(toolbar,/work-notifications/);
 });
 test('reception now uses only approved taxonomy subject and owner dropdowns in the new filter panel',()=>{
- assert.match(operations,/<OperationsStaffFilters/);
+ assert.match(operations,/<UnifiedIntakeFilters/);
  assert.doesNotMatch(operations,/فیلتر وضعیت مدارک/);
- assert.match(opsData,/opsGroup/);
- assert.match(opsData,/opsTopic/);
+ assert.match(opsData,/unifiedGroup/);
+ assert.match(opsData,/unifiedTopic/);
 });
