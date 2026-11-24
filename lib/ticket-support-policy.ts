@@ -1,6 +1,6 @@
 import {type TicketEntrySource} from './ticket-support-taxonomy.ts';
-import {intakeDefaultResponsibility,intakeCategory} from './unified-intake-taxonomy';
-import {validOptionalEmail,validPersianContactName,normalizeIranPhone} from './unified-intake-routing';
+import {intakeDefaultResponsibility,intakeCategory} from './unified-intake-taxonomy.ts';
+import {validOptionalEmail,validPersianContactName,normalizeIranPhone} from './unified-intake-routing.ts';
 
 /** Historical ticket_v:1 rows remain readable. New staff-submitted tickets use v2. */
 export const TICKET_CATALOG_VERSION=2;
