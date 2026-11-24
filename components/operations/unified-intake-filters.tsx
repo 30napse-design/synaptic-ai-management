@@ -19,13 +19,13 @@ export function UnifiedIntakeFilters({query,setQuery,group,setGroup,category,set
  const selected=intakeCategory(category);
  const number=(n:number)=>Number(n||0).toLocaleString('fa-IR');
  return <section dir="rtl" className={"ops-staff-filters"+(compact?" compact":"")} aria-label="فیلتر مشترک پذیرش و تیکت">
-  <header><Filter size={17}/><div><strong>جست‌وجو و فیلتر ارتباطات</strong><small>فیلترها روی اطلاعات ثبت‌شده سامانه اجرا می‌شوند.</small></div></header>
+  <header><Filter size={17}/><div><strong>جست‌وجو و فیلتر ارتباطات</strong><small>دسته‌بندی سوابق قبلی نیز در فیلتر لحاظ می‌شود؛ موارد مبهم جداگانه قابل مشاهده‌اند.</small></div></header>
   <label className="ops-staff-search"><Search size={18}/><input aria-label="جستجو بر اساس نام فاکتور موبایل و ایمیل" placeholder="نام محقق، فاکتور یا سفارش، موبایل یا ایمیل…" value={query} onChange={e=>setQuery(e.target.value)}/></label>
   <div className="ops-staff-fields">
    <label>گروه درخواست<select value={group} onChange={e=>{setGroup(e.target.value);setCategory('');setTopic('')}}><option value="">هر دو گروه</option><option value="services">{intakeGroupLabel('services')}</option><option value="consultation">{intakeGroupLabel('consultation')}</option></select></label>
-   <label>دسته اصلی<select value={category} onChange={e=>{setCategory(e.target.value);setTopic('')}}><option value="">همه دسته‌ها</option>{categories.map(c=><option key={c.id} value={c.id}>{c.title}</option>)}</select></label>
+   <label>دسته اصلی<select value={category} onChange={e=>{setCategory(e.target.value);setTopic('')}}><option value="">همه دسته‌ها</option><option value="unclassified">طبقه‌بندی نشده</option>{categories.map(c=><option key={c.id} value={c.id}>{c.title}</option>)}</select></label>
    <label>موضوع<select disabled={!selected} value={topic} onChange={e=>setTopic(e.target.value)}><option value="">همه موضوعات</option>{selected?.topics.map(t=><option key={t.title} value={t.title}>{t.title}</option>)}</select></label>
-   <label>مسئولیت سازمانی<select value={owner} onChange={e=>setOwner(e.target.value)}><option value="">همه مسئولیت‌ها</option>{intakeResponsibleRoles.map(r=><option key={r.id} value={r.id}>{r.label}</option>)}</select></label>
+   <label>مسئولیت سازمانی<select value={owner} onChange={e=>setOwner(e.target.value)}><option value="">همه مسئولیت‌ها</option><option value="unclassified">مسئولیت نامشخص</option>{intakeResponsibleRoles.map(r=><option key={r.id} value={r.id}>{r.label}</option>)}</select></label>
    <label>وضعیت<select value={status} onChange={e=>setStatus(e.target.value)}><option value="">همه وضعیت‌ها</option>{Object.entries(statuses).map(([value,label])=><option key={value} value={value}>{label}</option>)}</select></label>
   </div>
   {selected&&<p className="hint" role="status">مسئولیت سازمانی: {topic?intakeDefaultResponsibility(selected.id,topic)?.label||'—':intakeResponsibleRoles.filter(r=>selected.topics.some(t=>t.role===r.id)).map(r=>r.label).join('، ')}</p>}
