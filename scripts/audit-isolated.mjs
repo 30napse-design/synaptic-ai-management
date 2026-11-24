@@ -13,7 +13,8 @@ for(const file of files){
  const python=file.endsWith('.test.py'),node=file.endsWith('.test.mjs');
  if(!python&&!node){results.push({file,status:'deferred',reason:'Runtime harness or helper requires separate fixture review'});continue;}
  const start=Date.now();
- const r=spawnSync(python?'python3':process.execPath,python?['tests/'+file]:['--test','tests/'+file],{env,encoding:'utf8',timeout:120000,maxBuffer:8*1024*1024});
+ const executable=python?'python3':file==='portable-backup.test.mjs'&&process.env.SYNAPSE_BACKUP_NODE?process.env.SYNAPSE_BACKUP_NODE:process.execPath;
+ const r=spawnSync(executable,python?['tests/'+file]:['--test','tests/'+file],{env,encoding:'utf8',timeout:120000,maxBuffer:8*1024*1024});
  const output=(r.stdout||'')+'\n'+(r.stderr||'')+(r.error?'\n'+r.error.message:'');
  writeFileSync(join(dir,file+'.log'),output);
  const status=r.status===0?'passed':'failed';
