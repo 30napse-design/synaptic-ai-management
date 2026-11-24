@@ -114,3 +114,6 @@
   .unified-workspace.home-route #workspace-navigation:not(.open){transform:translateX(105%);visibility:hidden;pointer-events:none}
   .unified-workspace.home-route #workspace-navigation.open{right:0;left:auto;transform:translateX(0);visibility:visible;pointer-events:auto}
 }
+
+/* Preserve shared toolbar geometry, avatar, live actions and search. */
+.unified-workspace .unified-topbar{background:linear-gradient(110deg,#f9fbff,#edf4fc);border-bottom:1px solid #d9e5f4;box-shadow:0 3px 12px #1b3e690a}.unified-workspace .home-search{background:#fff;border-color:#c8d9ed;border-radius:11px;box-shadow:0 2px 6px #2147770b}.unified-workspace .home-toolbar-icon,.unified-workspace .work-notifications>.icon-button{border-radius:10px;box-shadow:0 2px 5px #2147770b}.unified-workspace .home-toolbar-profile{border-radius:11px;box-shadow:none}
