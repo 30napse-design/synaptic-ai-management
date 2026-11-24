@@ -1,6 +1,6 @@
 'use client';
 import {Search,Filter} from 'lucide-react';
-import {unifiedIntakeCategories,intakeCategory,intakeGroupLabel,type IntakeGroupId} from '../../lib/unified-intake-taxonomy';
+import {unifiedIntakeCategories,intakeCategory,intakeGroupLabel,intakeResponsibleRoles,intakeDefaultResponsibility,type IntakeGroupId} from '../../lib/unified-intake-taxonomy';
 import './operations-staff-filters.css';
 type Props={
  query:string;setQuery:(s:string)=>void;
@@ -24,9 +24,10 @@ export function UnifiedIntakeFilters({query,setQuery,group,setGroup,category,set
    <label>گروه درخواست<select value={group} onChange={e=>{setGroup(e.target.value);setCategory('');setTopic('')}}><option value="">هر دو گروه</option><option value="services">{intakeGroupLabel('services')}</option><option value="consultation">{intakeGroupLabel('consultation')}</option></select></label>
    <label>دسته اصلی<select value={category} onChange={e=>{setCategory(e.target.value);setTopic('')}}><option value="">همه دسته‌ها</option>{categories.map(c=><option key={c.id} value={c.id}>{c.title}</option>)}</select></label>
    <label>موضوع<select disabled={!selected} value={topic} onChange={e=>setTopic(e.target.value)}><option value="">همه موضوعات</option>{selected?.topics.map(t=><option key={t.title} value={t.title}>{t.title}</option>)}</select></label>
-   <label>مسئول واقعی<select value={owner} onChange={e=>setOwner(e.target.value)}><option value="">همه مسئولان</option>{members.map(m=><option key={m.email} value={m.email}>{m.name||m.email}</option>)}</select></label>
+   <label>مسئولیت سازمانی<select value={owner} onChange={e=>setOwner(e.target.value)}><option value="">همه مسئولیت‌ها</option>{intakeResponsibleRoles.map(r=><option key={r.id} value={r.id}>{r.label}</option>)}</select></label>
    <label>وضعیت<select value={status} onChange={e=>setStatus(e.target.value)}><option value="">همه وضعیت‌ها</option>{Object.entries(statuses).map(([value,label])=><option key={value} value={value}>{label}</option>)}</select></label>
   </div>
+  {selected&&<p className="hint" role="status">مسئولیت سازمانی: {topic?intakeDefaultResponsibility(selected.id,topic)?.label||'—':intakeResponsibleRoles.filter(r=>selected.topics.some(t=>t.role===r.id)).map(r=>r.label).join('، ')}</p>}
   <div className="ops-unified-chips" aria-label="دسته‌های قابل فیلتر">{categories.map(c=><button type="button" key={c.id} aria-pressed={category===c.id} className={category===c.id?'selected':''} onClick={()=>{setCategory(category===c.id?'':c.id);setTopic('')}}>{c.title} <small>{number(counts?.[c.id]||0)}</small></button>)}</div>
   <div className="ops-staff-foot"><small>تعدادها فقط از رکوردهای ثبت‌شده و مجاز محاسبه می‌شوند.</small><button type="button" onClick={reset}>پاک‌کردن فیلترها</button></div>
  </section>;
