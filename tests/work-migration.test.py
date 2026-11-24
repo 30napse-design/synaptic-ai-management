@@ -6,7 +6,7 @@ class WorkMigration(unittest.TestCase):
         db = sqlite3.connect(':memory:')
         files = sorted((ROOT / 'drizzle').glob('*.sql'))
         for f in files:
-            if f.name.startswith('0017'): continue
+            if f.name >= '0017': break
             db.executescript(f.read_text())
         db.execute("INSERT INTO staff_records(id,kind,title,assignee,reviewer,created_by,updated_at,status,revision) VALUES('old','task','preserved','a','r','owner','2026-11-11','todo',7)")
         before = db.execute('SELECT * FROM staff_records').fetchall()
