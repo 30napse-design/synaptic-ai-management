@@ -15,8 +15,10 @@ test('all, legacy, site and direct have distinct server source predicates',()=>{
  assert.match(data,/source\)\{where\+=' AND 1=0'/);
 });
 test('same-position authorized accounts remain separate and private IDs are not swapped',()=>{
- assert.match(app,/const roleMembers=data\.members\.filter/);
- assert.match(app,/roleMembers\.filter\(\(x:any\)=>memberRole\(x\)===memberRole\(m\)\)/);
+ assert.match(app,/eligible=\(record:any\)=>data\.members\.filter/);
+ assert.match(app,/mayAssignWork\(u,m\.email/);
+ assert.match(app,/canUseOpsCategory\(m,/);
+ assert.match(app,/eligible\(selected\)\.map/);
  assert.match(app,/value=\{m\.email\}/);
  assert.doesNotMatch(app,/new Map\(data\.members/);
 });
