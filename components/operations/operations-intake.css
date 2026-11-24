@@ -31,3 +31,23 @@
 .ops-module .detail-modal{background:linear-gradient(160deg,#fff,#f8fbff);border:1px solid #d5e6f8;border-radius:17px}
 @media(max-width:700px){.ops-module .ops-intake-form .form-grid>label{padding:10px}.ops-module .ops-intake-form .form-grid{gap:9px}.ops-module .ops-intake-form .modal-actions>*{flex:1}}
 @media(prefers-reduced-motion:reduce){.ops-module .ops-list .ops-item-row{transition:none}}
+
+/* Compact inline intake: keep all fields and validation, reduce vertical chrome. */
+.ops-module .ops-call-state{display:grid;gap:4px;align-content:start;text-align:center}
+.ops-module .ops-call-state small{font-size:11px;color:#52677a}
+.ops-module .ops-call-action:disabled,.ops-module .ops-call-action:disabled:hover{cursor:default;background:#648d7c;border-color:#648d7c;animation:none;transform:none;transition:none;box-shadow:none}
+.ops-module .ops-call-action:disabled svg{animation:none!important;transform:none!important}
+.ops-module .ops-intake-form{gap:9px;padding:0}
+.ops-module .ops-intake-form>.hint{padding:5px 8px;background:none;border:0}
+.ops-module .ops-intake-form>.form-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px 12px}
+.ops-module .ops-intake-form .form-grid>label,.ops-module .ops-intake-form .form-grid>label.wide{padding:0;border:0;background:none;box-shadow:none;gap:3px}
+.ops-module .ops-intake-form .form-grid>label:focus-within{background:none;border:0;box-shadow:none}
+.ops-module .ops-intake-form .form-grid :is(input,select,textarea){min-width:0;width:100%;min-height:34px;padding:5px 8px}
+.ops-module .ops-intake-form .form-grid textarea{min-height:70px}
+.ops-module .ops-intake-form .ops-transcript{grid-column:span 2}
+.ops-module .ops-intake-form .ops-responsibility{grid-column:1/-1;margin:0;padding:7px 10px;background:#edf7f3;border-radius:7px;color:#245d50;font-size:12px}
+.ops-module .ops-intake-form .ops-intake-extra{grid-column:1/-1;border-top:1px solid #e2eaf4;padding:7px 0}
+.ops-module .ops-intake-form .ops-intake-extra summary{cursor:pointer;font-size:12px;color:#365d88}
+.ops-module .ops-intake-form .ops-intake-extra .form-grid{margin-top:9px;gap:8px}
+@media(max-width:1000px){.ops-module .ops-intake-form>.form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.ops-module .ops-intake-form>.form-grid{grid-template-columns:minmax(0,1fr)}.ops-module .ops-intake-form .ops-transcript{grid-column:1/-1}}
