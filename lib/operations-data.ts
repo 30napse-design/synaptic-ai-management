@@ -1,3 +1,4 @@
+import {receiptRange} from './operations-date-filter';
 import {canManualAssignOperations} from './operations-manual-assignment';
 import {ticketNoteVisible,redactRequest,mayReadRequestSource} from './dispatch-policy';
 import {dispatchReady} from './dispatch-engine';
@@ -74,6 +75,15 @@ export async function readOperationsData(u:any,p:URLSearchParams){
  if(p.get('channel')){where+=' AND '+channelSQL+'=?';args.push(p.get('channel'))}
  for(const [key,column] of [['category','category'],['subtype','subtype'],['status','status'],['source','source_type'],['requestType','request_type'],['assignee','assignee'],['intakeState',"COALESCE(NULLIF(intake_state,''),'unreviewed')"]]){const value=p.get(key);if(value&&!(view==='tickets'&&key==='status')){where+=key==='status'&&value==='awaiting_assignment'?" AND "+assignmentStateSQL:' AND '+column+'=?';if(!(key==='status'&&value==='awaiting_assignment'))args.push(value)}}
  const query=(p.get('q')||'').trim().slice(0,200);if(query){where+=" AND (title LIKE ? ESCAPE '\\' OR client_name LIKE ? ESCAPE '\\' OR phone LIKE ? ESCAPE '\\' OR email LIKE ? ESCAPE '\\' OR reference LIKE ? ESCAPE '\\' OR organization LIKE ? ESCAPE '\\' OR representative LIKE ? ESCAPE '\\' OR source_body LIKE ? ESCAPE '\\')";const escaped='%'+query.replace(/[\\%_]/g,'\\$&')+'%';args.push(...Array(8).fill(escaped))}
+ // A date-only telephone record uses its original local call day, not import time.
+ const callDaySQL="((source_type='incoming' OR channel='phone') AND length(COALESCE(call_date,''))=10 AND substr(call_date,5,1)='-' AND substr(call_date,8,1)='-')";
+ const receivedSQL="COALESCE(NULLIF(source_at,''),created_at)";
+ const range=receiptRange(p);let dateWhere='';const dateArgs:any[]=[];
+ if(range?.invalid)dateWhere=' AND 1=0';
+ else if(range){dateWhere=" AND (("+callDaySQL+" AND call_date>=? AND call_date<=?) OR (NOT "+callDaySQL+" AND ((length("+receivedSQL+")=10 AND "+receivedSQL+">=? AND "+receivedSQL+"<=?) OR (length("+receivedSQL+")>10 AND "+receivedSQL+">=? AND "+receivedSQL+"<?))))";dateArgs.push(range.from,range.to,range.from,range.to,range.start,range.end)}
+ where+=dateWhere;args.push(...dateArgs);
+ const orderSQL="CASE WHEN "+callDaySQL+" THEN call_date||'T12:00:00Z' ELSE "+receivedSQL+" END";
+ const orderDirection=p.get('sortOrder')==='asc'?' ASC':' DESC';
  const ticketBaseWhere=where,ticketBaseArgs=[...args];
  if(view==='tickets'&&p.get('status')){if(p.get('status')==='awaiting_assignment')where+=" AND "+assignmentStateSQL;else{where+=' AND status=?';args.push(p.get('status'))}}
  const baseWhere=where,baseArgs=[...args];
@@ -82,7 +92,7 @@ export async function readOperationsData(u:any,p:URLSearchParams){
  const offset=Math.max(0,Math.min(5000,Number(p.get('offset'))||0));
  const initialPageSize=view==='tickets'?100:50;
  const columns=(routingReady?'routing,request_state,':'')+(await organizationReady()?'access_scope,':'')+'request_type,client_kind,organization,representative,intake_state,intake_notes,is_ticket,ticket_kind,direction,channel,visit_purpose,id,source_key,category,subtype,title,substr(source_body,1,200) AS source_body,client_name,phone,email,reference,call_date,source_type,source_url,source_at,source_labels,attachments,assignee,due,status,priority,resolution,payment_state,manager_only,created_by,created_at,updated_at,revision';
- const statements=[db().prepare('SELECT '+columns+' FROM ops_items WHERE '+where+' ORDER BY COALESCE(NULLIF(source_at,\'\'),created_at) DESC LIMIT '+initialPageSize+' OFFSET ?').bind(...args,offset),db().prepare('SELECT COUNT(*) AS total FROM ops_items WHERE '+where).bind(...args),db().prepare('SELECT category,COUNT(*) AS total FROM ops_items WHERE '+permitted+' GROUP BY category').bind(...scopeArgs),db().prepare("SELECT COUNT(*) AS all_count,SUM(CASE WHEN status!='closed' AND due=? THEN 1 ELSE 0 END) AS today,SUM(CASE WHEN status!='closed' AND due!='' AND due<? THEN 1 ELSE 0 END) AS overdue,SUM(CASE WHEN status!='closed' AND "+unassignedSQL+" THEN 1 ELSE 0 END) AS unassigned,SUM(CASE WHEN status!='closed' AND trim(resolution)='' THEN 1 ELSE 0 END) AS unanswered,SUM(CASE WHEN status!='closed' AND "+channelSQL+"='phone' AND trim(resolution)='' THEN 1 ELSE 0 END) AS calls_pending FROM ops_items WHERE "+baseWhere).bind(today,today,...baseArgs),db().prepare('SELECT source,created,updated,finished_at FROM ops_sync_runs WHERE ?=1 ORDER BY finished_at DESC LIMIT 4').bind(u.manager?1:0)];
+ const statements=[db().prepare('SELECT '+columns+' FROM ops_items WHERE '+where+' ORDER BY '+orderSQL+orderDirection+', id'+orderDirection+' LIMIT '+initialPageSize+' OFFSET ?').bind(...args,offset),db().prepare('SELECT COUNT(*) AS total FROM ops_items WHERE '+where).bind(...args),db().prepare('SELECT category,COUNT(*) AS total FROM ops_items WHERE '+permitted+dateWhere+' GROUP BY category').bind(...scopeArgs,...dateArgs),db().prepare("SELECT COUNT(*) AS all_count,SUM(CASE WHEN status!='closed' AND due=? THEN 1 ELSE 0 END) AS today,SUM(CASE WHEN status!='closed' AND due!='' AND due<? THEN 1 ELSE 0 END) AS overdue,SUM(CASE WHEN status!='closed' AND "+unassignedSQL+" THEN 1 ELSE 0 END) AS unassigned,SUM(CASE WHEN status!='closed' AND trim(resolution)='' THEN 1 ELSE 0 END) AS unanswered,SUM(CASE WHEN status!='closed' AND "+channelSQL+"='phone' AND trim(resolution)='' THEN 1 ELSE 0 END) AS calls_pending FROM ops_items WHERE "+baseWhere).bind(today,today,...baseArgs),db().prepare('SELECT source,created,updated,finished_at FROM ops_sync_runs WHERE ?=1 ORDER BY finished_at DESC LIMIT 4').bind(u.manager?1:0)];
  if(view==='tickets')statements.push(db().prepare("SELECT COUNT(*) AS all_count,SUM(CASE WHEN status!='closed' AND due=? THEN 1 ELSE 0 END) AS today_count,SUM(CASE WHEN status='open' THEN 1 ELSE 0 END) AS new_count,SUM(CASE WHEN status='waiting' THEN 1 ELSE 0 END) AS waiting_count,SUM(CASE WHEN status!='closed' AND due!='' AND due<? THEN 1 ELSE 0 END) AS overdue_count,SUM(CASE WHEN status!='closed' AND "+unassignedSQL+" THEN 1 ELSE 0 END) AS unassigned_count FROM ops_items WHERE "+ticketBaseWhere).bind(today,today,...ticketBaseArgs));
  const selected=p.get('id');if(selected)statements.push(db().prepare('SELECT * FROM ops_items WHERE id=? AND '+permitted).bind(selected,...scopeArgs));
  // Rows and count are essential; stats/sync summaries are optional and isolated from the primary read.
@@ -95,7 +105,7 @@ export async function readOperationsData(u:any,p:URLSearchParams){
  let payments=new Map<string,any>(),financialDataUnavailable=false;try{payments=await operationPayments([...new Set([...rr[0].results,...(allowedItem?[allowedItem]:[])].map((r:any)=>r.id))])}catch(e:any){financialDataUnavailable=true;console.error('operations finance summary unavailable',e?.code||e?.message||'unknown')}
  const map=(raw:any)=>{const r=redactRequest(u,raw),x=opsRow(r),financial=payments.get(r.id)||null;const paymentState=financialDataUnavailable?'unknown':financial?.paid_rial>0?'verified':r.payment_state==='reported'?'reported':r.category==='billing'?'pending':'unknown';return {...x,payment_state:paymentState,paymentState,financial:u.manager||hasDataAccess(u,'billing_ops')?financial:null,isTicket:isTicket(x)}};
  const facetArgs:any[]=[...scopeArgs,p.get('direction')||'inbound'];
- let facetWhere=permitted+' AND direction=?';
+ let facetWhere=permitted+' AND direction=?'+dateWhere;facetArgs.push(...dateArgs);
  if(view==='tickets')facetWhere+=' AND '+ticketSQL;
  if(view==='tickets'&&['site','direct'].includes(p.get('ticketSource')||'')){facetWhere+=" AND json_extract(source_labels,'$.ticket_source')=?";facetArgs.push(p.get('ticketSource'))}
  if(p.get('channel')){facetWhere+=' AND '+channelSQL+'=?';facetArgs.push(p.get('channel'))}
