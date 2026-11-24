@@ -1,7 +1,7 @@
-import {mayReadRequest,requestRouting} from './dispatch-policy';
-import {unifiedRequiredAccess} from './unified-intake-routing';
-import {unifiedIntakeCategories,seniorResearchMayReview} from './unified-intake-taxonomy';
-import {organizationalCode} from './organizational-logins';
+import {mayReadRequest,requestRouting} from './dispatch-policy.ts';
+import {unifiedRequiredAccess} from './unified-intake-routing.ts';
+import {unifiedIntakeCategories,seniorResearchMayReview} from './unified-intake-taxonomy.ts';
+import {organizationalCode} from './organizational-logins.ts';
 import {visitPurposes} from './communication-policy.ts';
 import {hasDataAccess} from './auth-policy.ts';
 export const operationCategories=[
