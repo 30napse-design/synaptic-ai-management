@@ -12,7 +12,7 @@ import {intakeMembers} from './intake-server';
 import {ticketSQL,isTicket} from './intake-policy';
 import {siteTicketCategories,directTicketCategories,getTicketCategories} from './ticket-support-taxonomy';
 import {legacyCategoryForSite} from './operations-intake-ui';
-import {intakeCategory,unifiedIntakeCategories} from './unified-intake-taxonomy';
+import {intakeCategory,unifiedIntakeCategories,intakeResponsibleRoles} from './unified-intake-taxonomy';
 export async function readOperationsData(u:any,p:URLSearchParams){
  const routingReady=await dispatchReady();const {sql:permitted,args:scopeArgs}=operationsScope(u,routingReady);
  // Legacy Hostinger databases may not yet have routing columns. Optional counters must never break page reads.
@@ -54,6 +54,8 @@ export async function readOperationsData(u:any,p:URLSearchParams){
   }
 }
  const unifiedGroup=(p.get('unifiedGroup')||'').slice(0,30),unifiedCategory=(p.get('unifiedCategory')||'').slice(0,80),unifiedTopic=(p.get('unifiedTopic')||'').slice(0,160);
+ const unifiedRole=(p.get('unifiedRole')||'').slice(0,80);
+ if(unifiedRole){if(intakeResponsibleRoles.some(r=>r.id===unifiedRole)){where+=" AND (json_extract(source_labels,'$.intake_role')=? OR json_extract(source_labels,'$.ticket_role')=?)";args.push(unifiedRole,unifiedRole)}else where+=' AND 1=0'}
  if(unifiedGroup){if(['services','consultation'].includes(unifiedGroup)){where+=" AND (json_extract(source_labels,'$.intake_group')=? OR json_extract(source_labels,'$.ticket_group')=?)";args.push(unifiedGroup,unifiedGroup)}else where+=' AND 1=0'}
  if(unifiedCategory){if(intakeCategory(unifiedCategory)){where+=" AND (json_extract(source_labels,'$.intake_category')=? OR json_extract(source_labels,'$.ticket_category')=?)";args.push(unifiedCategory,unifiedCategory)}else where+=' AND 1=0'}
  if(unifiedTopic){if(intakeCategory(unifiedCategory)?.topics.some(t=>t.title===unifiedTopic)){where+=" AND (json_extract(source_labels,'$.intake_topic')=? OR json_extract(source_labels,'$.ticket_topic')=?)";args.push(unifiedTopic,unifiedTopic)}else where+=' AND 1=0'}
