@@ -19,6 +19,7 @@ for(const file of files){
  const status=r.status===0?'passed':'failed';
  results.push({file,status,exit:r.status,durationMs:Date.now()-start,log:file+'.log'});
  console.log(status+' '+file);
+ if(status==='failed') console.log(output.slice(-18000));
 }
 const counts=Object.fromEntries(['passed','failed','deferred'].map(s=>[s,results.filter(r=>r.status===s).length]));
 writeFileSync(join(dir,'summary.json'),JSON.stringify({counts,results},null,2));
