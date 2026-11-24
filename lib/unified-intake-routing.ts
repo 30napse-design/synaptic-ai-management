@@ -23,7 +23,7 @@ export function normalizeIranPhone(raw:string){
 }
 export function validPersianContactName(raw:string){
  const name=String(raw||'').trim().replace(/\s+/g,' ');
- return name.length<=160&&/^[\u0600-\u06FF\u200c\s]+$/u.test(name)&&name.split(/\s+/).filter(Boolean).length>=2;
+ return name.length<=160&&/^[\p{Script=Arabic}\u200c\s]+$/u.test(name)&&!/[^\p{L}\p{M}\u200c\s]/u.test(name)&&name.split(/\s+/).filter(Boolean).length>=2;
 }
 export function validOptionalEmail(raw:string){
  return !raw||raw.length<=200&&/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(raw.trim());
