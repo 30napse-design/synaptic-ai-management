@@ -17,6 +17,13 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-node@v4
         with:
+          node-version: '24'
+      - name: Record backup verification runtime
+        run: |
+          node --input-type=module -e "import { DatabaseSync } from 'node:sqlite'; const db=new DatabaseSync(':memory:'); if(typeof db.setAuthorizer!=='function') process.exit(1); db.close()"
+          echo "SYNAPSE_BACKUP_NODE=$(command -v node)" >> "$GITHUB_ENV"
+      - uses: actions/setup-node@v4
+        with:
           node-version: '22'
       - uses: actions/setup-python@v5
         with:
