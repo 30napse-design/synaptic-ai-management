@@ -43,7 +43,8 @@ test('Existing scoped operations queries and ticket source selectors remain in p
  assert.match(app,/ticketSourceFilter/);
  assert.match(app,/ticketCategoryFilter/);
  assert.match(app,/ticketTopicFilter/);
- assert.match(app,/aria-label="مسئول تیکت"/);
+ assert.match(app,/owner=\{unifiedRole\}/);
+ assert.match(source,/p\.get\('unifiedRole'\)/);
 });
 test('No artificial ticket population or migration is performed by the dashboard',()=>{
  assert.doesNotMatch(source,/INSERT INTO ops_items|UPDATE ops_items|DELETE FROM ops_items/i);
