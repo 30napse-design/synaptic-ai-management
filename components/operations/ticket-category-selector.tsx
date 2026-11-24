@@ -16,16 +16,17 @@ export function TicketCategorySelector({value,onChange,showInternal=false}:Props
  const set=(update:Partial<TicketCategorySelection>)=>onChange({...value,...update});
  return <section className={styles.root} dir="rtl" aria-label="طبقه‌بندی درخواست">
   <div className={styles.sources} role="group" aria-label="مسیر ورود">
-   <button type="button" aria-pressed={value.source==='site'} className={value.source==='site'?styles.selected:''} onClick={()=>set({source:'site',group:'services',category:'service_orders',topic:'',description:'',title:''})}>تیکت‌های سایت</button>
-   <button type="button" aria-pressed={value.source==='direct'} className={value.source==='direct'?styles.selected:''} onClick={()=>set({source:'direct',group:'services',category:'service_orders',topic:'',description:'',title:''})}>ثبت مستقیم سامانه</button>
+   <button type="button" aria-pressed={value.source==='site'} className={value.source==='site'?styles.selected:''} onClick={()=>set({source:'site',group:'services',category:'service_orders',topic:'',description:value.description,title:value.title})}>تیکت‌های سایت</button>
+   <button type="button" aria-pressed={value.source==='direct'} className={value.source==='direct'?styles.selected:''} onClick={()=>set({source:'direct',group:'services',category:'service_orders',topic:'',description:value.description,title:value.title})}>ثبت مستقیم سامانه</button>
   </div>
   <div className={styles.fields}>
    <label>گروه درخواست<select value={activeGroup} onChange={e=>{const group=e.target.value as IntakeGroupId;set({group,category:unifiedIntakeCategories.find(c=>c.group===group)?.id||'',topic:''})}}><option value="services">{intakeGroupLabel('services')}</option><option value="consultation">{intakeGroupLabel('consultation')}</option></select></label>
    <label>دسته اصلی<select value={group.id} onChange={e=>set({category:e.target.value,topic:''})}>{cats.map(c=><option key={c.id} value={c.id}>{c.title}</option>)}</select></label>
-   <label>موضوع درخواست<select value={group.topics.some(t=>t.title===value.topic)?value.topic:''} onChange={e=>set({topic:e.target.value})}><option value="">موضوع درخواست را انتخاب کنید</option>{group.topics.map(topic=><option key={topic.title} value={topic.title}>{topic.title}</option>)}</select></label>
+   <label>موضوع درخواست *<select required value={group.topics.some(t=>t.title===value.topic)?value.topic:''} onChange={e=>set({topic:e.target.value})}><option value="">موضوع درخواست را انتخاب کنید</option>{group.topics.map(topic=><option key={topic.title} value={topic.title}>{topic.title}</option>)}</select></label>
+   <label>مسئول پیگیری<output className={styles.responsibility} role="status">{responsibility?.label||"پس از انتخاب موضوع"}</output></label>
   </div>
-  <p className="hint" role="status">{responsibility?'حوزه مسئولیت پیشنهادی: '+responsibility.label+' · تعیین شخص منوط به حساب فعال و مجاز است.':'پس از انتخاب موضوع، حوزه مسئولیت پیشنهادی نمایش داده می‌شود.'}</p>
-  {value.source==='direct'&&<label>عنوان پیام<input maxLength={240} value={value.title} onChange={e=>set({title:e.target.value})} placeholder="عنوان کوتاه درخواست"/></label>}
+  <small className="hint">ارجاع به حساب فعال و مجاز؛ در صورت نبود مسئول مصوب، در انتظار تعیین مسئول.</small>
+  {value.source==='direct'&&<label>عنوان پیام *<input required maxLength={240} value={value.title} onChange={e=>set({title:e.target.value})} placeholder="عنوان کوتاه درخواست"/></label>}
   <label>شرح درخواست (اختیاری)<textarea rows={expanded?6:3} maxLength={16000} value={value.description} onChange={e=>set({description:e.target.value})} placeholder="در صورت نیاز، جزئیات درخواست خود را بنویسید…"/></label>
   <button type="button" className="secondary" onClick={()=>setExpanded(!expanded)} aria-expanded={expanded}>{expanded?'توضیح کوتاه‌تر':'فضای بیشتر برای توضیحات'}</button>
  </section>;
