@@ -1,7 +1,7 @@
-import {organizationalCode} from './organizational-logins';
-import {hasDataAccess} from './auth-policy';
-import {unifiedRequiredAccess} from './unified-intake-routing';
-import {seniorResearchMayReview} from './unified-intake-taxonomy';
+import {organizationalCode} from './organizational-logins.ts';
+import {hasDataAccess} from './auth-policy.ts';
+import {unifiedRequiredAccess} from './unified-intake-routing.ts';
+import {seniorResearchMayReview} from './unified-intake-taxonomy.ts';
 export const requestFamilies=[
  ['A01','ثبت سفارش و پذیرش','customer_manager'],['A02','مشاوره علمی پیش از سفارش','scientific_manager'],['A03','پیش‌فاکتور و فاکتور','finance_manager'],['A04','پرداخت‌ها و امور بانکی','finance_manager'],['A05','تحویل و پذیرش نمونه','customer_manager'],['A06','انتقال و جابه‌جایی نمونه','customer_manager'],['A07','پیگیری اجرای سفارش','customer_manager'],['A08','دریافت نتایج از آزمایشگاه','research_specialist'],['A09','تحویل نتیجه به مشتری','customer_manager'],['A10','مشاوره پس از نتیجه و رفع اشکال','research_manager'],['A11','اصلاح، تکمیل یا تغییر سفارش','scientific_manager'],['A12','لغو سفارش، شکایت و اختلاف','customer_manager'],['A13','درخواست‌های مستقیم آزمایشگاه','research_specialist'],['A14','مکاتبات و امور اداری','administration_manager'],['A15','منابع انسانی و درخواست کارکنان','administration_manager'],['A16','هزینه، تنخواه و تأمین خدمات','administration_manager'],['A17','فناوری اطلاعات و پشتیبانی','it_security_manager'],['A18','توسعه، همکاری و سایر ارتباطات','executive_director']
 ].map(([id,title,role])=>({id,title,role}));
