@@ -34,7 +34,7 @@ test('operations page tolerates optional reporting failures without bypassing re
  assert.match(data,/operations optional read failed/);
  assert.match(data,/unassignedSQL=routingReady/);
  assert.match(data,/assignmentStateSQL=routingReady/);
- assert.match(data,/rr\[0\]\.results\.filter\(r=>canSeeOps\(u,r\)\)/);
+ assert.match(data,/rr\[0\]\.results\.filter\(\(r:any\)=>canSeeOps\(u,r\)\)/);
  assert.match(app,/catch\(e:any\).*OperationsApp initialData=\{null\}/);
  assert.match(route,/operations API read failed/);
 });
