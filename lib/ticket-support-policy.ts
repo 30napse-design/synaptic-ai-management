@@ -1,6 +1,6 @@
 import {type TicketEntrySource} from './ticket-support-taxonomy.ts';
-import {intakeDefaultResponsibility,intakeCategory} from './unified-intake-taxonomy';
-import {validOptionalEmail,validPersianContactName,normalizeIranPhone} from './unified-intake-routing';
+import {intakeDefaultResponsibility,intakeCategory} from './unified-intake-taxonomy.ts';
+import {validOptionalEmail,validPersianContactName,normalizeIranPhone} from './unified-intake-routing.ts';
 
 /** Historical ticket_v:1 rows remain readable. New staff-submitted tickets use v2. */
 export const TICKET_CATALOG_VERSION=2;
@@ -14,7 +14,7 @@ export function validTicketEntry(b:any,manager=false):b is TicketEntry{
  for(const [key,max] of [['clientName',160],['phone',80],['email',200],['reference',160],['organization',240],['due',10]] as const)
   if(typeof b[key]!=='string'||b[key].length>max)return false;
  if(!validPersianContactName(b.clientName)||!validOptionalEmail(b.email))return false;
- if(!b.email.trim()&&!normalizeIranPhone(b.phone))return false;
+ if(!b.email.trim()||!normalizeIranPhone(b.phone))return false;
  if(b.phone&&!normalizeIranPhone(b.phone))return false;
  if(b.due&&!/^\d{4}-\d{2}-\d{2}$/.test(b.due))return false;
  return true;
