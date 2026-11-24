@@ -26,7 +26,8 @@ test('staff desk omits noisy channel selector, retains categories, roles and his
  assert.match(app,/ticket-source-select/);
  assert.match(app,/getTicketCategories/);
  assert.match(app,/setTicketTopicFilter\(''\)/);
- assert.match(app,/roleMembers\.map/);
+ assert.match(app,/owner=\{unifiedRole\}/);
+ assert.match(readFileSync('components/operations/unified-intake-filters.tsx','utf8'),/intakeResponsibleRoles\.map/);
  assert.match(app,/ticket-bulk-panel/);
  assert.match(app,/ticket-detail-modal/);
  assert.match(app,/selected\.attachments/);

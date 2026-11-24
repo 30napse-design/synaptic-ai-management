@@ -1,7 +1,7 @@
 import {hasAccess} from './auth-policy.ts';
-export const assistantModes={staff:'راهنمای کارکنان',science:'دستیار علمی',quote:'پیشنهاد پیش‌فاکتور',customer:'راهنمای خدمات مشتری',management:'دستیار مدیریت'};
+export const assistantModes={staff:'راهنمای کارکنان',science:'دستیار علمی',quote:'پیشنهاد پیش‌فاکتور',customer:'راهنمای خدمات مشتری',management:'دستیار مدیریت',general:'جست‌وجو و پرسش عمومی',laboratory:'دانش آزمایشگاهی',analysis:'تحلیل داده و گزارش علمی',quality:'کنترل کیفیت',training:'آموزش کارکنان',operations:'عملیات و ارجاع',memory:'حافظه سازمانی',alerts:'نظارت و هشدار'};
 export type AssistantMode=keyof typeof assistantModes;
-export function allowedModes(u:any):AssistantMode[]{return (Object.keys(assistantModes) as AssistantMode[]).filter(m=>m==='management'?u.manager:m==='quote'?!u.laboratory&&(u.manager||hasAccess(u,'finance_ops')||hasAccess(u,'quote_ops')):m==='science'?!u.laboratory&&hasAccess(u,'science'):true)}
+export function allowedModes(u:any):AssistantMode[]{return (Object.keys(assistantModes) as AssistantMode[]).filter(m=>m==='management'?u.manager:m==='quote'?!u.laboratory&&(u.manager||hasAccess(u,'finance_ops')||hasAccess(u,'quote_ops')):['science','laboratory','analysis','quality'].includes(m)?!u.laboratory&&(u.manager||hasAccess(u,'science')):['operations','memory'].includes(m)?!u.laboratory&&(u.manager||hasAccess(u,'operations')):m==='alerts'?u.manager:true)}
 export type KnowledgeChunk={id:string,document:string,version:string,category:AssistantMode,scope:string,title:string,text:string,href:string,approved:boolean;externalAllowed?:boolean};
 // Curated product guidance, not scientific evidence or an authoritative price list.
 export const knowledge:KnowledgeChunk[]=[
