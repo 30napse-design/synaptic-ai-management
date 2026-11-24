@@ -1,3 +1,4 @@
+import {normalizeIranPhone} from '../../../lib/unified-intake-routing';
 import {identity,json,db,eventStmt,mutationAllowed} from '../../../lib/staff-server';
 import {canUseOps} from '../../../lib/ops-policy';
 import {dispatchCreate,dispatchReady} from '../../../lib/dispatch-engine';
@@ -20,8 +21,8 @@ export async function POST(req:Request){
     sourceKey:key,noContentMatch:true,partyKind:'customer',direction:'inbound',
     channel:b.source==='site'?'website':'manual',isTicket:true,ticketKind:'support',
     title:(b.source==='direct'?b.title.trim():b.topic).slice(0,240),
-    subtype:b.topic,sourceBody:b.description,clientName:b.clientName,phone:b.phone,
-    email:b.email,reference:b.reference,organization:b.organization||'',due:b.due,
+    subtype:b.topic,sourceBody:b.description,clientName:b.clientName.trim(),phone:normalizeIranPhone(b.phone),
+    email:b.email.trim(),reference:b.reference,organization:b.organization||'',due:b.due,
     unifiedCategory:b.category,unifiedTopic:b.topic,
     requestType:'unknown',clientKind:'unknown',intakeState:'unreviewed'
   });

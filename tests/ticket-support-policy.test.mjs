@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {validTicketEntry,ticketMetadata} from '../lib/ticket-support-policy.ts';
-const valid={source:'site',group:'services',category:'service_orders',topic:'ارسال پیش‌فاکتور',description:'',title:'',clientName:'علی رضایی',phone:'09123456789',email:'',reference:'05870',organization:'',due:'',requestKey:'test'};
+const valid={source:'site',group:'services',category:'service_orders',topic:'ارسال پیش‌فاکتور',description:'',title:'',clientName:'علی رضایی',phone:'09123456789',email:'researcher@example.test',reference:'05870',organization:'',due:'',requestKey:'test'};
 test('approved v2 ticket taxonomy and precise responsibility',()=>{
  assert.equal(validTicketEntry(valid),true);
  const meta=ticketMetadata(valid);
@@ -19,6 +19,10 @@ test('direct entry requires a title and preserves category restrictions',()=>{
 });
 test('contact validation and split financial responsibilities',()=>{
  assert.equal(validTicketEntry({...valid,phone:'',email:''}),false);
+ assert.equal(validTicketEntry({...valid,email:''}),false);
+ assert.equal(validTicketEntry({...valid,phone:''}),false);
+ assert.equal(validTicketEntry({...valid,phone:'123'}),false);
+ assert.equal(validTicketEntry({...valid,phone:'+989123456789'}),true);
  assert.equal(validTicketEntry({...valid,phone:'',email:'bad email'}),false);
  assert.equal(validTicketEntry({...valid,clientName:'علی'}),false);
  const finance={...valid,category:'service_finance',topic:'پرداخت‌ها و واریزی‌ها'};
