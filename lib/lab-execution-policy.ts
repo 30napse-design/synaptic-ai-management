@@ -1,4 +1,4 @@
-import microbiologyDraft from './microbiology-services-draft.json';
+import microbiologyDraft from './microbiology-services-draft.json' with { type: 'json' };
 import {hasAccess,hasDataAccess} from './auth-policy.ts';
 export const executionStatuses:Record<string,string>={received:'ابلاغ سفارش',doing:'در حال اجرا',paused:'نیازمند هماهنگی / متوقف',ready:'گزارش تحویل پژوهشکده شد',delivered:'دریافت توسط عملیات'};
 export const sampleStatuses:Record<string,string>={prepared:'آماده ارسال',sent:'ارسال‌شده',received:'دریافت‌شده',issue:'مغایرت نمونه',consumed:'مصرف‌شده',returned:'برگشت‌داده‌شده',retained:'نگهداری با مهلت مصوب',disposed:'امحای مستند'};
