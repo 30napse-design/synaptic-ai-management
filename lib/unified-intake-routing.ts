@@ -1,4 +1,4 @@
-import {intakeDefaultResponsibility,type IntakeRoleId} from './unified-intake-taxonomy';
+import {intakeDefaultResponsibility,type IntakeRoleId} from './unified-intake-taxonomy.ts';
 
 /** Exact operational positions only. The nine display labels never grant account access.
  * For split, project-specific or vacant roles, always queue manager triage instead. */
