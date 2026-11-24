@@ -1,5 +1,6 @@
 'use client';
 import {useState} from 'react';
+import {normalizeIranPhone,validOptionalEmail,validPersianContactName} from '../../lib/unified-intake-routing';
 import {TicketCategorySelector,type TicketCategorySelection} from './ticket-category-selector';
 import styles from './ticket-category-selector.module.css';
 type Props={manager:boolean;onSaved:()=>void;onCancel:()=>void;inline?:boolean};
@@ -8,7 +9,7 @@ export function TicketSupportCreate({manager,onSaved,onCancel,inline=false}:Prop
  const [requestKey,setRequestKey]=useState(()=>crypto.randomUUID()),[uploaded,setUploaded]=useState<string[]>([]);const [value,setValue]=useState<TicketCategorySelection>(empty),[clientName,setName]=useState(''),[phone,setPhone]=useState(''),[email,setEmail]=useState(''),[reference,setReference]=useState(''),[organization,setOrganization]=useState(''),[due,setDue]=useState('');
  const [files,setFiles]=useState<File[]>([]),[createdId,setCreatedId]=useState(''),[busy,setBusy]=useState(false),[message,setMessage]=useState(''),[done,setDone]=useState(false);
  async function submit(e:React.FormEvent){
-  e.preventDefault();if(busy||done)return;setBusy(true);setMessage('');
+  e.preventDefault();if(busy||done)return;if(!createdId&&(!validPersianContactName(clientName)||!normalizeIranPhone(phone)||!email.trim()||!validOptionalEmail(email))){setMessage('نام و نام خانوادگی فارسی، موبایل معتبر ایران و ایمیل معتبر الزامی است.');return;}setBusy(true);setMessage('');
   let id=createdId;
   try{
    if(!id){
@@ -33,9 +34,9 @@ export function TicketSupportCreate({manager,onSaved,onCancel,inline=false}:Prop
   <p className="hint">تیکت‌های سایت: ثبت دستی پیام دریافتی از وب‌سایت توسط کارکنان. ثبت عمومی وب‌سایت تا اتصال جداگانه فعال نیست. سوابق قبلی Gmail در فهرست حفظ می‌شوند.</p>
   <TicketCategorySelector value={value} onChange={v=>{if(!createdId)setValue(v)}} showInternal={manager}/>
   <div className={styles.contactFields}>
-   <label>نام محقق / مشتری<input required maxLength={160} value={clientName} disabled={!!createdId} onChange={e=>setName(e.target.value)}/></label>
-   <label>ایمیل تماس<input dir="ltr" type="email" maxLength={200} value={email} disabled={!!createdId} onChange={e=>setEmail(e.target.value)}/></label>
-   <label>شماره تماس<input dir="ltr" type="tel" maxLength={80} value={phone} disabled={!!createdId} onChange={e=>setPhone(e.target.value)}/></label>
+   <label>نام و نام خانوادگی محقق *<input required maxLength={160} value={clientName} disabled={!!createdId} onChange={e=>setName(e.target.value)}/></label>
+   <label>ایمیل تماس *<input required dir="ltr" type="email" maxLength={200} value={email} disabled={!!createdId} onChange={e=>setEmail(e.target.value)}/></label>
+   <label>موبایل ایران *<input required placeholder="09123456789" dir="ltr" type="tel" maxLength={80} value={phone} disabled={!!createdId} onChange={e=>setPhone(e.target.value)}/></label>
    <label>فاکتور / شماره مرجع (برای پیگیری؛ بدون تأیید خودکار)<input maxLength={160} value={reference} disabled={!!createdId} onChange={e=>setReference(e.target.value)}/></label>
    <label>دانشگاه / سازمان<input maxLength={240} value={organization} disabled={!!createdId} onChange={e=>setOrganization(e.target.value)}/></label>
    <label>موعد پیشنهادی پیگیری<input type="date" value={due} disabled={!!createdId} onChange={e=>setDue(e.target.value)}/></label>
@@ -47,7 +48,7 @@ export function TicketSupportCreate({manager,onSaved,onCancel,inline=false}:Prop
   <p className="hint">پیوست‌ها خصوصی ذخیره می‌شوند و تا بررسی امنیتی قابل مشاهده عمومی نیستند. اگر فضای فایل Hostinger فعال نباشد، سامانه خطا را صریح اعلام می‌کند.</p>
   {message&&<p role="status" className={styles.statusText}>{message}</p>}
   <div className={styles.actions}>
-   <button type="submit" className="primary" disabled={busy||done||!value.topic||!clientName||(!email&&!phone)||value.source==='direct'&&!value.title.trim()}>{busy?'در حال ثبت…':createdId?'تلاش مجدد برای پیوست‌ها':'ثبت و ارجاع تیکت'}</button>
+   <button type="submit" className="primary" disabled={busy||done||!value.topic||!clientName||(!email.trim()||!normalizeIranPhone(phone)||!validPersianContactName(clientName)||!validOptionalEmail(email))||value.source==='direct'&&!value.title.trim()}>{busy?'در حال ثبت…':createdId?'تلاش مجدد برای پیوست‌ها':'ثبت و ارجاع تیکت'}</button>
    {!inline&&<button type="button" className="secondary" disabled={busy} onClick={onCancel}>بستن</button>}
   </div>
  </form>;
