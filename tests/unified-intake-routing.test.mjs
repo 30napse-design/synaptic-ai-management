@@ -37,9 +37,9 @@ test('both views retain current source icons and use server-side filters',()=>{
  assert.match(ops,/communication-channels/);
  assert.match(ops,/UnifiedIntakeFilters/);
  assert.match(ops,/ops-ticket-inline/);
- assert.match(ops,/ops-unified-intake/);
- assert.match(ops,/disabled title="اتصال خودکار/);
- for(const f of ['unifiedGroup','unifiedCategory','unifiedTopic'])assert.ok(db.includes("p.get('"+f+"')"),f);
+ assert.match(ops,/ops-inline-entry/);
+ assert.match(ops,/disabled aria-describedby="ops-phone-status"/);
+ for(const f of ['unifiedGroup','unifiedCategory','unifiedTopic','unifiedRole'])assert.ok(db.includes("p.get('"+f+"')"),f);
  assert.match(db,/unifiedCounts/);
  assert.match(fields,/counts\?\.\[c\.id\]/);
 });
