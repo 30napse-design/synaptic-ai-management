@@ -1,4 +1,5 @@
 /** Staff-only ticket filter metadata. Never change historic ticket rows. */
+import {intakeResponsibleRoles,type IntakeRoleId} from './unified-intake-taxonomy';
 import {siteTicketCategories} from './ticket-support-taxonomy';
 export const ticketStaffCategories=siteTicketCategories;
 export const legacyTicketCategories:Record<string,string>={
@@ -13,6 +14,6 @@ export function ticketTopicAllowed(id:string,topic:string){
 export function memberPositionLabel(member:{manager?:boolean;username?:string;name?:string},roleCatalog:{role_key:string;title_fa:string}[],code:(username:string)=>string|undefined){
  if(member.manager)return 'رئیس پژوهشکده';
  const role=code(member.username||'');
- const labels:Record<string,string>={management:'رئیس پژوهشکده',executive_director:'مدیر ارشد پژوهشی',research_manager:'مسئول فنی پروژه',scientific_manager:'مسئول علمی پروژه',customer_manager:'پذیرش و پشتیبانی علمی',finance_manager:'مدیر مالی و قراردادها',accountant:'کارشناس حسابداری',administration_manager:'امور اداری و اجرایی',it_security_manager:'کارشناس فناوری اطلاعات'};
- return labels[role||'']||'در انتظار تعیین مسئولیت';
+ const mapping:Record<string,IntakeRoleId>={management:'director',executive_director:'senior_research',research_manager:'technical_project',scientific_manager:'scientific_project',customer_manager:'scientific_reception',finance_manager:'finance_manager',accountant:'accountant',administration_manager:'administrative',it_security_manager:'it_specialist'};
+ return intakeResponsibleRoles.find(r=>r.id===mapping[role||''])?.label||'در انتظار تعیین مسئولیت';
 }
