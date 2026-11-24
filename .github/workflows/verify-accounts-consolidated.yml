@@ -1,0 +1,20 @@
+name: Verify consolidated accounts
+on:
+  pull_request:
+    branches: [hostinger-nextjs-fix]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --global pnpm@11.25.0
+      - run: pnpm install --frozen-lockfile
+      - run: node --test tests/approved-account-role-mapping.test.mjs tests/dispatch-read-availability.test.mjs tests/unified-intake-routing.test.mjs tests/navigation.test.mjs
+      - run: pnpm exec tsc --noEmit
+      - run: pnpm build
