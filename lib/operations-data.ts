@@ -58,9 +58,9 @@ export async function readOperationsData(u:any,p:URLSearchParams){
  const unifiedGroup=(p.get('unifiedGroup')||'').slice(0,30),unifiedCategory=(p.get('unifiedCategory')||'').slice(0,80),unifiedTopic=(p.get('unifiedTopic')||'').slice(0,160);
  const unifiedRole=(p.get('unifiedRole')||'').slice(0,80);
  if(unifiedRole){if(unifiedRole==='unclassified')where+=' AND '+filterRoleSQL+' IS NULL';else if(intakeResponsibleRoles.some(r=>r.id===unifiedRole)){where+=' AND '+filterRoleSQL+'=?';args.push(unifiedRole)}else where+=' AND 1=0'}
- if(unifiedGroup){if(['services','consultation'].includes(unifiedGroup)){where+=' AND '+filterGroupSQL+'=?';args.push(unifiedGroup)}else where+=' AND 1=0'}
- if(unifiedCategory){if(unifiedCategory==='unclassified')where+=' AND '+filterCategorySQL+' IS NULL';else if(intakeCategory(unifiedCategory)){where+=' AND '+filterCategorySQL+'=?';args.push(unifiedCategory)}else where+=' AND 1=0'}
- if(unifiedTopic){if(intakeCategory(unifiedCategory)?.topics.some(t=>t.title===unifiedTopic)){where+=' AND '+filterTopicSQL+'=?';args.push(unifiedTopic)}else where+=' AND 1=0'}
+
+
+
  if(view!=='tickets'&&p.get('opsGroup')){
   const group=String(p.get('opsGroup')||'').slice(0,90);
   const [kind,id]=group.split(':');
@@ -84,13 +84,18 @@ export async function readOperationsData(u:any,p:URLSearchParams){
  else if(range){dateWhere=" AND (("+callDaySQL+" AND call_date>=? AND call_date<=?) OR (NOT "+callDaySQL+" AND ((length("+receivedSQL+")=10 AND "+receivedSQL+">=? AND "+receivedSQL+"<=?) OR (length("+receivedSQL+")>10 AND "+receivedSQL+">=? AND "+receivedSQL+"<?))))";dateArgs.push(range.from,range.to,range.from,range.to,range.start,range.end)}
  where+=dateWhere;args.push(...dateArgs);
  const orderSQL="CASE WHEN "+callDaySQL+" THEN call_date||'T12:00:00Z' ELSE "+receivedSQL+" END";
- const orderDirection=p.get('sortOrder')==='asc'?' ASC':' DESC';
+ const orderDirection=p.get('sortOrder')==='desc'?' DESC':' ASC';
  const ticketBaseWhere=where,ticketBaseArgs=[...args];
  if(view==='tickets'&&p.get('status')){if(p.get('status')==='awaiting_assignment')where+=" AND "+assignmentStateSQL;else{where+=' AND status=?';args.push(p.get('status'))}}
  const baseWhere=where,baseArgs=[...args];
  const today=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Dubai',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
  const followup=p.get('followup');if(followup==='today'){where+=" AND status!='closed' AND due=?";args.push(today)}else if(followup==='overdue'){where+=" AND status!='closed' AND due!='' AND due<?";args.push(today)}else if(followup==='unassigned'){where+=" AND status!='closed' AND "+unassignedSQL}else if(followup==='unanswered'){where+=" AND status!='closed' AND trim(resolution)=''"}else if(followup==='calls_pending'){where+=" AND status!='closed' AND "+channelSQL+"='phone' AND trim(resolution)=''"}
- const offset=Math.max(0,Math.min(5000,Number(p.get('offset'))||0));
+ // Category facets share the exact authorized result predicate, excluding only their own selection.
+ const facetWhere=where,facetArgs=[...args];
+ if(unifiedGroup){if(['services','consultation'].includes(unifiedGroup)){where+=' AND '+filterGroupSQL+'=?';args.push(unifiedGroup)}else where+=' AND 1=0'}
+ if(unifiedCategory){if(unifiedCategory==='unclassified')where+=' AND '+filterCategorySQL+' IS NULL';else if(intakeCategory(unifiedCategory)){where+=' AND '+filterCategorySQL+'=?';args.push(unifiedCategory)}else where+=' AND 1=0'}
+ if(unifiedTopic){if(intakeCategory(unifiedCategory)?.topics.some(t=>t.title===unifiedTopic)){where+=' AND '+filterTopicSQL+'=?';args.push(unifiedTopic)}else where+=' AND 1=0'}
+ const offset=Math.max(0,Number(p.get('offset'))||0);
  const initialPageSize=view==='tickets'?100:50;
  const columns=(routingReady?'routing,request_state,':'')+(await organizationReady()?'access_scope,':'')+'request_type,client_kind,organization,representative,intake_state,intake_notes,is_ticket,ticket_kind,direction,channel,visit_purpose,id,source_key,category,subtype,title,substr(source_body,1,200) AS source_body,client_name,phone,email,reference,call_date,source_type,source_url,source_at,source_labels,attachments,assignee,due,status,priority,resolution,payment_state,manager_only,created_by,created_at,updated_at,revision';
  const statements=[db().prepare('SELECT '+columns+' FROM ops_items WHERE '+where+' ORDER BY '+orderSQL+orderDirection+', id'+orderDirection+' LIMIT '+initialPageSize+' OFFSET ?').bind(...args,offset),db().prepare('SELECT COUNT(*) AS total FROM ops_items WHERE '+where).bind(...args),db().prepare('SELECT category,COUNT(*) AS total FROM ops_items WHERE '+permitted+dateWhere+' GROUP BY category').bind(...scopeArgs,...dateArgs),db().prepare("SELECT COUNT(*) AS all_count,SUM(CASE WHEN status!='closed' AND due=? THEN 1 ELSE 0 END) AS today,SUM(CASE WHEN status!='closed' AND due!='' AND due<? THEN 1 ELSE 0 END) AS overdue,SUM(CASE WHEN status!='closed' AND "+unassignedSQL+" THEN 1 ELSE 0 END) AS unassigned,SUM(CASE WHEN status!='closed' AND trim(resolution)='' THEN 1 ELSE 0 END) AS unanswered,SUM(CASE WHEN status!='closed' AND "+channelSQL+"='phone' AND trim(resolution)='' THEN 1 ELSE 0 END) AS calls_pending FROM ops_items WHERE "+baseWhere).bind(today,today,...baseArgs),db().prepare('SELECT source,created,updated,finished_at FROM ops_sync_runs WHERE ?=1 ORDER BY finished_at DESC LIMIT 4').bind(u.manager?1:0)];
@@ -105,16 +110,6 @@ export async function readOperationsData(u:any,p:URLSearchParams){
  const rr=[...essential,...optional];const item=selected?(rr[view==='tickets'?6:5]?.results?.[0] as any):null;const allowedItem=item&&canSeeOps(u,item)?item:null;const events=allowedItem?(await db().prepare('SELECT * FROM staff_events WHERE record_id=? ORDER BY created_at ASC LIMIT 200').bind(selected).all()).results.filter((e:any)=>ticketNoteVisible(u,e)):[];
  let payments=new Map<string,any>(),financialDataUnavailable=false;try{payments=await operationPayments([...new Set([...rr[0].results,...(allowedItem?[allowedItem]:[])].map((r:any)=>r.id))])}catch(e:any){financialDataUnavailable=true;console.error('operations finance summary unavailable',e?.code||e?.message||'unknown')}
  const map=(raw:any)=>{const r=redactRequest(u,raw),x=opsRow(r),financial=payments.get(r.id)||null;const paymentState=financialDataUnavailable?'unknown':financial?.paid_rial>0?'verified':r.payment_state==='reported'?'reported':r.category==='billing'?'pending':'unknown';return {...x,payment_state:paymentState,paymentState,financial:u.manager||hasDataAccess(u,'billing_ops')?financial:null,isTicket:isTicket(x)}};
- const facetArgs:any[]=[...scopeArgs,p.get('direction')||'inbound'];
- let facetWhere=permitted+' AND direction=?'+dateWhere;facetArgs.push(...dateArgs);
- if(view==='tickets')facetWhere+=' AND '+ticketSQL;
- if(view==='tickets'&&['site','direct'].includes(p.get('ticketSource')||'')){facetWhere+=" AND json_extract(source_labels,'$.ticket_source')=?";facetArgs.push(p.get('ticketSource'))}
- if(p.get('channel')){facetWhere+=' AND '+channelSQL+'=?';facetArgs.push(p.get('channel'))}
- if(p.get('assignee')){facetWhere+=' AND assignee=?';facetArgs.push(p.get('assignee'))}
- if(p.get('status')){if(p.get('status')==='awaiting_assignment')facetWhere+=" AND "+assignmentStateSQL;else{facetWhere+=' AND status=?';facetArgs.push(p.get('status'))}}
- if(p.get('unifiedGroup')){facetWhere+=' AND '+filterGroupSQL+'=?';facetArgs.push(p.get('unifiedGroup'))}
- const facetQ=(p.get('q')||'').trim().slice(0,200);
- if(facetQ){facetWhere+=" AND (client_name LIKE ? OR phone LIKE ? OR email LIKE ? OR reference LIKE ? OR title LIKE ?)";facetArgs.push(...Array(5).fill('%'+facetQ.replace(/[%_]/g,'')+'%'))}
  let facetRows:any[]=[];try{facetRows=(await db().prepare("SELECT "+filterCategorySQL+" AS id,COUNT(*) AS n FROM ops_items WHERE "+facetWhere+" GROUP BY 1").bind(...facetArgs).all()).results as any[]}catch(e:any){console.error('operations category summary unavailable',e?.code||e?.message||'unknown')}
  const unifiedCounts=Object.fromEntries([...unifiedIntakeCategories.map(c=>[c.id,Number(facetRows.find(x=>x.id===c.id)?.n||0)]),['unclassified',Number(facetRows.find(x=>x.id==null)?.n||0)]]);
  const total=Number((rr[1].results[0] as any)?.total||0);const counts=Object.fromEntries(operationCategories.map(c=>[c.id,Number((rr[2].results.find((r:any)=>r.category===c.id) as any)?.total||0)]));
