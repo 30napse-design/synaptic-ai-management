@@ -29,7 +29,7 @@ export function normalizeCallDay(raw:unknown):string {
  return validDay(day)?day:'';
 }
 // Only validated dates enter generated SQL literals; no user input is interpolated.
-export function callDayExpression(rawDates:unknown[]){
+export function callDayExpression(rawDates:unknown[],asTimestamp=false){
  const cases=rawDates.flatMap(raw=>{const value=String(raw??''),day=normalizeCallDay(value);return day&&/^[0-9۰-۹٠-٩/\s-]+$/.test(value)?["WHEN '"+value+"' THEN '"+day+"'"]:[]});
  return cases.length?"(CASE call_date "+cases.join(' ')+" ELSE NULL END)":"NULL";
 }
