@@ -13,7 +13,12 @@ const known=unifiedIntakeCategories.map(c=>quote(c.id)).join(',');
 const label=(key:string)=>"COALESCE(NULLIF(json_extract(source_labels,'$.intake_"+key+"'),''),NULLIF(json_extract(source_labels,'$.ticket_"+key+"'),''))";
 const legacyCases=Object.entries(legacy).flatMap(([cat,items])=>Object.entries(items).map(([sub,id])=>"WHEN category="+quote(cat)+" AND subtype="+quote(sub)+" THEN "+quote(id))).join(' ');
 const catLabel=label('category');
-export const filterCategorySQL="(CASE WHEN "+catLabel+" IN ("+known+") THEN "+catLabel+" WHEN COALESCE(json_extract(source_labels,'$.intake_v'),0)=2 OR COALESCE(json_extract(source_labels,'$.ticket_v'),0)=2 THEN NULL "+legacyCases+" ELSE NULL END)";
+// Legacy records often have a broad canonical category and a free-form subtype.
+// Resolve only the read-side facet; preserve original classification and access policy.
+const broad:Record<string,string>={customers:'service_orders',billing:'service_finance',results:'service_results',projects:'service_projects',internal:'service_admin'};
+const broadCases=Object.entries(broad).map(([cat,id])=>"WHEN category="+quote(cat)+" THEN "+quote(id)).join(' ');
+const oldLabelCases=Object.entries({orders:'service_orders',invoices:'service_orders',payments:'service_finance',results:'service_results',projects:'service_projects',internal:'service_admin',system:'service_it',collaboration:'service_admin',proposal:'consult_before',organization:'service_admin'}).map(([cat,id])=>"WHEN "+catLabel+"="+quote(cat)+" THEN "+quote(id)).join(' ');
+export const filterCategorySQL="(CASE WHEN "+catLabel+" IN ("+known+") THEN "+catLabel+" "+legacyCases+" "+oldLabelCases+" WHEN category='system' AND subtype IN ('نیازمند بررسی','گزارش روزانه ایمیل‌ها') THEN NULL "+broadCases+" ELSE NULL END)";
 export const filterGroupSQL="(CASE "+filterCategorySQL+" "+unifiedIntakeCategories.map(c=>"WHEN "+quote(c.id)+" THEN "+quote(c.group)).join(' ')+" ELSE NULL END)";
 const explicitRole=label('role');
 const exactCases=unifiedIntakeCategories.flatMap(c=>c.topics.filter(t=>!/^سایر/.test(t.title)).map(t=>"WHEN "+filterCategorySQL+"="+quote(c.id)+" AND "+label('topic')+"="+quote(t.title)+" THEN "+quote(t.role))).join(' ');
