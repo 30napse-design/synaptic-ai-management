@@ -84,7 +84,7 @@ export async function readOperationsData(u:any,p:URLSearchParams){
  else if(range){dateWhere=" AND (("+callDaySQL+" AND call_date>=? AND call_date<=?) OR (NOT "+callDaySQL+" AND ((length("+receivedSQL+")=10 AND "+receivedSQL+">=? AND "+receivedSQL+"<=?) OR (length("+receivedSQL+")>10 AND "+receivedSQL+">=? AND "+receivedSQL+"<?))))";dateArgs.push(range.from,range.to,range.from,range.to,range.start,range.end)}
  where+=dateWhere;args.push(...dateArgs);
  const orderSQL="CASE WHEN "+callDaySQL+" THEN call_date||'T12:00:00Z' ELSE "+receivedSQL+" END";
- const orderDirection=p.get('sortOrder')==='desc'?' DESC':' ASC';
+ const orderDirection=p.get('sortOrder')==='asc'?' ASC':' DESC';
  const ticketBaseWhere=where,ticketBaseArgs=[...args];
  if(view==='tickets'&&p.get('status')){if(p.get('status')==='awaiting_assignment')where+=" AND "+assignmentStateSQL;else{where+=' AND status=?';args.push(p.get('status'))}}
  const baseWhere=where,baseArgs=[...args];
