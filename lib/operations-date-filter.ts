@@ -30,7 +30,7 @@ export function normalizeCallDay(raw:unknown):string {
 }
 // Only validated dates enter generated SQL literals; no user input is interpolated.
 export function callDayExpression(rawDates:unknown[],asTimestamp=false){
- const cases=rawDates.flatMap(raw=>{const value=String(raw??''),day=normalizeCallDay(value);return day&&/^[0-9۰-۹٠-٩/\s-]+$/.test(value)?["WHEN '"+value+"' THEN '"+day+"'"]:[]});
+ const cases=rawDates.flatMap(raw=>{const value=String(raw??''),day=normalizeCallDay(value);return day&&/^[0-9۰-۹٠-٩/\s-]+$/.test(value)?["WHEN '"+value+"' THEN '"+(asTimestamp?midnightUTC(day):day)+"'"]:[]});
  return cases.length?"(CASE call_date "+cases.join(' ')+" ELSE NULL END)":"NULL";
 }
 export function receiptDateLabel(row:{callDate?:string;sourceAt?:string;createdAt?:string;channel?:string;sourceType?:string}){
