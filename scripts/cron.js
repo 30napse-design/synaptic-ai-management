@@ -23,14 +23,22 @@ if (!token) {
     } catch {
       throw new Error('Non-JSON response from integration endpoint (HTTP ' + response.status + ')');
     }
-    if (!response.ok || !result.ok) {
-      console.error('Integration tick failed:', response.status,
-        JSON.stringify({ results: result.results?.map(({id,ok,error})=>({id,ok,error})) || [], error: result.error || null }));
+    // Keep successful-source metrics even when another source fails.
+    // Never log message contents, tokens or arbitrary upstream error details.
+    const rows = Array.isArray(result.results) ? result.results : [];
+    const results = rows.map(({id,ok,events,created,replayed,more,error})=>({
+      id, ok: ok === true, events, created, replayed, more,
+      ...(ok === true ? {} : {error: error === 'source-needs-review' ? error : 'source-error'})
+    }));
+    const succeeded = results.filter(r=>r.ok).length;
+    const failed = results.length - succeeded;
+    const status = !response.ok ? 'failed' : failed && succeeded ? 'partial' : failed || !result.ok ? 'failed' : 'completed';
+    const totals = Object.fromEntries(['events','created','replayed'].map(key=>[key,results.filter(r=>r.ok).reduce((n,r)=>n+(Number.isFinite(r[key])?r[key]:0),0)]));
+    const report = {httpStatus:response.status,status,succeeded,failed,totals,more:results.some(r=>r.more===true),results};
+    if (status === 'completed') console.log('Integration tick completed:',JSON.stringify(report));
+    else {
+      console.error('Integration tick '+status+':',JSON.stringify(report));
       process.exitCode = 1;
-    } else {
-      // No customer contents, tokens, or private records in logs.
-      console.log('Integration tick completed:',
-        JSON.stringify((result.results || []).map(({id,ok,events,created,replayed,more})=>({id,ok,events,created,replayed,more}))));
     }
   } catch (error) {
     console.error('Integration tick request error:', error instanceof Error ? error.message : String(error));
