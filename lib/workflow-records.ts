@@ -53,9 +53,9 @@ export async function workflowGraph(initial:WorkflowReference[]){
    else if(type==='project')queue("SELECT 'lab_job' type,id FROM laboratory_jobs WHERE json_extract(CASE WHEN json_valid(notes) THEN notes ELSE '{}' END,'$.mother_project') IN (SELECT value FROM json_each(?1))",ids);
    else if(type==='lab_job')queue(`SELECT 'finance_document' type,document_id id FROM finance_links WHERE reference_id IN (SELECT value FROM json_each(?1)) AND type LIKE 'lab-line:%'
     UNION ALL SELECT CASE kind WHEN 'sample' THEN 'sample' ELSE 'lab_result' END,id FROM laboratory_records WHERE job_id IN (SELECT value FROM json_each(?1)) AND kind IN ('sample','result')
-    UNION ALL SELECT 'science_case',c.id FROM science_cases c JOIN json_each(c.payload,'$.job_ids') j WHERE j.value IN (SELECT value FROM json_each(?1))
-    UNION ALL SELECT 'science_case',v.case_id FROM science_versions v JOIN json_each(v.payload,'$.job_ids') j WHERE j.value IN (SELECT value FROM json_each(?1))`,ids);
-   else if(type==='science_case')queue("SELECT 'science_result' type,id FROM science_entries WHERE case_id IN (SELECT value FROM json_each(?1)) AND kind IN ('data','report') UNION ALL SELECT 'lab_job',j.value FROM science_versions v JOIN json_each(v.payload,'$.job_ids') j WHERE v.case_id IN (SELECT value FROM json_each(?1))",ids);
+    UNION ALL SELECT 'science_case',c.id FROM science_cases c CROSS JOIN json_each(c.payload,'$.job_ids') j WHERE j.value IN (SELECT value FROM json_each(?1))
+    UNION ALL SELECT 'science_case',v.case_id FROM science_versions v CROSS JOIN json_each(v.payload,'$.job_ids') j WHERE j.value IN (SELECT value FROM json_each(?1))`,ids);
+   else if(type==='science_case')queue("SELECT 'science_result' type,id FROM science_entries WHERE case_id IN (SELECT value FROM json_each(?1)) AND kind IN ('data','report') UNION ALL SELECT 'lab_job',j.value FROM science_versions v CROSS JOIN json_each(v.payload,'$.job_ids') j WHERE v.case_id IN (SELECT value FROM json_each(?1))",ids);
    else if(type==='task')queue(`SELECT 'science_case' type,id FROM science_cases WHERE source_task_id IN (SELECT value FROM json_each(?1))
     UNION ALL SELECT 'finance_document',document_id FROM finance_links WHERE type='scientific' AND reference_id IN (SELECT value FROM json_each(?1))`,ids);
    else if(type==='operation')queue(`SELECT 'finance_document' type,document_id id FROM finance_links WHERE type='operation:'||reference_id AND reference_id IN (SELECT value FROM json_each(?1))

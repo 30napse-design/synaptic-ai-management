@@ -1,0 +1,32 @@
+/* Accounts page only; existing workspace header/sidebar remain untouched. */
+.synapse-accounts-list{display:grid;gap:12px;margin-block:16px 28px}
+.synapse-account-guide{border:1px solid #d6e7e9;border-radius:18px;background:linear-gradient(105deg,#f3fafa,#fafcff);padding:18px 22px;margin-block:18px;color:#28465a}
+.synapse-account-guide h2{margin:0 0 8px;color:#143b55;font-size:1.14rem}
+.synapse-account-guide p{margin:5px 0;font-size:.87rem;line-height:1.9}
+.synapse-account-row{border:1px solid #dce7ed;border-radius:17px;background:#fff;overflow:hidden;box-shadow:0 2px 11px rgba(18,54,78,.045);transition:border-color .17s,box-shadow .17s}
+.synapse-account-row[open]{border-color:#92cbd0;box-shadow:0 9px 28px rgba(18,77,93,.1)}
+.synapse-account-bar{display:flex;align-items:center;gap:16px;min-height:83px;padding:15px 21px;cursor:pointer;list-style:none;background:linear-gradient(95deg,#fff,#f5fafb)}
+.synapse-account-bar::-webkit-details-marker{display:none}
+.synapse-account-bar:focus-visible{outline:3px solid #3e9bb1;outline-offset:-4px}
+.synapse-account-bar:hover{background:linear-gradient(95deg,#f7fcfd,#eaf6f7)}
+.synapse-account-arrow{display:grid;place-items:center;flex:none;width:32px;height:32px;border-radius:10px;background:#e6f1f4;color:#19647e;font-size:27px;line-height:1;transition:transform .18s}
+.synapse-account-row[open] .synapse-account-arrow{transform:rotate(180deg)}
+.synapse-account-main{display:flex;flex:1;min-width:0;flex-direction:column;gap:3px}
+.synapse-account-main strong{color:#173c54;font-size:1.02rem}
+.synapse-account-main small{font-size:.76rem;color:#64788b;line-height:1.6}
+.synapse-account-main code{font-size:.8rem;background:#eaf2f5;padding:1px 6px;border-radius:5px}
+.synapse-account-bar .account-status{flex:none;max-width:125px;font-size:.75rem}
+.synapse-account-body{display:grid;gap:16px;padding:22px 24px 24px;border-top:1px solid #e2edf0;line-height:1.85;color:#263a4b}
+.synapse-account-section{border-bottom:1px solid #e8eff2;padding-bottom:14px}
+.synapse-account-section h3{font-size:.95rem;margin:0 0 9px;color:#16526a}
+.synapse-account-section ul{margin:0;padding-inline-start:20px}
+.synapse-account-section li{margin:5px 0;font-size:.86rem}
+.synapse-account-section .nine-account-access{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0}
+.synapse-account-section .nine-account-access a{border-radius:9px;border:1px solid #d3e5e8;background:#f4fafb;padding:6px 10px;font-size:.79rem;text-decoration:none;color:#195872}
+.synapse-account-section .nine-account-access a:hover{border-color:#83c2cb;background:#e5f4f5}
+.synapse-account-actions{border-bottom:0;padding-bottom:0}
+.synapse-account-actions .nine-account-actions{display:flex;flex-wrap:wrap;gap:8px}
+.synapse-account-actions .nine-account-actions button,.synapse-account-actions .nine-account-actions a{min-height:39px}
+.synapse-account-pending .synapse-account-bar{background:linear-gradient(95deg,#fff,#faf9f3)}
+@media(max-width:620px){.synapse-account-bar{padding:13px;gap:10px}.synapse-account-body{padding:15px}.synapse-account-bar .account-status{font-size:.66rem}.synapse-account-main strong{font-size:.92rem}.synapse-account-guide{padding:14px}.synapse-account-actions .nine-account-actions>*{flex:1;min-width:125px}}
+@media(prefers-reduced-motion:reduce){.synapse-account-row,.synapse-account-arrow{transition:none}}

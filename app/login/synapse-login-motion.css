@@ -1,0 +1,30 @@
+/* SYNAPSE entry motion — decorative only. Form is always in the DOM and keyboard accessible.
+   Timeline 0–1100ms left-origin flyby, 1000–1800ms crest, 1600–2300ms login reveal.
+   Reduced motion disables every effect; no login/network/redirect is delayed. */
+.synapse-login-page{isolation:isolate;position:relative;overflow:hidden;min-height:100dvh;background:radial-gradient(ellipse 60% 65% at 12% 36%,#195384 0%,transparent 68%),radial-gradient(circle at 82% 15%,#264b8f 0%,transparent 36%),linear-gradient(135deg,#07172f 0%,#10325e 46%,#08152c 100%);padding:38px 18px;color:#172d53}
+.synapse-login-page::before{content:'';position:absolute;inset:0;z-index:0;pointer-events:none;background:linear-gradient(110deg,transparent 10%,#44c9fc0b 35%,transparent 60%),repeating-linear-gradient(90deg,#8fc8fa0a 0 1px,transparent 1px 64px);mask-image:linear-gradient(to bottom,#0009,transparent 98%)}
+.synapse-entry-stage{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:1}
+.synapse-entry-orbit{position:absolute;width:460px;aspect-ratio:1;border:1px solid #8bd4fd27;border-radius:50%;left:-140px;top:12%;box-shadow:0 0 0 70px #68c4ef04,0 0 0 160px #9e90fe04;animation:synapse-orbit-fade 1.9s ease both}
+.synapse-entry-orbit.orbit-two{left:auto;right:-220px;top:57%;width:370px;animation-delay:.2s}
+.synapse-entry-comet{position:absolute;top:25%;left:-360px;display:flex;gap:10px;align-items:center;direction:ltr;color:#6ce7ff;text-shadow:0 0 24px #56dafea8;filter:drop-shadow(0 0 14px #37baf37a);animation:synapse-flyby 2s cubic-bezier(.32,.02,.18,.99) both}
+.synapse-entry-comet svg{display:block;width:170px;height:80px}.synapse-entry-comet span{font:800 clamp(24px,4vw,49px)/1 Arial,sans-serif;letter-spacing:.16em}
+.synapse-login-page .auth-card{position:relative;z-index:2;max-width:min(440px,100%);width:100%;border-radius:25px;border:1px solid #b9ddffb8;background:linear-gradient(145deg,#fffffff7,#f1f7fffa 70%,#f4f1fffa);box-shadow:0 25px 78px #020b25a6,0 1px 0 #ffffff inset;backdrop-filter:blur(16px);animation:synapse-card-reveal .42s cubic-bezier(.18,.7,.18,1) .1s both}
+.synapse-login-page .auth-brand{padding:8px 10px;background:#ecf5ff;border:1px solid #d3e8f9;border-radius:14px;max-width:230px;margin:0 auto 22px}
+.synapse-login-page .auth-card h1{font-size:clamp(21px,2.5vw,27px);letter-spacing:-.02em;color:#172c54}
+.synapse-login-page .auth-card .eyebrow{color:#2c7cb2;font-weight:750;letter-spacing:.02em}
+.synapse-login-page .auth-card form label{color:#27446f;display:grid;gap:8px}
+.synapse-login-page .auth-card input{background:#fff;border:1px solid #c6d9f0;border-radius:11px;min-height:46px;padding:10px 13px;box-shadow:0 2px 8px #2d65a40c}
+.synapse-login-page .auth-card input:focus-visible{outline:3px solid #78c9ea;outline-offset:1px}
+.synapse-login-page .auth-card .primary{background:linear-gradient(108deg,#1f73c4,#535ed5);box-shadow:0 8px 18px #326dba36;border-radius:12px;min-height:48px;color:#fff}
+.synapse-login-page .auth-card .primary:hover{filter:brightness(1.075)}
+.synapse-login-page .auth-footer{color:#506c96;border-color:#dce7f6}
+@keyframes synapse-flyby{0%{transform:translateX(0) scale(.78);opacity:0}20%{opacity:1}61%{transform:translateX(min(58vw,680px)) scale(1.03);opacity:1}84%{transform:translateX(min(74vw,920px)) scale(1.12);opacity:.9}100%{transform:translateX(calc(100vw + 400px)) scale(1.25);opacity:0}}
+@keyframes synapse-orbit-fade{0%{opacity:0;transform:scale(.8)}45%{opacity:1}100%{opacity:.37;transform:scale(1.06)}}
+@keyframes synapse-card-reveal{from{opacity:0;transform:translateY(22px) scale(.965);filter:blur(8px)}to{opacity:1;transform:none;filter:none}}
+@media(max-width:600px){.synapse-login-page{align-items:flex-start;padding-top:12dvh}.synapse-entry-comet{top:5%}.synapse-entry-comet svg{width:90px}.synapse-entry-comet span{font-size:22px}.synapse-login-page .auth-card{padding:24px 21px;border-radius:19px}.synapse-login-page .auth-brand{margin-bottom:12px}}
+@media(prefers-reduced-motion:reduce){.synapse-login-page .auth-card,.synapse-entry-comet,.synapse-entry-orbit{animation:none!important;filter:none!important}.synapse-entry-comet{display:none}}
+
+/* Keep the form immediately usable: the ornamental sequence never gates focus or submission. */
+.synapse-login-page .auth-card{will-change:transform}
+.synapse-entry-comet{will-change:transform,opacity}
+@media(prefers-reduced-motion:reduce){.synapse-login-page .auth-card{opacity:1!important;transform:none!important;will-change:auto}}

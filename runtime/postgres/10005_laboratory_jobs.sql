@@ -1,0 +1,21 @@
+CREATE TABLE laboratory_jobs (
+ id text PRIMARY KEY NOT NULL,
+ reference text NOT NULL,
+ area text NOT NULL,
+ client text NOT NULL,
+ service text NOT NULL,
+ quantity bigint NOT NULL,
+ assignee text NOT NULL,
+ due text NOT NULL DEFAULT '',
+ status text NOT NULL DEFAULT 'received',
+ notes text NOT NULL DEFAULT '',
+ result_url text NOT NULL DEFAULT '',
+ price bigint NOT NULL DEFAULT 0,
+ paid bigint NOT NULL DEFAULT 0,
+ cost bigint NOT NULL DEFAULT 0,
+ vendor_paid bigint NOT NULL DEFAULT 0,
+ revision bigint NOT NULL DEFAULT 0,
+ created_by text NOT NULL,
+ created_at text NOT NULL,
+ updated_at text NOT NULL
+);

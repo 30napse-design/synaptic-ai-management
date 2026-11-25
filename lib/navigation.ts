@@ -2,10 +2,10 @@ import {laboratoryDomains} from './laboratory-center-policy.ts';
 import {hasDataAccess,hasAccess} from './auth-policy.ts';
 export type NavItem={label:string,href:string,enabled:boolean,category?:string};
 export type NavGroup={id:string,label:string,items:NavItem[]};
-function navigationDefinitions(user:any):NavGroup[]{const can=(scope:string)=>hasAccess(user,scope);const item=(label:string,href:string,enabled=true,category?:string)=>({label,href,enabled,...(category?{category}:{})});if(user.laboratory)return [{id:'management',label:'مدیریت و راهبری پژوهشکده',items:[item('مدیریت و پیگیری درخواست‌ها','/operations?view=dispatch')]},{id:'operations',label:'عملیات و مشتریان',items:[item('پذیرش، ارتباط و پشتیبانی','/operations'),item('تیکت و پشتیبانی','/operations?view=tickets'),item('دفتر تماس‌های ورودی','/operations?source=incoming'),item('همه ارتباطات خروجی','/operations?direction=outbound'),item('دفتر مراجعات حضوری','/operations?direction=visit')]},{id:'laboratory-cases',label:'پرونده‌های آزمایشگاهی',items:[item('فهرست کل پرونده‌ها','/laboratories')]},{id:'laboratories',label:'آزمایشگاه‌ها',items:laboratoryDomains.map(d=>item(d.title,'/laboratories?domain='+d.id))}];return [
-{id:'operations',label:'عملیات و مشتریان',items:[item('پذیرش، ارتباط و پشتیبانی','/operations',user.manager||['operations','calls','billing_ops','results_ops'].some(can)),item('تیکت و پشتیبانی','/operations?view=tickets',user.manager||['operations','billing_ops','results_ops'].some(can)),item('دفتر تماس‌های ورودی','/operations?source=incoming',can('calls')),item('همه ارتباطات خروجی','/operations?direction=outbound',can('operations')),item('دفتر مراجعات حضوری','/operations?direction=visit',can('operations')),item('پذیرش نمونه محققین','/sample-intake',hasDataAccess(user,'sample_intake'))]},
-{id:'work',label:'کار و برنامه‌ریزی من',items:[item('امروز من','/staff?view=overview'),item('همه وظایف','/staff?view=all'),item('برد وظایف','/staff?view=board'),item('برنامه‌ریزی','/staff?view=plans'),item('بررسی و تأیید','/staff?view=approvals')]},
-{id:'research',label:'اجرای پژوهش و مکاتبات',items:[item('مشاوره و کار علمی','/work/science',can('science')),item('مدیریت پروژه و عملیات','/work/projects',can('projects')),item('مکاتبات داخلی','/work/mail',can('mail'))]},
+function navigationDefinitions(user:any):NavGroup[]{const can=(scope:string)=>hasAccess(user,scope);const item=(label:string,href:string,enabled=true,category?:string)=>({label,href,enabled,...(category?{category}:{})});if(user.laboratory)return [{id:'management',label:'مدیریت و راهبری پژوهشکده',items:[item('مدیریت و پیگیری درخواست‌ها','/operations?view=dispatch')]},{id:'operations',label:'پذیرش و ارتباطات',items:[item('پذیرش، ارتباط و پشتیبانی','/operations'),item('پذیرش نمونه محققین','/sample-intake',hasDataAccess(user,'sample_intake')),item('تیکت و پشتیبانی','/operations?view=tickets')]},{id:'laboratory-cases',label:'پرونده‌های آزمایشگاهی',items:[item('فهرست کل پرونده‌ها','/laboratories')]},{id:'laboratories',label:'آزمایشگاه‌ها',items:laboratoryDomains.map(d=>item(d.title,'/laboratories?domain='+d.id))}];return [
+{id:'operations',label:'پذیرش و ارتباطات',items:[item('پذیرش، ارتباط و پشتیبانی','/operations',user.manager||['operations','calls','billing_ops','results_ops'].some(can)),item('پذیرش نمونه محققین','/sample-intake',hasDataAccess(user,'sample_intake')),item('تیکت و پشتیبانی','/operations?view=tickets',user.manager||['operations','billing_ops','results_ops'].some(can))]},
+{id:'work',label:'کارتابل و برنامه‌ریزی',items:[item('کارتابل و برنامه‌ریزی','/staff?view=dashboard'),item('امروز من','/staff?view=overview'),item('همه وظایف','/staff?view=all'),item('برد وظایف','/staff?view=board'),item('برنامه‌ریزی','/staff?view=plans'),item('بررسی و تأیید','/staff?view=approvals'),item('مکاتبات داخلی','/work/mail',can('mail'))]},
+{id:'research',label:'مشاوره علمی و مدیریت پروژه‌ها',items:[item('ثبت پرونده و مدیریت پروژه','/laboratories',can('lab')||can('lab_operations')||can('sample_intake')||can('research_supervision')),item('مرکز مشاوره علمی','/work/science',can('science')),item('مشتریان','/operations?view=history',user.manager||['operations','calls','billing_ops','results_ops'].some(can))]},
 {id:'laboratory-cases',label:'پرونده‌های آزمایشگاهی',items:[item('فهرست کل پرونده‌ها','/laboratories',can('lab')||can('lab_operations')||can('sample_intake')||can('research_supervision')),item('ثبت پرونده جدید','/laboratories?view=new',can('lab_operations')||can('sample_intake')||!!user.manager)]},
 {id:'laboratories',label:'آزمایشگاه‌ها',items:laboratoryDomains.map(d=>item(d.title,'/laboratories?domain='+d.id,can('lab')||can('lab_operations')||can('sample_intake')||can('research_supervision')))},
 {id:'finance',label:'مالی و قراردادها',items:[item('داشبورد مالی','/finance/dashboard',user.manager||can('finance_ops')),item('پرونده‌های مالی پروژه‌ها','/finance/invoices',user.manager||can('finance_ops'),'documents'),item('برآورد و پیش‌فاکتور','/finance/pricing',user.manager||can('finance_ops')||can('quote_ops'),'documents'),item('دریافت‌ها و تسویه مشتریان','/finance/receipts',user.manager||can('finance_ops'),'payments'),item('پرداخت‌ها و هزینه‌ها','/finance/payables',!user.laboratory,'payments'),item('صورت‌حساب و تطبیق بانک','/finance/bank',user.manager||can('finance_ops'),'payments'),item('تنخواه','/finance/petty-cash',user.manager||can('petty_cash')||can('finance_ops'),'payments'),item('حسابداری و تعرفه‌ها','/finance/ledger',user.manager||can('finance_ops'),'accounting')]},
@@ -26,7 +26,7 @@ export const routeAliases:Record<string,string>={
 const groupDescriptions:Record<string,string>={
  operations:'ثبت درخواست، تماس، پذیرش نمونه و پیگیری مشتری',
  work:'وظایف امروز، برد مشترک، برنامه و بررسی نتیجه',
- research:'پرونده مادر، سفارش‌ها، پیشرفت و مکاتبات پژوهشی',
+ research:'ثبت پرونده، مدیریت پروژه، مشاوره علمی و سوابق مشتری',
  laboratories:'خدمات تخصصی، روش‌ها، نمونه‌ها و نتایج آزمایشگاه',
  finance:'پرونده مالی، برآورد، دریافت، پرداخت و حسابداری',
  management:'حساب‌ها، منابع، اتصال‌ها و نظارت پژوهشکده',
@@ -36,10 +36,12 @@ export function workspaceNavigation(user:any):NavGroup[]{
  const cases=groups.find(g=>g.id==='laboratory-cases');
  let research=groups.find(g=>g.id==='research');
  if(!research){research={id:'research',label:'اجرای پژوهشی',items:[]};groups.push(research)}
- if(cases)research.items.push(...cases.items);
+ // Laboratory-only navigation keeps its established case links; for standard users
+ // the consolidated case entry above replaces both older sidebar shortcuts.
+ if(cases&&user.laboratory)research.items.push(...cases.items);
  // Keep all existing destinations while presenting the six approved domains.
  const order=['operations','work','research','laboratories','finance','management'];
- const labels:Record<string,string>={work:'کارتابل و برنامه‌ریزی',research:'اجرای پژوهشی',laboratories:'متدها و آزمایش‌ها'};
+ const labels:Record<string,string>={work:'کارتابل و برنامه‌ریزی',research:'مشاوره علمی و مدیریت پروژه‌ها',laboratories:'متدها و آزمایش‌ها'};
  return order.flatMap(id=>{const g=groups.find(g=>g.id===id);return g?[{...g,label:labels[id]||g.label}]:[]});
 }
 export function routeRegistry(user:any){
@@ -51,6 +53,8 @@ export function routeRegistry(user:any){
 export function resolveWorkspaceRoute(path:string,query:URLSearchParams,user:any){
  if(path==='/manage/finance'&&query.get('resources')==='1')return {label:'منابع و سوابق مالی',group:'finance',groupTitle:'مالی و قراردادها',href:path+'?resources=1'};
  const registry=routeRegistry(user);
+ // Old phone notebook deep links resolve into the existing unified intake menu.
+ if(path==='/operations'&&query.get('source')==='incoming')return registry.find(route=>route.href==='/operations');
  const matches=registry.filter(route=>activeNavigation(path,query,route.href));
  // A domain / new-case link must win over its parent list.
  const exact=matches.sort((a,b)=>new URL(b.href,'https://synapse.local').searchParams.size-new URL(a.href,'https://synapse.local').searchParams.size)[0];
