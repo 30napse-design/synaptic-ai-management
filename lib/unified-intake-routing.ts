@@ -37,3 +37,12 @@ export function unifiedRequiredAccess(category:string){
  category==='service_results'?'results_ops':
  category.startsWith('consult_')?'projects':'operations';
 }
+
+/** Non-throwing catalog-only resolution for previews and triage.
+ * Existing verifiedUnifiedClassification remains the strict write-path contract.
+ */
+export function resolveInitialResponsibility(categoryId:string,topicTitle:string){
+ const classification=intakeDefaultResponsibility(categoryId,topicTitle);
+ if(!classification)return {status:'needs_review' as const,categoryId,topicTitle,reason:'دسته یا موضوع مصوب معتبر نیست.'};
+ return {status:'resolved' as const,roleId:classification.role,roleLabel:classification.label,categoryId,topicTitle};
+}
