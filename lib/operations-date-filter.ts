@@ -1,3 +1,4 @@
+import {incomingISO} from './incoming-dates.ts';
 // Receipt dates and follow-up deadlines are deliberately independent.
 const zone='Asia/Tehran';
 const fmt=new Intl.DateTimeFormat('en-CA',{timeZone:zone,year:'numeric',month:'2-digit',day:'2-digit'});
@@ -18,8 +19,22 @@ export function receiptRange(p:URLSearchParams,now=new Date()){
  if(!validDay(from)||!validDay(to)||from>to)return {invalid:true as const};
  return {invalid:false as const,from,to,start:midnightUTC(from),end:midnightUTC(shift(to,1))};
 }
+// Normalize legacy ledger dates without rewriting imported records.
+export function normalizeCallDay(raw:unknown):string {
+ const value=String(raw??'').trim().replace(/[۰-۹]/g,c=>String('۰۱۲۳۴۵۶۷۸۹'.indexOf(c))).replace(/[٠-٩]/g,c=>String('٠١٢٣٤٥٦٧٨٩'.indexOf(c)));
+ const m=/^(\d{4})[/-](\d{1,2})[/-](\d{1,2})$/.exec(value);
+ if(!m)return '';
+ const day=m[1]+'-'+m[2].padStart(2,'0')+'-'+m[3].padStart(2,'0');
+ if(Number(m[1])>=1300&&Number(m[1])<=1499){try{return incomingISO(day.replaceAll('-','/'))}catch{return ''}}
+ return validDay(day)?day:'';
+}
+// Only validated dates enter generated SQL literals; no user input is interpolated.
+export function callDayExpression(rawDates:unknown[]){
+ const cases=rawDates.flatMap(raw=>{const value=String(raw??''),day=normalizeCallDay(value);return day&&/^[0-9۰-۹٠-٩/\s-]+$/.test(value)?["WHEN '"+value+"' THEN '"+day+"'"]:[]});
+ return cases.length?"(CASE call_date "+cases.join(' ')+" ELSE NULL END)":"NULL";
+}
 export function receiptDateLabel(row:{callDate?:string;sourceAt?:string;createdAt?:string;channel?:string;sourceType?:string}){
- const call=(row.channel==='phone'||row.sourceType==='incoming')&&validDay(row.callDate||'')?row.callDate:'';
+ const call=(row.channel==='phone'||row.sourceType==='incoming')?normalizeCallDay(row.callDate):'';
  const raw=call||row.sourceAt||row.createdAt||'';if(!raw)return 'تاریخ نامشخص';
  const d=new Date(validDay(raw)?raw+'T12:00:00Z':raw);return Number.isFinite(d.getTime())?new Intl.DateTimeFormat('fa-IR',{timeZone:zone,year:'numeric',month:'2-digit',day:'2-digit'}).format(d):'تاریخ نامشخص';
 }
