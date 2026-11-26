@@ -1,0 +1,54 @@
+name: Isolated browser QA TKT-02 and TKT-03
+on:
+  pull_request:
+    branches: [hostinger-nextjs-fix, feature/tkt-02-v3-workdesk-2026-11-26]
+    paths:
+      - 'scripts/qa-ticket-browser.mjs'
+      - '.github/workflows/verify-ticket-browser-isolated.yml'
+      - 'components/support/**'
+      - 'components/operations/**'
+      - 'app/operations/**'
+      - 'app/support/**'
+permissions:
+  contents: read
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - package: '02'
+            ref: '37f9c2b6cdce2ebd3502c68b2037cd2487639783'
+          - package: '03'
+            ref: ${{ github.event.pull_request.head.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: cp scripts/qa-ticket-browser.mjs "$RUNNER_TEMP/qa-ticket-browser.mjs"
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.ref }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --global pnpm@11.25.0
+      - run: pnpm install --frozen-lockfile
+      - run: |
+          npm install --prefix "$RUNNER_TEMP/qa-pw" --no-audit --no-fund playwright@1.51.1
+          "$RUNNER_TEMP/qa-pw/node_modules/.bin/playwright" install --with-deps chromium
+      - run: node "$RUNNER_TEMP/qa-ticket-browser.mjs"
+        env:
+          QA_PACKAGE: ${{ matrix.package }}
+          PW_PACKAGE_JSON: ${{ runner.temp }}/qa-pw/package.json
+          NEXT_TELEMETRY_DISABLED: '1'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: isolated-ticket-browser-${{ matrix.package }}
+          path: qa-browser-output/
+          if-no-files-found: ignore
+          retention-days: 7
