@@ -32,3 +32,49 @@
 .ops-module .ticket-detail-modal .form-grid{gap:9px}
 .ops-module .ticket-detail-modal .source-body,.ops-module .ticket-detail-modal pre{white-space:pre-wrap;overflow-wrap:anywhere;max-width:100%}
 @media(max-width:760px){.ops-module .ticket-staff-panel .form-grid{grid-template-columns:1fr}.ops-module .ticket-detail-modal{width:100%;max-height:94dvh}}
+
+/* V3 workdesk: scoped to tickets only; existing workspace chrome remains intact. */
+.v3-passthrough{display:contents}
+.ops-module.ticket-v3{--v3-bg:#F3F6F9;--v3-ink:#263F51;--v3-accent:#286C86;--v3-line:#E0E7ED;--v3-green:#36765F}
+.ticket-v3 .v3-workdesk{display:grid;grid-template-columns:minmax(210px,24%) minmax(0,1fr);gap:16px;align-items:start;color:var(--v3-ink);direction:rtl}
+.ticket-v3 .v3-main{min-width:0;display:flex;flex-direction:column;gap:12px}
+.ticket-v3 .v3-role-sidebar,.ticket-v3 .v3-calendar{background:#fff;border:1px solid var(--v3-line);border-radius:10px;padding:12px;box-shadow:0 2px 10px #173b5106;min-width:0}
+.ticket-v3 .v3-role-sidebar h2{display:flex;align-items:center;gap:7px;color:#173B51;font-size:13px;line-height:1.7;margin:0 0 12px}
+.ticket-v3 .v3-role-sidebar h2 svg{flex:none;color:var(--v3-accent)}
+.ticket-v3 .v3-role-options{display:grid;gap:7px}
+.ticket-v3 .v3-role-options button{display:flex;align-items:center;justify-content:space-between;gap:8px;text-align:right;padding:9px 10px;min-height:40px;border:1px solid transparent;border-radius:8px;background:#F1F7F4;color:var(--v3-ink);font-size:12px;line-height:1.6;cursor:pointer}
+.ticket-v3 .v3-role-options button:hover{border-color:#36765F}
+.ticket-v3 .v3-role-options button[aria-pressed=true]{background:#36765F;color:white}
+.ticket-v3 .v3-role-options small{background:#ffffffb5;color:#263F51;border-radius:7px;padding:2px 6px;white-space:nowrap;font-size:11px}
+.ticket-v3 .v3-role-toggle{display:none}
+.ticket-v3 .v3-overview{display:grid;grid-template-columns:minmax(0,1fr) minmax(205px,34%);align-items:start;gap:12px}
+.ticket-v3 .ticket-dashboard{margin:0}
+.ticket-v3 .ticket-dashboard-cards{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.ticket-v3 .ticket-dashboard-card{background:white;border-color:var(--v3-line);min-height:96px;display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;gap:5px;border-radius:9px;min-width:0}
+.ticket-v3 .ticket-dashboard-label{white-space:normal;color:#405969;font-size:11px}
+.ticket-v3 .ticket-dashboard-icon{background:var(--tbg)}
+.ticket-v3 .v3-calendar header,.ticket-v3 .v3-calendar footer,.ticket-v3 .v3-responsibility header,.ticket-v3 .v3-list-heading{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.ticket-v3 .v3-calendar header b{display:flex;gap:5px;align-items:center;font-size:12px;color:#173B51}
+.ticket-v3 .v3-calendar button,.ticket-v3 .v3-responsibility button{border:1px solid transparent;background:#F3F6F9;color:#286C86;border-radius:6px;min-height:30px;padding:4px 7px;font-size:12px;cursor:pointer}
+.ticket-v3 .v3-calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px;text-align:center;margin:9px 0}
+.ticket-v3 .v3-calendar-grid small{color:#536e7f;font-size:11px}
+.ticket-v3 .v3-calendar-grid button{padding:0;background:transparent;color:#263F51}
+.ticket-v3 .v3-calendar-grid button[aria-current=date]{border-color:#286C86}
+.ticket-v3 .v3-calendar-grid button[aria-pressed=true]{background:#286C86;color:white}
+.ticket-v3 .v3-calendar footer button{flex:1}
+.ticket-v3 .v3-responsibility{background:#F1F7F4;border:1px solid #cfe3d9;border-radius:10px;padding:12px}
+.ticket-v3 .v3-responsibility h3,.ticket-v3 .v3-list-heading h3{font-size:14px;margin:0;color:#173B51}
+.ticket-v3 .v3-responsibility p{font-size:12px;color:#405969}
+.ticket-v3 .v3-topics{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.ticket-v3 .v3-topics button{background:white;border-color:var(--v3-line);color:#405969}
+.ticket-v3 .v3-topics button[aria-pressed=true]{background:#36765F;color:white}
+.ticket-v3 .v3-list-heading{padding:4px 0}
+.ticket-v3 .v3-list-heading label{display:flex;align-items:center;gap:6px;font-size:12px}
+.ticket-v3 .ops-list{border:1px solid var(--v3-line);border-radius:10px;background:white;overflow:visible;max-height:none}
+.ticket-v3 .ops-item-content{min-width:0}
+.ticket-v3 .ops-item-content .v3-message-summary{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;white-space:normal;color:#536e7f;line-height:1.6}
+.ticket-v3 .v3-view{display:inline-flex;align-items:center;gap:3px;background:#EDF5FB;color:#286C86;border-radius:6px;padding:6px 8px;font-size:12px;flex-shrink:0}
+.ticket-v3 button:focus-visible,.ticket-v3 select:focus-visible{outline:2px solid #286C86;outline-offset:2px}
+@media(max-width:1150px){.ticket-v3 .v3-overview{grid-template-columns:1fr}.ticket-v3 .v3-calendar{max-width:none}}
+@media(max-width:850px){.ticket-v3 .v3-workdesk{grid-template-columns:minmax(0,1fr)}.ticket-v3 .v3-role-toggle{display:block;background:#F1F7F4;color:#36765F;border:1px solid #cfe3d9;border-radius:7px;padding:8px;width:100%}.ticket-v3 .v3-role-sidebar:not(.expanded) .v3-role-options{display:none}.ticket-v3 .v3-role-options{margin-top:8px;grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:480px){.ticket-v3 .ticket-dashboard-cards{grid-template-columns:repeat(2,minmax(0,1fr))}.ticket-v3 .v3-role-options{grid-template-columns:1fr}.ticket-v3 .v3-workdesk{gap:8px}}
