@@ -52,7 +52,7 @@ export default function OperationsIntakeForm({form,setForm,user,allowed,eligible
    <label>نام تماس‌گیرنده / مشتری<input required maxLength={160} value={form.clientName} onChange={e=>change({clientName:e.target.value})}/></label>
    <label>شماره تماس<input type="tel" dir="ltr" maxLength={80} value={form.phone} onChange={e=>change({phone:e.target.value})}/></label>
    <label>ایمیل تماس<input type="email" dir="ltr" maxLength={200} value={form.email} onChange={e=>change({email:e.target.value})}/></label>
-   <label>شماره فاکتور / سفارش<input maxLength={160} value={form.reference} onChange={e=>change({reference:e.target.value})}/></label>
+   <label className="ops-intake-reference">شماره فاکتور / سفارش<input maxLength={160} value={form.reference} onChange={e=>change({reference:e.target.value})}/></label>
    <label className="ops-transcript">شرح تماس / درخواست مشتری <span className="required">*</span><textarea required rows={3} maxLength={7000} value={form.customerRequest||''} onChange={e=>change({customerRequest:e.target.value})} placeholder="صحبت‌ها و درخواست مطرح‌شده توسط مخاطب را ثبت کنید…"/></label>
    <label className="ops-transcript">پاسخ پشتیبان / اقدام یا قول داده‌شده <span className="required">*</span><textarea required rows={3} maxLength={7000} value={form.staffResponse||''} onChange={e=>change({staffResponse:e.target.value})} placeholder="پاسخ، تعهد یا اقدام بعدی را دقیق ثبت کنید…"/></label>
    <details className="wide ops-intake-extra"><summary>اطلاعات تکمیلی و موعد پیگیری</summary><div className="form-grid">

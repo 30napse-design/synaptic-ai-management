@@ -147,23 +147,62 @@
  .ops-reception-calendar .v3-calendar-grid button{min-height:29px}
 }
 
-.ops-reception .ops-entry-backdrop{
+.ops-module :is(.ops-entry-backdrop,.ops-message-backdrop){
  padding:0;
  align-items:stretch;
  justify-content:stretch;
 }
-.ops-reception .ops-entry-backdrop .modal:has(.ops-intake-form){
+.ops-module :is(.ops-entry-backdrop,.ops-message-backdrop) .modal{
  width:100%;
  max-width:none;
  height:100dvh;
  max-height:none;
  margin:0;
- padding:clamp(14px,3vw,36px);
+ padding:clamp(12px,2vw,26px);
  border-radius:0;
  overflow:auto;
 }
-.ops-entry-backdrop :is(.modal-heading,.ops-intake-form){
+:is(.ops-entry-backdrop,.ops-message-backdrop) :is(.modal-heading,.ops-intake-form,.ops-conversation,.ops-message-actions){
  width:100%;
- max-width:1120px;
+ max-width:1480px;
  margin-inline:auto;
+}
+
+.ops-module .ops-entry-backdrop .ops-intake-form{gap:8px}
+.ops-module .ops-entry-backdrop .ops-intake-form > .form-grid{gap:8px 12px}
+.ops-module .ops-entry-backdrop .ops-intake-form > .form-grid > label{font-size:13px}
+.ops-module .ops-entry-backdrop .ops-intake-form select,
+.ops-module .ops-entry-backdrop .ops-intake-form input{font-size:13px;min-height:36px}
+.ops-module .ops-entry-backdrop .ops-intake-form .ops-transcript textarea{min-height:100px;font-size:14px}
+.ops-module .ops-entry-backdrop .ops-intake-form .ops-intake-reference{grid-column:1/-1;width:min(100%,340px)}
+.ops-module .ops-message-backdrop .modal{background:#f8fbfe}
+.ops-message-backdrop .modal-heading h2{overflow-wrap:anywhere;font-size:clamp(16px,2vw,22px)}
+.ops-conversation{display:grid;gap:10px}
+.ops-contact-bar,.ops-message-links,.ops-reply-actions{
+ display:flex;align-items:center;flex-wrap:wrap;gap:7px 16px;
+}
+.ops-contact-bar{padding:9px 12px;border:1px solid #d2e3ef;border-radius:8px;background:#eff7fc;color:#234159}
+.ops-contact-bar :is(a,bdi,span){overflow-wrap:anywhere;min-width:0}
+.ops-contact-bar a{display:inline-flex;align-items:center;gap:4px}
+.ops-conversation-role{margin-inline-start:auto;color:#256558;font-size:12px}
+.ops-thread{display:grid;gap:7px;max-height:46dvh;overflow:auto;scrollbar-gutter:stable}
+.ops-message{min-width:0;padding:9px 12px;border:1px solid #dce7ef;border-radius:8px;background:#fff}
+.ops-message[data-kind="draft"],.ops-message[data-kind="sent"],.ops-message[data-kind="outbound"]{background:#eef8ff;border-color:#cfe3f2}
+.ops-message[data-kind="internal"]{background:#f5f4f9}
+.ops-message header{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px 12px;color:#2b506a;font-size:12px}
+.ops-message header small{color:#526b7e}
+.ops-message p{margin:5px 0 0;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.7}
+.ops-message-files{margin:6px 0;font-size:12px}
+.ops-message-links{font-size:12px;padding:3px 2px}
+.ops-message-links a,.ops-reply-actions a{color:#196295}
+.ops-reply{display:grid;gap:6px}
+.ops-reply label{font-weight:600;color:#2b506a}
+.ops-reply textarea{width:100%;resize:vertical;min-height:64px;max-height:40dvh;padding:7px 9px;border:1px solid #c5d8e9;border-radius:8px;background:#fff}
+.ops-reply-actions{gap:6px;font-size:12px}
+.ops-message-actions{margin-top:10px;border-top:1px solid #dce7ef;padding-top:7px;color:#2b506a}
+.ops-message-actions summary{cursor:pointer;font-size:12px}
+.ops-message-actions .form-grid{margin-top:7px;grid-template-columns:repeat(auto-fit,minmax(min(100%,155px),1fr));align-items:end;gap:7px}
+.dispatch-engine .ops-dispatch-fullscreen{
+ position:fixed;inset:0;z-index:80;overflow:auto;margin:0;
+ padding:clamp(12px,2vw,26px);border-radius:0;background:#f8fbfe;
 }
