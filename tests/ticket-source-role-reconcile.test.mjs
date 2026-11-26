@@ -55,3 +55,14 @@ test('researcher preview and oversight cannot broaden existing scope',()=>{
  assert.match(data,/unifiedRole==='senior_research'/);
  assert.match(data,/seniorResearchMayReview\(c.id\)/);
 });
+
+test('signed form ingestion derives metadata from configured source, not arbitrary event payload',()=>{
+ const input=readFileSync('lib/input-sources.ts','utf8');
+ const dispatch=readFileSync('lib/dispatch-engine.ts','utf8');
+ const receive=readFileSync('app/api/integrations/receive/[id]/route.ts','utf8');
+ assert.match(receive,/signedSource\(req,id,raw\)/);
+ assert.match(input,/websiteForm:configuredWebsiteForm\(s\)/);
+ assert.match(dispatch,/trusted&&channel==='website'&&isWebsiteFormId\(b.websiteForm\)/);
+ assert.match(dispatch,/if\(!old&&\(unified\|\|websiteForm\)\)/);
+ assert.match(dispatch,/website_form:websiteForm/);
+});
