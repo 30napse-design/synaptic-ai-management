@@ -32,7 +32,7 @@ test('tickets and manually classified intake share original idempotent dispatch 
  assert.match(engine,/verifiedUnifiedClassification/);
  assert.match(engine,/source_labels=\?/);
  assert.match(engine,/INSERT OR IGNORE INTO staff_records/);
- assert.match(ops,/onSubmit=\{save\}/);
+ assert.match(ops,/<OperationsIntakeForm[^\n]+onSubmit=\{async payload=>\{const ok=await save\(payload\)/);
 });
 test('both views retain current source icons and use server-side filters',()=>{
  assert.match(ops,/communication-channels/);
