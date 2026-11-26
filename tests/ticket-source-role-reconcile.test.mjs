@@ -10,7 +10,7 @@ test('all, legacy, site and direct have distinct server source predicates',()=>{
  assert.deepEqual(ticketSourceOptions.map(x=>x.id),['','site','research_order','quick_request','collaboration','contact','direct','gmail']);
  assert.equal(ticketSourceOptions[0].label,'همه منابع');
  assert.match(app,/ticketSourceOptions\.map/);
- assert.match(app,/<option value="legacy">Gmail و پیام‌های قبلی<\/option>/);
+ assert.match(app,/v3-source-tabs/);
  assert.match(data,/source==='legacy'/);
  assert.match(data,/source_type='gmail'/);
  assert.match(data,/source==='site'\|\|source==='direct'/);

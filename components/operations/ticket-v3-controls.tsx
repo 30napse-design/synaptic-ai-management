@@ -28,7 +28,7 @@ export function RoleSidebar({selected,counts,onSelect}:{selected:string;counts:R
 export function ResponsibilityArea({role,category,topic,onTopic}:{role:string;category:string;topic:string;onTopic:(category:string,topic:string)=>void}){
  const [expanded,setExpanded]=useState(false);
  const label=intakeResponsibleRoles.find(r=>r.id===role)?.label;
- if(!label)return null;
+ if(!label)return <section className="v3-responsibility" dir="rtl"><h3>حوزه مسئولیت سازمانی</h3><p>برای دیدن موضوعات و پیام‌های هر واحد، مسئولیت آن را از فهرست انتخاب کنید.</p></section>;
  const oversight=role==='director'||role==='senior_research';
  const categories=unifiedIntakeCategories.filter(c=>role==='director'||role==='senior_research'&&seniorResearchMayReview(c.id)||c.topics.some(t=>t.role===role));
  const topics=categories.flatMap(c=>c.topics.filter(t=>oversight||t.role===role).map(t=>({category:c.id,title:t.title})));

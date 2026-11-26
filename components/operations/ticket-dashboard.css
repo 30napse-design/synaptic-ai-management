@@ -103,3 +103,63 @@
 @keyframes v3-pulse{to{opacity:.45}}
 @media(prefers-reduced-motion:reduce){.v3-skeleton i{animation:none}}
 @media(max-width:600px){.v3-preview-panel{padding:14px}.v3-preview-groups{grid-template-columns:1fr}.ticket-v3 .v3-header-controls label{width:100%;flex-wrap:wrap}.ticket-v3 .v3-header-controls select{flex:1;min-width:0}}
+
+.ticket-v3 .v3-ticket-sources{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;padding:8px 10px;background:#fff;border:1px solid var(--v3-line);border-radius:10px}
+.ticket-v3 .v3-ticket-sources strong{font-size:12px}
+.ticket-v3 .v3-source-tabs button:disabled{opacity:.52;cursor:default}
+.ticket-v3 .v3-workdesk{grid-template-columns:minmax(165px,20%) minmax(0,1fr);gap:12px;container-type:inline-size;align-items:stretch}
+.ticket-v3 .v3-role-sidebar{align-self:start}
+.ticket-v3 .v3-main{gap:9px;container-type:inline-size}
+.ticket-v3 .v3-overview{grid-template-columns:minmax(0,1fr) minmax(155px,27%);align-items:stretch}
+.ticket-v3 .ticket-dashboard{display:flex;flex-direction:column}
+.ticket-v3 .ticket-dashboard-cards{flex:1;align-content:stretch}
+.ticket-v3 .ticket-dashboard-card{min-height:68px;padding:7px 9px}
+.ticket-v3 .v3-calendar{padding:8px}
+.ticket-v3 .v3-calendar-grid{margin:4px 0;gap:1px}
+.ticket-v3 .v3-calendar-grid button{min-height:24px}
+.ticket-v3 .v3-calendar footer button,.ticket-v3 .v3-calendar header button{min-height:26px}
+.ticket-v3 .v3-responsibility{background:#e8f5ec;border-inline-start:3px solid #4f9b76}
+.ticket-v3 .v3-responsibility p{margin:5px 0 0}
+.ticket-v3 .v3-search-tools,.ticket-v3 .v3-date-tools{min-width:0}
+.ticket-v3 .v3-received{color:#3d5c71;white-space:nowrap;font-size:11px}
+.ticket-v3 .ops-item-content h3{display:inline;margin-inline-end:8px}
+.ticket-v3 .ops-item-content .v3-message-summary{-webkit-line-clamp:1}
+.ticket-v3 .ops-list .ops-item{min-height:0;padding-block:6px}
+.ticket-v3 .ops-item-row + .ops-item-row{border-top:1px solid var(--v3-line)}
+@container (max-width:510px){
+ .ticket-v3 .v3-overview{grid-template-columns:minmax(0,1fr)}
+}
+@media(max-width:850px){
+ .ticket-v3 .v3-workdesk{grid-template-columns:minmax(0,1fr)}
+}
+
+.ticket-v3 .v3-date-tools{display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap;padding:0 4px;font-size:12px}
+.ticket-v3 .v3-date-tools label{display:inline-flex;align-items:center;gap:6px}
+.ticket-v3 .v3-date-tools summary{cursor:pointer;padding:6px}
+.ticket-v3 .v3-date-range{display:flex;flex-wrap:wrap;gap:5px}
+.ticket-v3 .v3-search-tools .ops-staff-filters header small,.ticket-v3 .v3-search-tools .ops-staff-foot small{display:none}
+.ticket-v3 .v3-main>.hint{margin:1px 0}
+.ticket-v3 .ops-list{padding:0;min-height:0}
+.ticket-v3 .ops-item-row{padding:0 7px;min-height:0}
+.ticket-v3 .v3-ticket-item,.ticket-v3 .v3-ticket-table-head{display:grid;grid-template-columns:minmax(48px,.65fr) minmax(80px,.85fr) minmax(100px,2fr) minmax(64px,.85fr) minmax(80px,1fr) minmax(66px,.75fr) auto;gap:6px;align-items:center;text-align:right;font-size:12px}
+.ticket-v3 .v3-ticket-item{width:100%;align-self:stretch;flex:1;padding:7px 5px;background:transparent;border:0}
+.ticket-v3 .v3-ticket-table-head{background:#edf3f7;padding:8px 32px 8px 12px;border-radius:9px 9px 0 0;color:#314d5c}
+.ticket-v3 .v3-row-message,.ticket-v3 .v3-row-assignee{min-width:0;line-height:1.45}
+.ticket-v3 .v3-row-message small,.ticket-v3 .v3-row-assignee small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#496376}
+.ticket-v3 .v3-ticket-item .status-label{white-space:normal}
+.ticket-v3 .ops-item-call{font-size:11px}
+@container (max-width:675px){
+ .ticket-v3 .v3-ticket-table-head{display:none}
+ .ticket-v3 .v3-ticket-item{grid-template-columns:minmax(0,1fr) auto;column-gap:8px}
+ .ticket-v3 .v3-row-message{grid-row:1;grid-column:1/-1}
+ .ticket-v3 .v3-row-source,.ticket-v3 .v3-row-requester{overflow-wrap:anywhere}
+}
+.ticket-v3 .ops-item-row{display:grid;grid-template-columns:18px minmax(0,1fr) 52px;gap:4px}
+.ticket-v3 .ops-item-row>input{grid-column:1}
+.ticket-v3 .ops-item-row>.v3-ticket-item{grid-column:2}
+.ticket-v3 .ops-item-row>.ops-item-call{grid-column:3;padding:4px}
+.ticket-v3 .v3-ticket-table-head{padding-inline:33px 67px}
+@container (max-width:420px){
+ .ticket-v3 .ops-item-row{grid-template-columns:16px minmax(0,1fr)}
+ .ticket-v3 .ops-item-row>.ops-item-call{grid-column:2;justify-self:end}
+}

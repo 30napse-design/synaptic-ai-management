@@ -26,8 +26,9 @@ test('unapproved employee mappings never randomly fall back to owner',()=>{
  assert.ok(engine.includes('d.unifiedIntake&&rawP.missing'));
 });
 test('tickets and manually classified intake share original idempotent dispatch engine',()=>{
- assert.match(api,/dispatchCreate\(u,/);
- assert.match(api,/unifiedCategory:b\.category,unifiedTopic:b\.topic/);
+ assert.match(api,/submitSupportTicket\(u,b\)/);
+ assert.match(readFileSync('lib/ticket-support-submit.ts','utf8'),/dispatchCreate\(user,dispatchEntry/);
+ assert.match(readFileSync('lib/ticket-support-submit.ts','utf8'),/unifiedCategory:entry\.category,\s*unifiedTopic:entry\.topic/);
  assert.match(engine,/verifiedUnifiedClassification/);
  assert.match(engine,/source_labels=\?/);
  assert.match(engine,/INSERT OR IGNORE INTO staff_records/);

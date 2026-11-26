@@ -58,7 +58,7 @@ try{
   await page.locator('.v3-list-heading select').selectOption('10');
   await waitRequest(p=>p.get('pageSize')==='10');
   await page.getByRole('button',{name:'نمای پژوهشگر',exact:true}).click();
-  await page.getByRole('heading',{name:'چطور می‌توانیم کمکتان کنیم؟'}).waitFor();
+  await page.getByRole('heading',{name:'مرکز پشتیبانی پژوهشگر'}).waitFor();
   const previous=requests.length;
   await page.waitForTimeout(400);
   assert.equal(requests.length,previous);
