@@ -1,0 +1,23 @@
+name: Verify TKT-03 support wizard without deployment
+on:
+  pull_request:
+    branches: [hostinger-nextjs-fix, feature/tkt-02-v3-workdesk-2026-11-26]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --global pnpm@11.25.0
+      - run: pnpm install --frozen-lockfile
+      - run: node --test tests/support-wizard.test.mjs tests/ticket-v3-workdesk.test.mjs tests/unified-intake-routing.test.mjs tests/ticket-support-taxonomy.test.mjs
+      - run: pnpm exec tsc --noEmit
+      - run: pnpm build
