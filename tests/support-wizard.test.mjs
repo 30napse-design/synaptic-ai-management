@@ -30,14 +30,15 @@ test('local attachments enforce count size extension and MIME',()=>{
  assert.ok(validateFiles([{...pdf,type:'image/jpeg'}]));
  assert.ok(validateFiles(Array(6).fill(pdf)));
 });
-test('wizard does not transmit data or fabricate success and retains existing staff form',()=>{
+test('public wizard stays in preview while the authenticated staff entry shares the ticket API',()=>{
  const wizard=readFileSync('components/support/ResearcherSupportWizard.tsx','utf8');
  const app=readFileSync('app/operations/operations-app.tsx','utf8');
  const page=readFileSync('app/support/page.tsx','utf8');
- assert.doesNotMatch(wizard,/fetch\(|localStorage|sessionStorage|setTimeout\(/);
- assert.match(wizard,/className="sw-primary" disabled/);
+ assert.doesNotMatch(wizard,/localStorage|sessionStorage|setTimeout\(/);
+ assert.match(wizard,/if\(!live\|\|submitting.current\)return/);
+ assert.match(wizard,/typeof result.trackingCode!=='string'/);
  assert.match(wizard,/Math.max\(1,s-1\)/);
  assert.match(app,/<TicketSupportCreate/);
- assert.match(app,/<ResearcherSupportWizard isInternalStaff/);
+ assert.match(app,/<ResearcherSupportWizard isInternalStaff onSaved=/);
  assert.match(page,/<ResearcherSupportWizard\/>/);
 });

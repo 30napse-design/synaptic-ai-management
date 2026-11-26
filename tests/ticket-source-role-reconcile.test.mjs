@@ -63,6 +63,6 @@ test('signed form ingestion derives metadata from configured source, not arbitra
  assert.match(receive,/signedSource\(req,id,raw\)/);
  assert.match(input,/websiteForm:configuredWebsiteForm\(s\)/);
  assert.match(dispatch,/trusted&&channel==='website'&&isWebsiteFormId\(b.websiteForm\)/);
- assert.match(dispatch,/if\(!old&&\(unified\|\|websiteForm\)\)/);
+ assert.match(dispatch,/if\(!old&&\(unified\|\|websiteForm\|\|ticket\)\)/);
  assert.match(dispatch,/website_form:websiteForm/);
 });

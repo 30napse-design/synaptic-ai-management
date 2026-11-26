@@ -29,14 +29,19 @@ export async function POST(req:Request){
   const u=await identity();assert(u&&!u.laboratory,'دسترسی ندارید',403);
   const form=await req.formData(),id=String(form.get('ticket_id')||'');
   const ticket=await record(u,id);assert(ticket.created_by===u.email||u.manager,'فقط ثبت‌کننده یا مدیریت می‌تواند پیوست اضافه کند',403);
+  const uploadKey=String(form.get('upload_key')||'');
+  assert(!uploadKey||/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(uploadKey),'شناسه پیوست معتبر نیست');
   const file=form.get('file');assert(file instanceof File&&file.size>0&&file.size<=MAX_SIZE,'فایل غیرخالی تا ۸ مگابایت انتخاب کنید',413);
   const bytes=new Uint8Array(await file.arrayBuffer()),mime=mimeOf(file.name,bytes);
   assert(mime,'فقط PDF، DOCX، PNG و JPG معتبر پذیرفته می‌شود',415);
-  const old=JSON.parse(ticket.attachments||'[]');assert(Array.isArray(old)&&old.length<MAX_FILES,'حداکثر پنج پیوست مجاز است',400);
+  const old=JSON.parse(ticket.attachments||'[]');
+  const prior=Array.isArray(old)&&uploadKey&&old.find((a:any)=>a.upload_key===uploadKey&&a.created_by===u.email);
+  if(prior)return json({ok:true,id:prior.id,filename:prior.filename,review_status:prior.review_status});
+  assert(Array.isArray(old)&&old.length<MAX_FILES,'حداکثر پنج پیوست مجاز است',400);
   const fileId=crypto.randomUUID(),name=file.name.replace(/[\\/\r\n]/g,'_').slice(0,180);
   key='ticket-support/'+id+'/'+fileId;
   await privateTicketPut(key,bytes);
-  const meta={id:fileId,filename:name,mime,size:file.size,object_key:key,review_required:true,review_status:'pending',created_by:u.email};
+  const meta={id:fileId,filename:name,mime,size:file.size,object_key:key,review_required:true,review_status:'pending',created_by:u.email,...uploadKey?{upload_key:uploadKey}:{}};
   try{
    const result=await db().batch([
     db().prepare('UPDATE ops_items SET attachments=?,revision=revision+1,updated_at=? WHERE id=? AND revision=?').bind(JSON.stringify([...old,meta]),new Date().toISOString(),id,ticket.revision),
