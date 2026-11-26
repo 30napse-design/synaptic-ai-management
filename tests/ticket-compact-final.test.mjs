@@ -23,7 +23,9 @@ test('scoped counts and status filters never mutate original tickets',()=>{
 });
 test('staff desk omits noisy channel selector, retains categories, roles and history',()=>{
  assert.match(app,/!tickets&&source!=='incoming'/);
- assert.match(app,/ticket-source-select/);
+ // TKT five-filter desk: the ticket source selector now lives in ResponsibilityArea and is fed by the desk's own source state.
+ assert.match(app,/source=\{ticketSourceFilter\}/);
+ assert.match(readFileSync('components/operations/ticket-v3-controls.tsx','utf8'),/ticketSourceOptions\.map/);
  assert.match(app,/getTicketCategories/);
  assert.match(app,/setTicketTopicFilter\(''\)/);
  assert.match(app,/owner=\{unifiedRole\}/);
