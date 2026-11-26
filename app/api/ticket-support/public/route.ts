@@ -1,4 +1,3 @@
-import {isWebsiteFormId,researcherFormAllows} from '../../../../lib/ticket-sources-mapping';
 import {json} from '../../../../lib/staff-server';
 import {OWNER} from '../../../../lib/staff-policy';
 import {validTicketEntry} from '../../../../lib/ticket-support-policy';
@@ -26,12 +25,12 @@ export async function POST(req:Request){
    return json({error:'اطلاعات درخواست معتبر نیست.'},400);
   }
   const form=body.form;
-  if(form!==undefined&&(!isWebsiteFormId(form)||!researcherFormAllows(form,entry.category,entry.topic))){
-   return json({error:'موضوع انتخابی برای این فرم معتبر نیست.'},400);
+  if(form!==undefined){
+   return json({error:'این فرم فعلاً فعال نیست.'},400);
   }
   await verifyPublicSupport(body.turnstileToken);
   await publicSupportLimit('submit',normalizeIranPhone(entry.phone),8);
-  return Response.json(await submitSupportTicket({email:OWNER,manager:true,name:'مرکز پشتیبانی پژوهشگر'},entry,true,form),{headers:{'Cache-Control':'no-store'}});
+  return Response.json(await submitSupportTicket({email:OWNER,manager:true,name:'مرکز پشتیبانی پژوهشگر'},entry,true),{headers:{'Cache-Control':'no-store'}});
  }catch(error){
   const failure=error as {status?:number;message?:string};
   return json({error:failure.status?failure.message:'انجام درخواست ممکن نشد.'},failure.status||500);

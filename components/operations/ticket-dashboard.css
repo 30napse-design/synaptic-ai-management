@@ -233,3 +233,8 @@
 .ticket-v3 .v3-role-search input{border:0;background:transparent;min-width:0;width:100%;font:inherit}
 .ticket-v3 .v3-role-compact-description select{width:100%}
 @container (max-width:450px){.ticket-v3 .v3-role-fields select{flex:1 1 115px}}
+.ticket-v3 .v3-five-filters{display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}
+.ticket-v3 .v3-five-filters select{width:100%;text-overflow:ellipsis}
+.ticket-v3 .v3-role-utility .v3-role-search{flex:0 1 280px}
+.ticket-v3 .v3-date-tools{justify-content:center}
+@container(max-width:600px){.ticket-v3 .v3-five-filters{grid-template-columns:repeat(auto-fit,minmax(105px,1fr))}}
