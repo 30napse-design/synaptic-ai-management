@@ -34,12 +34,13 @@ const researchAreas=[
 ];
 
 type AreaProps={
- role:string;category:string;topic:string;group:string;query:string;source:string;
+ role:string;category:string;topic:string;group:string;query:string;source:string;status:string;sort:string;statuses:Record<string,string>;
  onCategory:(v:string)=>void;onTopic:(v:string)=>void;onQuery:(v:string)=>void;onSource:(v:string)=>void;
+ onStatus:(v:string)=>void;onSort:(v:string)=>void;
  onArea:(categories:string[],group:string)=>void;
 };
 
-export function ResponsibilityArea({role,category,topic,group,query,source,onCategory,onTopic,onQuery,onSource,onArea}:AreaProps){
+export function ResponsibilityArea({role,category,topic,group,query,source,status,sort,statuses,onStatus,onSort,onCategory,onTopic,onQuery,onSource,onArea}:AreaProps){
  const [expanded,setExpanded]=useState(false);
  const label=intakeResponsibleRoles.find(r=>r.id===role)?.label;
  const categories=responsibilityCategories(label?role:'director');
@@ -51,14 +52,16 @@ export function ResponsibilityArea({role,category,topic,group,query,source,onCat
    {label&&<button type="button" className="v3-role-description" aria-expanded={expanded} onClick={()=>setExpanded(v=>!v)}><Info size={14}/>{expanded?'بستن شرح مسئولیت‌ها':'مشاهده شرح کامل مسئولیت‌ها'}</button>}
   </header>
   {role==='senior_research'&&<div className="v3-topics">{researchAreas.map(({id,label,Icon,categories:ids})=><button key={id} type="button" aria-pressed={ids.length===1?category===ids[0]:group==='consultation'&&!category} onClick={()=>onArea(ids,ids.length>1?'consultation':'')}><Icon size={14}/>{label}</button>)}</div>}
-  <div className="v3-role-fields">
-   {label&&<small>{fa(count)} موضوع {role==='director'||role==='senior_research'?'تحت نظارت':'اجرایی'}</small>}
-   <select aria-label="دسته اصلی" value={category} onChange={e=>onCategory(e.target.value)}><option value="">همه دسته‌ها</option>{categories.map(c=><option key={c.id} value={c.id}>{c.title}</option>)}</select>
-   <select aria-label="موضوع مسئولیت" disabled={!selected} value={topic} onChange={e=>onTopic(e.target.value)}><option value="">همه موضوع‌ها</option>{topics.map(t=><option key={t.title} value={t.title}>{t.title}</option>)}</select>
-  </div>
-  <div className="v3-role-fields">
-   <label className="v3-role-search"><Search size={14}/><input aria-label="جستجوی تیکت‌ها" placeholder="نام محقق، فاکتور، سفارش، موبایل یا ایمیل" value={query} onChange={e=>onQuery(e.target.value)}/></label>
+  <div className="v3-role-fields v3-five-filters">
+   <select aria-label="دسته اصلی" value={category} onChange={e=>onCategory(e.target.value)}><option value="">دسته اصلی</option>{categories.map(c=><option key={c.id} value={c.id}>{c.title}</option>)}</select>
+   <select aria-label="موضوعات" disabled={!selected} value={topic} onChange={e=>onTopic(e.target.value)}><option value="">موضوعات</option>{topics.map(t=><option key={t.title} value={t.title}>{t.title}</option>)}</select>
+   <select aria-label="وضعیت" value={status} onChange={e=>onStatus(e.target.value)}><option value="">همه وضعیت‌ها</option>{Object.entries(statuses).map(([id,label])=><option key={id} value={id}>{label}</option>)}</select>
+   <select aria-label="ترتیب پیام‌ها" value={sort} onChange={e=>onSort(e.target.value)}><option value="desc">ترتیب: جدیدترین دریافت</option><option value="asc">ترتیب: قدیمی‌ترین دریافت</option></select>
    <select aria-label="منبع تیکت" value={source} onChange={e=>onSource(e.target.value)}>{ticketSourceOptions.map(o=><option key={o.id} value={o.id}>{o.label}</option>)}</select>
+  </div>
+  <div className="v3-role-fields v3-role-utility">
+   <label className="v3-role-search"><Search size={14}/><input aria-label="جستجوی تیکت‌ها" placeholder="نام، فاکتور، موبایل یا ایمیل" value={query} onChange={e=>onQuery(e.target.value)}/></label>
+   {label&&<small>{fa(count)} موضوع {role==='director'||role==='senior_research'?'تحت نظارت':'اجرایی'}</small>}
   </div>
   {expanded&&label&&<div className="v3-role-compact-description"><select aria-label="انتخاب موضوع از شرح کامل مسئولیت" value={selected&&topic?JSON.stringify([selected.id,topic]):''} onChange={e=>{
    if(!e.target.value){onCategory('');return;}

@@ -32,3 +32,9 @@
 .sw-next-steps ol{display:flex;flex-wrap:wrap;gap:2px 20px;line-height:1.5}
 .sw-next-steps li+li{margin-top:0}
 .sw-entry-links{gap:4px;margin-bottom:7px}.sw-entry-links a{padding:3px 6px;font-size:11px}
+.sw-entry-links button{display:inline-flex;gap:4px;align-items:center;padding:3px 6px;border:1px solid #dce6ec;border-radius:7px;background:#f3f7fa;color:#526575;font-size:11px;cursor:default}
+.sw-compose{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,3fr);gap:10px}
+.sw-compose aside{padding:8px;background:#e9f5f4;border:1px solid #cde4de;border-radius:8px;align-self:start}
+.sw-compose aside p{margin-bottom:0;font-size:11px}
+.sw-compose textarea{resize:vertical}
+@media(max-width:600px){.sw-compose{grid-template-columns:1fr}}

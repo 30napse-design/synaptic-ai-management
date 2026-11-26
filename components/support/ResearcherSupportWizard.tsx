@@ -158,7 +158,7 @@ export function ResearcherSupportWizard({isInternalStaff=false,onCancel,onSaved,
     <p role="status">{trackingStatus}</p>
    </form>:<>
    {!isInternalStaff&&<nav className="sw-entry-links" aria-label="فرم‌های پژوهشگر">
-    {[{id:'',Icon:ClipboardList},{id:'research_order',Icon:FlaskConical},{id:'quick_request',Icon:Zap},{id:'collaboration',Icon:Handshake},{id:'contact',Icon:Phone}].map(({id,Icon})=><a key={id} href={id?'/support?form='+id:'/support'} aria-current={id===(form||'')?'page':undefined}><Icon size={17}/>{id?ticketSourceOptions.find(x=>x.id===id)?.label:'تیکت پشتیبانی'}</a>)}
+    {[{id:'',Icon:ClipboardList},{id:'research_order',Icon:FlaskConical},{id:'collaboration',Icon:Handshake},{id:'quick_request',Icon:Zap},{id:'contact',Icon:Phone}].map(({id,Icon})=>id?<button key={id} type="button" disabled><Icon size={14}/>{ticketSourceOptions.find(x=>x.id===id)?.label}</button>:<a key={id} href="/support" aria-current="page"><Icon size={14}/>تیکت پشتیبانی</a>)}
    </nav>}
    {profile&&<p className="sw-unit">{profile.description}</p>}
    <WizardProgress currentStep={step}/>
@@ -171,7 +171,7 @@ export function ResearcherSupportWizard({isInternalStaff=false,onCancel,onSaved,
     </aside>
    </div>}
    {step===2&&<Step2Topic {...props}/>}
-   {step===3&&<fieldset disabled={locked} style={{border:0,padding:0,margin:0,minWidth:0}}><Step3Details {...props} live={live}/></fieldset>}
+   {step===3&&<fieldset disabled={locked} style={{border:0,padding:0,margin:0,minWidth:0}}><div className="sw-compose"><aside><h2>موضوع درخواست</h2><strong>{data.topicTitle}</strong>{classification&&<p>واحد پاسخگو: {classification.label}</p>}</aside><Step3Details {...props} live={live}/></div></fieldset>}
    {step===4&&(receipt?<section className="sw-notice">
     <h2>درخواست با موفقیت ثبت شد</h2>
     <p>واحد پاسخگو {classification?.label}</p>
