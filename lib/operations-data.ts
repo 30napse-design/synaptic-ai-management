@@ -30,6 +30,11 @@ export async function readOperationsData(u:any,p:URLSearchParams){
   const ticketTopic=(p.get('ticketTopic')||'').trim().slice(0,160);
   if(source==='legacy'){where+=" AND (source_type='gmail' OR channel IN ('gmail','whatsapp','telegram','bale','rubika','instagram','linkedin'))"}
   else if(source==='site'||source==='direct'){where+=" AND json_extract(source_labels,'$.ticket_source')=?";args.push(source)}
+  else if(source==='gmail'){where+=" AND (source_type='gmail' OR channel='gmail')"}
+  else if(['research_order','quick_request','collaboration','contact'].includes(source)){
+   // Explicit verified form metadata only; unknown historical forms stay in all sources.
+   where+=" AND channel='website' AND json_extract(source_labels,'$.website_form')=?";args.push(source)
+  }
   else if(source){where+=' AND 1=0'}
   if(ticketCategory){
    const cat=(source==='direct'?getTicketCategories('direct'):siteTicketCategories).find(c=>c.id===ticketCategory);
