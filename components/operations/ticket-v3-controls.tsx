@@ -2,7 +2,8 @@
 import {useState} from 'react';
 import {ChevronLeft,ChevronRight,ShieldCheck,CalendarDays,FlaskConical,Settings,ChartNoAxesColumn,MessageCircle,Layers,Info,Search} from 'lucide-react';
 import {intakeResponsibleRoles,responsibilityCategories,responsibilityTopics} from '../../lib/unified-intake-taxonomy';
-import {tehranDay} from '../../lib/operations-date-filter';
+import {incomingISO} from '../../lib/incoming-dates';
+import {tehranDay,validDay} from '../../lib/operations-date-filter';
 import './ticket-dashboard.css';
 import {ticketSourceOptions} from '../../lib/ticket-sources-mapping';
 const fa=(n:number)=>n.toLocaleString('fa-IR');
@@ -11,15 +12,22 @@ const pf=new Intl.DateTimeFormat('en-u-ca-persian',{timeZone:'Asia/Tehran',year:
 const parts=(s:string)=>Object.fromEntries(pf.formatToParts(new Date(s+'T12:00:00Z')).map(p=>[p.type,Number(p.value)]));
 const monthStart=(s:string)=>dayShift(s,1-parts(s).day);
 const monthTitle=new Intl.DateTimeFormat('fa-IR-u-ca-persian',{timeZone:'Asia/Tehran',year:'numeric',month:'long'});
-export function TicketCalendar({selected,onDay,onAll}:{selected:string;onDay:(v:string)=>void;onAll:()=>void}){
- const today=tehranDay(),[month,setMonth]=useState(()=>monthStart(selected||today));
+const persianMonths=['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
+export function TicketCalendar({selected,onDay,onAll,monthPicker=false}:{selected:string;onDay:(v:string)=>void;onAll:()=>void;monthPicker?:boolean}){
+ const today=tehranDay(),[month,setMonth]=useState(()=>monthStart(validDay(selected)?selected:today));
  const start=monthStart(month),p=parts(start),days:string[]=[];
  for(let i=0;i<32;i++){const d=dayShift(start,i),x=parts(d);if(x.month!==p.month||x.year!==p.year)break;days.push(d)}
+ const chosenDate=(year:number,month:number)=>setMonth(incomingISO(year+'/'+month+'/1'));
+ const currentYear=parts(today).year;
+ const years=[...new Set([...Array.from({length:21},(_,i)=>currentYear-15+i),p.year])].sort((a,b)=>a-b);
  const blanks=(new Date(start+'T12:00:00Z').getUTCDay()+1)%7;
  return <section className="v3-calendar" dir="rtl" aria-label="تقویم شمسی تاریخ دریافت">
- <header><button type="button" aria-label="ماه قبل" onClick={()=>setMonth(monthStart(dayShift(start,-1)))}><ChevronRight size={16}/></button><b><CalendarDays size={15}/>{monthTitle.format(new Date(start+'T12:00:00Z'))}</b><button type="button" aria-label="ماه بعد" onClick={()=>setMonth(monthStart(dayShift(start,days.length)))}><ChevronLeft size={16}/></button></header>
+ <header><button type="button" aria-label="ماه قبل" onClick={()=>setMonth(monthStart(dayShift(start,-1)))}><ChevronRight size={16}/></button>{monthPicker?<div className="ops-calendar-month">
+  <select aria-label="ماه تقویم" value={p.month} onChange={e=>chosenDate(p.year,Number(e.target.value))}>{persianMonths.map((label,i)=><option key={label} value={i+1}>{label}</option>)}</select>
+  <select aria-label="سال تقویم" value={p.year} onChange={e=>chosenDate(Number(e.target.value),p.month)}>{years.map(year=><option key={year} value={year}>{fa(year)}</option>)}</select>
+ </div>:<b><CalendarDays size={15}/>{monthTitle.format(new Date(start+'T12:00:00Z'))}</b>}<button type="button" aria-label="ماه بعد" onClick={()=>setMonth(monthStart(dayShift(start,days.length)))}><ChevronLeft size={16}/></button></header>
  <div className="v3-calendar-grid">{['ش','ی','د','س','چ','پ','ج'].map(d=><small key={d}>{d}</small>)}{Array.from({length:blanks},(_,i)=><span key={'blank'+i}/>)}{days.map(d=><button type="button" key={d} aria-pressed={selected===d} aria-current={d===today?'date':undefined} aria-label={new Intl.DateTimeFormat('fa-IR',{dateStyle:'full',timeZone:'Asia/Tehran'}).format(new Date(d+'T12:00:00Z'))} onClick={()=>onDay(d)}>{fa(parts(d).day)}</button>)}</div>
- <footer><button type="button" onClick={()=>{setMonth(monthStart(today));onDay(today)}}>امروز</button><button type="button" onClick={onAll}>همه تاریخ‌ها</button></footer>
+ <footer>{!monthPicker&&<button type="button" onClick={()=>{setMonth(monthStart(today));onDay(today)}}>امروز</button>}<button type="button" onClick={onAll}>همه تاریخ‌ها</button></footer>
  </section>
 }
 export function RoleSidebar({selected,counts,onSelect}:{selected:string;counts:Record<string,number>|null;onSelect:(v:string)=>void}){

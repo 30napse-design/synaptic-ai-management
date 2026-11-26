@@ -61,3 +61,109 @@
 
 /* Compact ticket desk, same visual hierarchy as reception. */
 .ops-module .ticket-inline-compact{scroll-margin-top:90px;padding:12px 15px}.ops-module .ticket-inline-compact form{display:grid;gap:8px}.ops-module .ticket-inline-compact form label{font-size:12px;gap:4px;color:#264564}.ops-module .ticket-inline-compact form :is(input,select,textarea){font-size:12px;min-height:34px;padding:6px 9px;border-radius:8px;border:1px solid #cdddec;background:white;color:#213c5b}.ops-module .ticket-inline-compact form textarea{min-height:62px;resize:vertical}.ops-module .ticket-inline-compact form button{min-height:34px;font-size:12px}.ops-module .ticket-inline-compact form .hint{margin:0;padding:4px 0;font-size:11px}.ops-module .ticket-inline-compact form>div{gap:8px}.ops-module .ticket-inline-compact form>div:has(>label){grid-template-columns:repeat(3,minmax(0,1fr))}.ops-module .ticket-inline-compact form>div:has(>label)>label{min-width:0}.ops-module .ticket-staff-panel{padding:7px 12px;margin:6px 0;border-radius:10px}.ops-module .ticket-source-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.ops-module .ticket-source-row h3{font-size:12px;margin:0}.ops-module .ticket-source-row select{min-height:32px;font-size:12px}.ops-module details.ticket-bulk-panel{margin-top:10px;padding:9px 12px;border:1px solid #dce5ef;border-radius:10px;background:#f8faff}.ops-module details.ticket-bulk-panel>summary{font-size:12px;cursor:pointer;color:#315477}.ops-module .ticket-inline-compact input[type=file]{min-width:0;max-width:100%}@media(max-width:850px){.ops-module .ticket-inline-compact form>div:has(>label){grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:520px){.ops-module .ticket-inline-compact form>div:has(>label){grid-template-columns:1fr}}
+
+.ops-reception > main .heading-buttons:has(.ops-call-state){
+ display:grid;
+ grid-template-columns:repeat(2,minmax(0,1fr));
+ align-items:start;
+}
+.ops-reception > main .heading-buttons :is(.ops-reception-create,.ops-call-action){
+ display:flex;
+ justify-content:center;
+ width:100%;
+ height:44px;
+ min-height:44px;
+ padding:4px 8px;
+ font-size:12px;
+ line-height:1.35;
+}
+.ops-reception > main .page-heading{margin-bottom:7px}
+.ops-reception .communication-channels{margin:5px 0;gap:5px}
+.ops-reception .communication-channels button{min-height:55px;padding:4px;gap:3px}
+.ops-reception .communication-channels button svg{width:15px;height:15px}
+.ops-reception-controls{
+ display:grid;
+ grid-template-columns:minmax(0,1fr) minmax(190px,24%);
+ gap:8px;
+ align-items:stretch;
+}
+.ops-reception-right{display:grid;gap:7px;min-width:0}
+.ops-reception .ops-reception-right .ops-staff-filters{
+ margin:0;
+ padding:7px 9px;
+ gap:5px;
+ background:linear-gradient(145deg,#f7fcf8,#edf7ef);
+ border-color:#cce4d3;
+}
+.ops-reception .ops-reception-right .ops-staff-fields{grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}
+.ops-reception .ops-reception-right .ops-staff-foot{align-items:flex-start;flex-direction:row}
+.ops-reception .ops-reception-right :is(.ops-staff-fields select,.ops-staff-search input){min-height:29px}
+.ops-reception .ops-reception-right .ops-staff-fields select{padding-inline:5px}
+.ops-reception .ops-reception-right .ops-staff-filters .hint{margin:0;font-size:10px}
+.ops-reception .ops-reception-right .ops-quick-taxonomy{
+ margin:0;
+ padding:6px 8px;
+ gap:4px;
+ border:1px solid #ebdfb7;
+ border-radius:10px;
+ background:#fffaf0;
+}
+.ops-reception .ops-quick-taxonomy h3{font-size:12px}
+.ops-reception .ops-quick-groups{grid-template-columns:3fr 2fr;gap:5px}
+.ops-reception .ops-quick-group{min-width:0;border-radius:9px;padding:4px}
+.ops-reception .ops-group-title{font-size:11px;padding:1px 3px 4px}
+.ops-reception .ops-quick-cards{gap:4px}
+.ops-reception .ops-quick-cards button{min-height:31px;border-radius:7px;padding:3px;font-size:10px;line-height:1.4}
+.ops-reception .ops-quick-cards button small{display:inline-block;margin:0 3px 0 0;padding:0 4px}
+.ops-reception-calendar{--v3-line:#d8e5ef;min-width:0}
+.ops-reception-calendar .v3-calendar{padding:7px}
+.ops-reception-calendar .v3-calendar header{gap:3px;flex-wrap:nowrap}
+.ops-reception-calendar .v3-calendar-grid{margin:4px 0;gap:2px}
+.ops-reception-calendar .v3-calendar button{min-height:23px;padding-block:1px}
+.ops-reception-calendar .v3-calendar header button{display:grid;place-items:center;padding-inline:3px}
+.ops-calendar-month{display:flex;justify-content:center;gap:3px;min-width:0}
+.ops-calendar-month select{min-width:0;border:1px solid #cfdfeb;border-radius:6px;padding:3px;color:#24436c;background:white;font:inherit;font-size:11px}
+.ops-reception .desk-followups{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;margin:7px 0 3px}
+.ops-reception .desk-followups button{
+ border:1px solid #9dbce8;
+ border-radius:7px;
+ min-height:30px;
+ padding:3px 5px;
+ background:#f8fbff;
+ color:#264f88;
+ font-size:10px;
+ box-shadow:none;
+}
+.ops-reception .desk-followups button[aria-pressed=true]{background:#e2efff;border-color:#5787ca}
+.ops-reception .intake-active-filters:empty{display:none}
+.ops-reception .v3-passthrough > .hint{margin:4px 0;font-size:11px}
+@media(max-width:1050px){
+ .ops-reception .ops-reception-right .ops-staff-fields{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:640px){
+ .ops-reception-controls{grid-template-columns:minmax(0,1fr)}
+ .ops-reception .desk-followups{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .ops-reception .ops-quick-groups{grid-template-columns:minmax(0,1fr)}
+ .ops-reception-calendar .v3-calendar-grid button{min-height:29px}
+}
+
+.ops-reception .ops-entry-backdrop{
+ padding:0;
+ align-items:stretch;
+ justify-content:stretch;
+}
+.ops-reception .ops-entry-backdrop .modal:has(.ops-intake-form){
+ width:100%;
+ max-width:none;
+ height:100dvh;
+ max-height:none;
+ margin:0;
+ padding:clamp(14px,3vw,36px);
+ border-radius:0;
+ overflow:auto;
+}
+.ops-entry-backdrop :is(.modal-heading,.ops-intake-form){
+ width:100%;
+ max-width:1120px;
+ margin-inline:auto;
+}
