@@ -1,4 +1,4 @@
-import {receiptRange} from './operations-date-filter';
+import {receiptRange,callDayExpression,tehranDay} from './operations-date-filter';
 import {filterCategorySQL,filterGroupSQL,filterRoleSQL,filterTopicSQL} from './operations-filter-classification';
 import {canManualAssignOperations} from './operations-manual-assignment';
 import {ticketNoteVisible,redactRequest,mayReadRequestSource} from './dispatch-policy';
@@ -77,18 +77,22 @@ export async function readOperationsData(u:any,p:URLSearchParams){
  for(const [key,column] of [['category','category'],['subtype','subtype'],['status','status'],['source','source_type'],['requestType','request_type'],['assignee','assignee'],['intakeState',"COALESCE(NULLIF(intake_state,''),'unreviewed')"]]){const value=p.get(key);if(value&&!(view==='tickets'&&key==='status')){where+=key==='status'&&value==='awaiting_assignment'?" AND "+assignmentStateSQL:' AND '+column+'=?';if(!(key==='status'&&value==='awaiting_assignment'))args.push(value)}}
  const query=(p.get('q')||'').trim().slice(0,200);if(query){where+=" AND (title LIKE ? ESCAPE '\\' OR client_name LIKE ? ESCAPE '\\' OR phone LIKE ? ESCAPE '\\' OR email LIKE ? ESCAPE '\\' OR reference LIKE ? ESCAPE '\\' OR organization LIKE ? ESCAPE '\\' OR representative LIKE ? ESCAPE '\\' OR source_body LIKE ? ESCAPE '\\')";const escaped='%'+query.replace(/[\\%_]/g,'\\$&')+'%';args.push(...Array(8).fill(escaped))}
  // A date-only telephone record uses its original local call day, not import time.
- const callDaySQL="((source_type='incoming' OR channel='phone') AND length(COALESCE(call_date,''))=10 AND substr(call_date,5,1)='-' AND substr(call_date,8,1)='-')";
+ const phoneSQL="(source_type='incoming' OR channel='phone')";
+ const dates=(await db().prepare("SELECT DISTINCT call_date FROM ops_items WHERE ("+permitted+") AND "+phoneSQL+" AND COALESCE(call_date,'')<>''").bind(...scopeArgs).all()).results as any[];
+ const originalDay=callDayExpression(dates.map(r=>r.call_date));
+ const originalStamp=callDayExpression(dates.map(r=>r.call_date),true);
+ const callDaySQL="("+phoneSQL+" AND "+originalDay+" IS NOT NULL)";
  const receivedSQL="COALESCE(NULLIF(source_at,''),created_at)";
  const range=receiptRange(p);let dateWhere='';const dateArgs:any[]=[];
  if(range?.invalid)dateWhere=' AND 1=0';
- else if(range){dateWhere=" AND (("+callDaySQL+" AND call_date>=? AND call_date<=?) OR (NOT "+callDaySQL+" AND ((length("+receivedSQL+")=10 AND "+receivedSQL+">=? AND "+receivedSQL+"<=?) OR (length("+receivedSQL+")>10 AND "+receivedSQL+">=? AND "+receivedSQL+"<?))))";dateArgs.push(range.from,range.to,range.from,range.to,range.start,range.end)}
+ else if(range){dateWhere=" AND (("+callDaySQL+" AND "+originalDay+">=? AND "+originalDay+"<=?) OR (NOT "+callDaySQL+" AND ((length("+receivedSQL+")=10 AND "+receivedSQL+">=? AND "+receivedSQL+"<=?) OR (length("+receivedSQL+")>10 AND "+receivedSQL+">=? AND "+receivedSQL+"<?))))";dateArgs.push(range.from,range.to,range.from,range.to,range.start,range.end)}
  where+=dateWhere;args.push(...dateArgs);
- const orderSQL="CASE WHEN "+callDaySQL+" THEN call_date||'T12:00:00Z' ELSE "+receivedSQL+" END";
+ const orderSQL="CASE WHEN "+callDaySQL+" THEN "+originalStamp+" ELSE "+receivedSQL+" END";
  const orderDirection=p.get('sortOrder')==='asc'?' ASC':' DESC';
  const ticketBaseWhere=where,ticketBaseArgs=[...args];
  if(view==='tickets'&&p.get('status')){if(p.get('status')==='awaiting_assignment')where+=" AND "+assignmentStateSQL;else{where+=' AND status=?';args.push(p.get('status'))}}
  const baseWhere=where,baseArgs=[...args];
- const today=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Dubai',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+ const today=tehranDay();
  const followup=p.get('followup');if(followup==='today'){where+=" AND status!='closed' AND due=?";args.push(today)}else if(followup==='overdue'){where+=" AND status!='closed' AND due!='' AND due<?";args.push(today)}else if(followup==='unassigned'){where+=" AND status!='closed' AND "+unassignedSQL}else if(followup==='unanswered'){where+=" AND status!='closed' AND trim(resolution)=''"}else if(followup==='calls_pending'){where+=" AND status!='closed' AND "+channelSQL+"='phone' AND trim(resolution)=''"}
  // Category facets share the exact authorized result predicate, excluding only their own selection.
  const facetWhere=where,facetArgs=[...args];
@@ -121,6 +125,6 @@ export async function readOperationsData(u:any,p:URLSearchParams){
   roleCounts=Object.fromEntries(intakeResponsibleRoles.map(r=>[r.id,Number(rows.find(x=>x.id===r.id)?.n||0)]));
   roleCounts.all=rows.reduce((n,x)=>n+Number(x.n||0),0);
  }catch(e:any){console.error('operations role summary unavailable',e?.code||'unknown')}}
- let coverage:any=null;try{coverage=await db().prepare("SELECT MAX(call_date) AS lastCallDate,MAX(source_at) AS lastSourceAt,COUNT(*) AS count FROM ops_items WHERE "+permitted+" AND source_type='incoming' AND source_key LIKE 'calls:incoming:%'").bind(...scopeArgs).first()}catch(e:any){console.error('operations coverage unavailable',e?.code||e?.message||'unknown')}
+ let coverage:any=null;try{coverage=await db().prepare("SELECT MAX("+originalDay+") AS lastCallDate,MAX(source_at) AS lastSourceAt,COUNT(*) AS count FROM ops_items WHERE "+permitted+" AND source_type='incoming' AND source_key LIKE 'calls:incoming:%'").bind(...scopeArgs).first()}catch(e:any){console.error('operations coverage unavailable',e?.code||e?.message||'unknown')}
  return {coverage,roleCounts,unifiedCounts,financialDataUnavailable,manualAssignment:canManualAssignOperations(u),user:u,items:rr[0].results.filter((r:any)=>canSeeOps(u,r)).map(map),total,offset,nextOffset:offset+initialPageSize<total?offset+initialPageSize:null,counts,followups:rr[3]?.results?.[0]||{},ticketSummary:view==='tickets'?{all:Number((rr[5]?.results?.[0] as any)?.all_count||0),today:Number((rr[5]?.results?.[0] as any)?.today_count||0),new:Number((rr[5]?.results?.[0] as any)?.new_count||0),waiting:Number((rr[5]?.results?.[0] as any)?.waiting_count||0),overdue:Number((rr[5]?.results?.[0] as any)?.overdue_count||0),unassigned:Number((rr[5]?.results?.[0] as any)?.unassigned_count||0)}:null,categories:operationCategories.map(c=>({...c,allowed:u.manager||c.items.some(subtype=>canUseOpsCategory(u,{category:c.id,subtype,access_scope:requestedAccessScope(u,{category:c.id,subtype},'')})),items:c.items.filter(subtype=>u.manager||canUseOpsCategory(u,{category:c.id,subtype,access_scope:requestedAccessScope(u,{category:c.id,subtype},'')}))})),selected:allowedItem?map(allowedItem):null,events:allowedItem&&!mayReadRequestSource(u,allowedItem)?events.map((e:any)=>({...e,body:'{}'})):events,members:await intakeMembers(),sync:u.manager?rr[4]?.results||[]:[]};
 }
