@@ -219,3 +219,17 @@
  .ticket-v3 .v3-topics button{min-width:0}
 }
 .ticket-v3 .v3-main>.ops-pagination{flex-wrap:wrap;gap:6px}
+
+.ticket-v3 .v3-responsibility{padding:7px 9px;display:grid;gap:5px}
+.ticket-v3 .v3-responsibility h3{font-size:13px}
+.ticket-v3 .v3-responsibility .v3-role-description{min-height:24px;padding:1px 3px;font-size:11px}
+.ticket-v3 .v3-topics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;margin:0}
+.ticket-v3 .v3-topics button{min-width:0;min-height:26px;padding:2px 3px;font-size:11px;line-height:1.35}
+.ticket-v3 .v3-role-fields{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.ticket-v3 .v3-role-fields small{font-size:11px;color:#355747}
+.ticket-v3 .v3-role-fields select,.ticket-v3 .v3-role-compact-description select,.ticket-v3 .v3-role-search{border:1px solid #bdd9c9;border-radius:6px;background:#f9fefa;color:#173e2b;font:inherit;font-size:11px;min-width:0;min-height:28px;padding:3px 6px}
+.ticket-v3 .v3-role-fields select{flex:0 1 160px;max-width:100%}
+.ticket-v3 .v3-role-search{display:flex;align-items:center;flex:1 1 180px;gap:5px}
+.ticket-v3 .v3-role-search input{border:0;background:transparent;min-width:0;width:100%;font:inherit}
+.ticket-v3 .v3-role-compact-description select{width:100%}
+@container (max-width:450px){.ticket-v3 .v3-role-fields select{flex:1 1 115px}}
