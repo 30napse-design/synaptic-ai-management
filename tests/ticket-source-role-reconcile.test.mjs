@@ -1,12 +1,15 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
+import {ticketSourceOptions,configuredWebsiteForm,ticketSourceLabel} from '../lib/ticket-sources-mapping.ts';
 const app=readFileSync('app/operations/operations-app.tsx','utf8');
 const data=readFileSync('lib/operations-data.ts','utf8');
 const link=readFileSync('lib/operation-work-link.ts','utf8');
 const manual=readFileSync('lib/operations-manual-assignment.ts','utf8');
 test('all, legacy, site and direct have distinct server source predicates',()=>{
- assert.match(app,/<option value="">همه منابع<\/option>/);
+ assert.deepEqual(ticketSourceOptions.map(x=>x.id),['','site','research_order','quick_request','collaboration','contact','direct','gmail']);
+ assert.equal(ticketSourceOptions[0].label,'همه منابع');
+ assert.match(app,/ticketSourceOptions\.map/);
  assert.match(app,/<option value="legacy">Gmail و پیام‌های قبلی<\/option>/);
  assert.match(data,/source==='legacy'/);
  assert.match(data,/source_type='gmail'/);
@@ -33,4 +36,22 @@ test('task linking is idempotent with source, alert and permission preserved in 
  assert.match(link,/staff_work_notifications/);
  assert.match(manual,/validateManualAssignee/);
  assert.match(manual,/mayAssignWork/);
+});
+
+test('verified website forms are distinct; arbitrary titles and unconfigured IDs are not classified',()=>{
+ for(const id of ['research_order','quick_request','collaboration','contact']){
+  assert.equal(configuredWebsiteForm({id:'website-'+id.replaceAll('_','-'),channel:'website'}),id);
+  assert.equal(configuredWebsiteForm({id:'website-'+id.replaceAll('_','-'),channel:'gmail'}),undefined);
+ }
+ assert.equal(configuredWebsiteForm({id:'unknown',channel:'website'}),undefined);
+ assert.equal(ticketSourceLabel({channel:'website',sourceLabels:{website_form:'invalid'}}),undefined);
+ assert.equal(ticketSourceLabel({channel:'website',sourceLabels:{website_form:'research_order'}}),'سفارش خدمات پژوهشی');
+ assert.match(data,/json_extract\(source_labels,'\$\.website_form'\)=\?/);
+});
+test('researcher preview and oversight cannot broaden existing scope',()=>{
+ assert.match(app,/if\(tickets&&researcher\)return <ResearcherPreview/);
+ assert.match(app,/if\(view==='dispatch'\|\|tickets&&researcher\)return/);
+ assert.match(data,/operationsScope\(u,routingReady\)/);
+ assert.match(data,/unifiedRole==='senior_research'/);
+ assert.match(data,/seniorResearchMayReview\(c.id\)/);
 });
