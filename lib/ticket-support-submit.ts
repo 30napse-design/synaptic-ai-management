@@ -1,12 +1,13 @@
+import {type WebsiteFormId} from './ticket-sources-mapping';
 import {dispatchCreate} from './dispatch-engine';
 import {digest} from './staff-auth';
 import {type TicketEntry,ticketMetadata} from './ticket-support-policy';
 import {normalizeIranPhone} from './unified-intake-routing';
 
-export async function submitSupportTicket(user:{email:string;manager?:boolean;name?:string},entry:TicketEntry,fromPublic=false){
+export async function submitSupportTicket(user:{email:string;manager?:boolean;name?:string},entry:TicketEntry,fromPublic=false,form?:WebsiteFormId){
  const labels={...ticketMetadata(entry),...(fromPublic?{ticket_public:1}:{})};
  const dispatchEntry={
-  sourceKey:(fromPublic?'public-support:':'ticket:')+entry.requestKey.toLowerCase(),
+  websiteForm:form,sourceKey:(fromPublic?'public-support:':'ticket:')+entry.requestKey.toLowerCase(),
   noContentMatch:true,partyKind:'customer',direction:'inbound',
   channel:entry.source==='site'?'website':'manual',isTicket:true,ticketKind:'support',
   title:(entry.source==='direct'?entry.title.trim():entry.topic).slice(0,240),

@@ -56,3 +56,11 @@ export function seniorResearchMayReview(categoryId:string){
  return ['service_orders','service_projects','service_results','consult_before','consult_change','consult_execution','consult_results'].includes(categoryId);
 }
 export function intakeGroupLabel(id:IntakeGroupId){return id==='services'?'خدمات و پیگیری':'مشاوره تخصصی';}
+
+export function responsibilityCategories(role:string){
+ return unifiedIntakeCategories.filter(c=>role==='director'||(role==='senior_research'?seniorResearchMayReview(c.id):c.topics.some(t=>t.role===role)));
+}
+
+export function responsibilityTopics(role:string, category:UnifiedIntakeCategory){
+ return category.topics.filter(t=>role==='director'||role==='senior_research'||t.role===role);
+}

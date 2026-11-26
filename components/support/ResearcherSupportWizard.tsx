@@ -8,16 +8,22 @@ import {WizardProgress} from './WizardProgress';
 import {Step1Category} from './Step1Category';
 import {Step2Topic} from './Step2Topic';
 import {Step3Details} from './Step3Details';
+import {ClipboardList,FlaskConical,Handshake,Phone,Zap} from 'lucide-react';
+import {researcherForms,ticketSourceOptions,type WebsiteFormId} from '../../lib/ticket-sources-mapping';
 import {SupportChallenge} from './SupportChallenge';
 import './support-wizard.css';
 
-type Props={isInternalStaff?:boolean;onCancel?:()=>void;onSaved?:()=>void;publicSiteKey?:string};
+type Props={isInternalStaff?:boolean;onCancel?:()=>void;onSaved?:()=>void;publicSiteKey?:string;form?:WebsiteFormId};
 type Receipt={id:string;trackingCode:string};
 type Upload={file:File;key:string};
 type SubmissionResponse={ok?:unknown;id?:unknown;trackingCode?:unknown;error?:unknown};
 type Attempt={key:string;data:SupportWizardData;group:string};
 
-export function ResearcherSupportWizard({isInternalStaff=false,onCancel,onSaved,publicSiteKey}:Props){
+export function ResearcherSupportWizard({isInternalStaff=false,onCancel,onSaved,publicSiteKey,form}:Props){
+ const profile=form?researcherForms[form]:undefined;
+ const topic=profile&&'topic' in profile?profile.topic:'';
+ const firstStep=topic?3:profile?.category?2:1;
+ const draft=()=>({...initialSupportData(),categoryId:profile?.category||'',topicTitle:topic});
  const publicLive=!!publicSiteKey&&!isInternalStaff;
  const live=isInternalStaff&&!!onSaved||publicLive;
  const [turnstileToken,setTurnstileToken]=useState('');
@@ -25,8 +31,8 @@ export function ResearcherSupportWizard({isInternalStaff=false,onCancel,onSaved,
  const [trackingCode,setTrackingCode]=useState('');
  const [trackingStatus,setTrackingStatus]=useState('');
  const [trackingOpen,setTrackingOpen]=useState(false);
- const [step,setStep]=useState(1);
- const [data,setData]=useState(initialSupportData);
+ const [step,setStep]=useState(firstStep);
+ const [data,setData]=useState(draft);
  const [error,setError]=useState('');
  const [busy,setBusy]=useState(false);
  const [receipt,setReceipt]=useState<Receipt>();
@@ -73,7 +79,7 @@ export function ResearcherSupportWizard({isInternalStaff=false,onCancel,onSaved,
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify({
-     source:publicLive?'site':'direct',turnstileToken,group:attempt.group,category:d.categoryId,topic:d.topicTitle,title:d.topicTitle,
+     source:publicLive?'site':'direct',turnstileToken,form,group:attempt.group,category:d.categoryId,topic:d.topicTitle,title:d.topicTitle,
      description:d.description,clientName:d.name,phone:d.mobile,email:d.email,reference:d.orderNumber,
      organization:d.organization,due:d.followUpDate,requestKey:attempt.key
     })
@@ -130,12 +136,12 @@ export function ResearcherSupportWizard({isInternalStaff=false,onCancel,onSaved,
  }
 
  function reset(){
-  setData(initialSupportData());
+  setData(draft());
   setReceipt(undefined);
   setPendingFiles([]);
   setCopied(false);
   setError('');
-  setStep(1);
+  setStep(firstStep);
  }
 
  return <section className="sw-root" dir="rtl" aria-label="مرکز پشتیبانی پژوهشگر">
@@ -151,6 +157,10 @@ export function ResearcherSupportWizard({isInternalStaff=false,onCancel,onSaved,
     <button type="submit" className="sw-primary">مشاهده وضعیت</button>
     <p role="status">{trackingStatus}</p>
    </form>:<>
+   {!isInternalStaff&&<nav className="sw-entry-links" aria-label="فرم‌های پژوهشگر">
+    {[{id:'',Icon:ClipboardList},{id:'research_order',Icon:FlaskConical},{id:'quick_request',Icon:Zap},{id:'collaboration',Icon:Handshake},{id:'contact',Icon:Phone}].map(({id,Icon})=><a key={id} href={id?'/support?form='+id:'/support'} aria-current={id===(form||'')?'page':undefined}><Icon size={17}/>{id?ticketSourceOptions.find(x=>x.id===id)?.label:'تیکت پشتیبانی'}</a>)}
+   </nav>}
+   {profile&&<p className="sw-unit">{profile.description}</p>}
    <WizardProgress currentStep={step}/>
    {error&&<p className="sw-error" role="alert">{error}</p>}
    {step===1&&<div className="sw-start">
@@ -177,7 +187,7 @@ export function ResearcherSupportWizard({isInternalStaff=false,onCancel,onSaved,
    </section>)}
    {publicLive&&step===3&&<SupportChallenge key={challengeVersion} siteKey={publicSiteKey} onToken={setTurnstileToken}/>}
    <nav className="sw-nav" aria-label="حرکت بین مراحل">
-    {!receipt&&<button type="button" disabled={step===1||locked} onClick={()=>{setError('');setStep(s=>Math.max(1,s-1));}}><ChevronRight size={16}/> مرحله قبل</button>}
+    {!receipt&&<button type="button" disabled={step===firstStep||locked} onClick={()=>{setError('');setStep(s=>Math.max(firstStep,s-1));}}><ChevronRight size={16}/> مرحله قبل</button>}
     {onCancel&&<button type="button" disabled={busy} onClick={onCancel}>بازگشت</button>}
     {step<4&&<button type="button" className="sw-primary" disabled={busy} onClick={next}>
      {busy?'در حال ثبت…':['ادامه و انتخاب موضوع','ادامه و تکمیل اطلاعات درخواست',live?'ثبت درخواست و دریافت کد پیگیری':'مشاهده مرحله دریافت کد پیگیری'][step-1]}<ChevronLeft size={16}/>

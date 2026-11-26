@@ -63,3 +63,12 @@ test('legacy tickets remain recognized; no existing database migration or destru
  assert.match(db,/getTicketCategories/);
  assert.doesNotMatch(engine,/DROP TABLE|DELETE FROM ops_items/);
 });
+
+test('responsibility views match the approved nine-role allocation',async()=>{
+ const {intakeResponsibleRoles,responsibilityCategories,responsibilityTopics}=await import('../lib/unified-intake-taxonomy.ts');
+ const counts=Object.fromEntries(intakeResponsibleRoles.map(({id})=>[id,
+  responsibilityCategories(id).reduce((n,category)=>n+responsibilityTopics(id,category).length,0)
+ ]));
+ assert.deepEqual(counts,{director:63,senior_research:44,technical_project:20,scientific_project:13,
+  scientific_reception:11,finance_manager:3,accountant:4,administrative:9,it_specialist:3});
+});

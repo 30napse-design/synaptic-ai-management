@@ -15,3 +15,7 @@
 .sw-next-steps ol{padding-inline-start:18px;margin:0;line-height:1.9}
 .sw-next-steps li+li{margin-top:6px}
 @media(max-width:780px){.sw-start{grid-template-columns:minmax(0,1fr)}}
+
+.sw-entry-links{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 14px}
+.sw-entry-links a{display:inline-flex;align-items:center;gap:5px;padding:7px 10px;border:1px solid #c9e0ea;border-radius:8px;background:#f0f8fc;color:#15465c;font-weight:650;text-decoration:none}
+.sw-entry-links a[aria-current=page]{background:#135d70;color:white;border-color:#135d70}

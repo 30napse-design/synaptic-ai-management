@@ -23,3 +23,15 @@ export function ticketSourceLabel(row:{sourceLabels?:any;channel?:string;sourceT
  const key=row.channel==='website'&&isWebsiteFormId(form)?form:id==='site'||id==='direct'?id:row.channel==='gmail'||row.sourceType==='gmail'?'gmail':undefined;
  return ticketSourceOptions.find(x=>x.id===key)?.label;
 }
+
+export const researcherForms={
+ research_order:{category:'service_orders',description:'شرح خدمات یا آزمایش موردنیاز، نوع نمونه و تعداد تقریبی را وارد کنید.'},
+ quick_request:{category:'',description:'در چند جمله نیازتان را بنویسید تا واحد مرتبط پیگیری کند.'},
+ collaboration:{category:'service_admin',topic:'استخدام و همکاری',description:'زمینه تخصصی و نوع همکاری پیشنهادی را توضیح دهید.'},
+ contact:{category:'',description:'موضوع پیام و راه تماس را وارد کنید تا به واحد مربوط برسد.'},
+} as const;
+
+export function researcherFormAllows(form:WebsiteFormId,category:string,topic:string){
+ const profile=researcherForms[form];
+ return (!profile.category||category===profile.category)&&(!('topic' in profile)||topic===profile.topic);
+}

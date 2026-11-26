@@ -37,7 +37,7 @@ test('public wizard requires configuration while staff entry shares the ticket A
  assert.doesNotMatch(wizard,/localStorage|sessionStorage|setTimeout\(/);
  assert.match(wizard,/if\(!live\|\|submitting.current\)return/);
  assert.match(wizard,/typeof result.trackingCode!=='string'/);
- assert.match(wizard,/Math.max\(1,s-1\)/);
+ assert.match(wizard,/Math.max\(firstStep,s-1\)/);
  assert.match(app,/<TicketSupportCreate/);
  assert.match(app,/<ResearcherSupportWizard isInternalStaff onSaved=/);
  assert.match(page,/<ResearcherSupportWizard publicSiteKey=\{publicSupportSiteKey\(\)\}/);
