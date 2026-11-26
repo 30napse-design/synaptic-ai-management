@@ -161,7 +161,12 @@ export function ResearcherSupportWizard({isInternalStaff=false,onCancel,onSaved,
     {[{id:'',Icon:ClipboardList},{id:'research_order',Icon:FlaskConical},{id:'collaboration',Icon:Handshake},{id:'quick_request',Icon:Zap},{id:'contact',Icon:Phone}].map(({id,Icon})=>id?<button key={id} type="button" disabled><Icon size={14}/>{ticketSourceOptions.find(x=>x.id===id)?.label}</button>:<a key={id} href="/support" aria-current="page"><Icon size={14}/>تیکت پشتیبانی</a>)}
    </nav>}
    {profile&&<p className="sw-unit">{profile.description}</p>}
-   <WizardProgress currentStep={step} received={!!receipt}/>
+   <div className={step===1?'sw-progress-actions':undefined}>
+    <WizardProgress currentStep={step} received={!!receipt}/>
+    {step===1&&<button type="button" className="sw-primary sw-category-continue" disabled={!data.categoryId} onClick={next}>
+     ادامه و انتخاب موضوع<ChevronLeft size={16}/>
+    </button>}
+   </div>
    {error&&<p className="sw-error" role="alert">{error}</p>}
    <div className="sw-research-layout" data-stage={step}>
     {step===1&&<Step1Category {...props}/>}
@@ -197,15 +202,15 @@ export function ResearcherSupportWizard({isInternalStaff=false,onCancel,onSaved,
     </section>
    </div>
    {publicLive&&step===3&&<SupportChallenge key={challengeVersion} siteKey={publicSiteKey} onToken={setTurnstileToken}/>}
-   <nav className="sw-nav" aria-label="حرکت بین مراحل">
-    {!receipt&&<button type="button" disabled={step===firstStep||locked} onClick={()=>{setError('');setStep(s=>Math.max(firstStep,s-1));}}><ChevronRight size={16}/> مرحله قبل</button>}
+   {(step>1||onCancel)&&<nav className="sw-nav" aria-label="حرکت بین مراحل">
+    {!receipt&&step>1&&<button type="button" disabled={step===firstStep||locked} onClick={()=>{setError('');setStep(s=>Math.max(firstStep,s-1));}}><ChevronRight size={16}/> مرحله قبل</button>}
     {onCancel&&<button type="button" disabled={busy} onClick={onCancel}>بازگشت</button>}
-    {step<4&&<button type="button" className="sw-primary" disabled={busy} onClick={next}>
-     {busy?'در حال ثبت…':['ادامه و انتخاب موضوع','ادامه و تکمیل اطلاعات درخواست',live?'ثبت درخواست و دریافت کد پیگیری':'مشاهده مرحله دریافت کد پیگیری'][step-1]}<ChevronLeft size={16}/>
+    {step>1&&step<4&&<button type="button" className="sw-primary" disabled={busy} onClick={next}>
+     {busy?'در حال ثبت…':step===2?'ادامه و تکمیل اطلاعات درخواست':live?'ثبت درخواست و دریافت کد پیگیری':'مشاهده مرحله دریافت کد پیگیری'}<ChevronLeft size={16}/>
     </button>}
     {receipt&&pendingFiles.length>0&&<button type="button" className="sw-primary" disabled={busy} onClick={()=>void retryFiles()}>تلاش مجدد برای پیوست‌ها</button>}
     {receipt&&<button type="button" disabled={busy} onClick={reset}>ثبت درخواست دیگر</button>}
-   </nav></>}
+   </nav>}</>}
   </div>
  </section>;
 }
