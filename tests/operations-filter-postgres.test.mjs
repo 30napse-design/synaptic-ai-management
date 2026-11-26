@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {PGlite} from '@electric-sql/pglite';
 import {postgresQuery} from '../runtime/postgres-sql.mjs';
-import {filterCategorySQL,filterGroupSQL,filterRoleSQL} from '../lib/operations-filter-classification.ts';
+import {filterCategorySQL,filterGroupSQL,filterRoleSQL,filterTopicSQL} from '../lib/operations-filter-classification.ts';
 test('historical and current ticket filters execute in PostgreSQL',async()=>{
  const db=new PGlite();
  try{
@@ -14,7 +14,9 @@ test('historical and current ticket filters execute in PostgreSQL',async()=>{
  const select=async(expr,value)=>(await db.query(postgresQuery('SELECT id FROM ops_items WHERE '+expr+'=? ORDER BY id',[value],0),[value])).rows.map(r=>r.id);
  assert.deepEqual(await select(filterCategorySQL,'consult_before'),['old']);
  assert.deepEqual(await select(filterGroupSQL,'services'),['legacyVersion','new']);
- assert.deepEqual(await select(filterRoleSQL,'scientific_reception'),['new']);
+ assert.deepEqual(await select(filterRoleSQL,'scientific_reception'),['legacyVersion','new']);
+ assert.deepEqual(await select(filterRoleSQL,'technical_project'),['old']);
+ assert.deepEqual(await select(filterTopicSQL,'درخواست خدمات پژوهشی'),['legacyVersion','new']);
  assert.deepEqual((await db.query(postgresQuery('SELECT id FROM ops_items WHERE '+filterCategorySQL+' IS NULL',[],0))).rows.map(r=>r.id),['unknown']);
  assert.equal((await db.query(postgresQuery("SELECT COUNT(*) AS n FROM ops_items WHERE COALESCE(json_extract(source_labels,'$.ticket_v'),0)=0",[],0))).rows[0].n,3);
  }finally{await db.close()}

@@ -1,9 +1,10 @@
 'use client';
 import {useState} from 'react';
-import {ChevronLeft,ChevronRight,ShieldCheck,CalendarDays,FlaskConical,Settings,ChartNoAxesColumn,MessageCircle,Layers,Info} from 'lucide-react';
+import {ChevronLeft,ChevronRight,ShieldCheck,CalendarDays,FlaskConical,Settings,ChartNoAxesColumn,MessageCircle,Layers,Info,Search} from 'lucide-react';
 import {intakeResponsibleRoles,responsibilityCategories,responsibilityTopics} from '../../lib/unified-intake-taxonomy';
 import {tehranDay} from '../../lib/operations-date-filter';
 import './ticket-dashboard.css';
+import {ticketSourceOptions} from '../../lib/ticket-sources-mapping';
 const fa=(n:number)=>n.toLocaleString('fa-IR');
 const dayShift=(s:string,n:number)=>{const d=new Date(s+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10)};
 const pf=new Intl.DateTimeFormat('en-u-ca-persian',{timeZone:'Asia/Tehran',year:'numeric',month:'numeric',day:'numeric'});
@@ -23,7 +24,7 @@ export function TicketCalendar({selected,onDay,onAll}:{selected:string;onDay:(v:
 }
 export function RoleSidebar({selected,counts,onSelect}:{selected:string;counts:Record<string,number>|null;onSelect:(v:string)=>void}){
  const [expanded,setExpanded]=useState(false);
- return <aside className={'v3-role-sidebar'+(expanded?' expanded':'')} dir="rtl"><h2><ShieldCheck size={17}/>فیلتر تیکت‌ها براساس مسئولیت‌های سازمانی</h2><button type="button" className="v3-role-toggle" aria-expanded={expanded} onClick={()=>setExpanded(v=>!v)}>نمایش مسئولیت‌ها</button><div className="v3-role-options">{[{id:'',label:'همه مسئولیت‌ها'},...intakeResponsibleRoles].map(r=><button type="button" key={r.id} aria-pressed={selected===r.id} onClick={()=>onSelect(r.id)}><span>{r.label}</span><small>{counts?fa(counts[r.id||'all']??0):'—'}</small></button>)}</div></aside>
+ return <aside className={'v3-role-sidebar'+(expanded?' expanded':'')} dir="rtl"><h2><ShieldCheck size={17}/>فیلتر تیکت‌ها براساس مسئولیت‌های سازمانی</h2><button type="button" className="v3-role-toggle" aria-expanded={expanded} onClick={()=>setExpanded(v=>!v)}>نمایش مسئولیت‌ها</button><div className="v3-role-options">{[{id:'',label:'همه مسئولیت‌ها'},...intakeResponsibleRoles,{id:'unclassified',label:'نیازمند تعیین حوزه'}].map(r=><button type="button" key={r.id} aria-pressed={selected===r.id} onClick={()=>onSelect(r.id)}><span>{r.label}</span><small>{counts?fa(counts[r.id||'all']??0):'—'}</small></button>)}</div></aside>
 }
 const researchAreas=[
  {id:'orders',label:'خدمات پژوهشی',Icon:FlaskConical,categories:['service_orders']},
@@ -32,17 +33,37 @@ const researchAreas=[
  {id:'consultation',label:'مشاوره تخصصی',Icon:MessageCircle,categories:['consult_before','consult_change','consult_execution','consult_results']},
 ];
 
-export function ResponsibilityArea({role,category,topic,group,onTopic,onArea}:{role:string;category:string;topic:string;group:string;onTopic:(category:string,topic:string)=>void;onArea:(categories:string[],group:string)=>void}){
+type AreaProps={
+ role:string;category:string;topic:string;group:string;query:string;source:string;
+ onCategory:(v:string)=>void;onTopic:(v:string)=>void;onQuery:(v:string)=>void;onSource:(v:string)=>void;
+ onArea:(categories:string[],group:string)=>void;
+};
+
+export function ResponsibilityArea({role,category,topic,group,query,source,onCategory,onTopic,onQuery,onSource,onArea}:AreaProps){
  const [expanded,setExpanded]=useState(false);
  const label=intakeResponsibleRoles.find(r=>r.id===role)?.label;
- if(!label)return <section className="v3-responsibility" dir="rtl"><h3>حوزه مسئولیت سازمانی</h3><p>برای دیدن موضوعات و پیام‌های هر واحد، مسئولیت آن را از فهرست انتخاب کنید.</p></section>;
- const categories=responsibilityCategories(role);
- const areas=role==='senior_research'?researchAreas:categories.map(c=>({id:c.id,label:c.title,Icon:Layers,categories:[c.id]}));
- const count=categories.reduce((n,c)=>n+responsibilityTopics(role,c).length,0);
+ const categories=responsibilityCategories(label?role:'director');
+ const selected=categories.find(c=>c.id===category);
+ const topics=selected?responsibilityTopics(label?role:'director',selected):[];
+ const count=categories.reduce((n,c)=>n+responsibilityTopics(label?role:'director',c).length,0);
  return <section className="v3-responsibility" dir="rtl">
-  <header><h3><Layers size={20}/> حوزه مسئولیت {label}</h3><button type="button" className="v3-role-description" aria-expanded={expanded} aria-controls="v3-role-full-description" onClick={()=>setExpanded(v=>!v)}><Info size={16}/>{expanded?'بستن شرح مسئولیت‌ها':'مشاهده شرح کامل مسئولیت‌ها'}</button></header>
-  <p>{role==='senior_research'?'نظارت بر هفت دسته پژوهشی شامل سفارش، اجرای پروژه، نتایج و مشاوره':role==='director'?'نظارت عالی بر تمام دسته‌ها':'موضوعات اجرایی مرتبط با این مسئولیت'} · {fa(count)} موضوع</p>
-  <div className="v3-topics">{areas.map(({id,label,Icon,categories:ids})=><button key={id} type="button" aria-pressed={ids.length===1?category===ids[0]:group==='consultation'&&!category} onClick={()=>onArea(ids,ids.length>1?'consultation':'')}><Icon size={17}/>{label}</button>)}</div>
-  {expanded&&<div id="v3-role-full-description" className="v3-role-full-description">{categories.map(c=><section key={c.id}><h4>{c.title}</h4><ul>{responsibilityTopics(role,c).map(t=><li key={t.title}><button type="button" aria-pressed={category===c.id&&topic===t.title} onClick={()=>onTopic(c.id,t.title)}>{t.title}</button></li>)}</ul></section>)}</div>}
+  <header><h3><Layers size={15}/> {label?'حوزه مسئولیت '+label:role==='unclassified'?'نیازمند تعیین حوزه':'حوزه مسئولیت سازمانی'}</h3>
+   {label&&<button type="button" className="v3-role-description" aria-expanded={expanded} onClick={()=>setExpanded(v=>!v)}><Info size={14}/>{expanded?'بستن شرح مسئولیت‌ها':'مشاهده شرح کامل مسئولیت‌ها'}</button>}
+  </header>
+  {role==='senior_research'&&<div className="v3-topics">{researchAreas.map(({id,label,Icon,categories:ids})=><button key={id} type="button" aria-pressed={ids.length===1?category===ids[0]:group==='consultation'&&!category} onClick={()=>onArea(ids,ids.length>1?'consultation':'')}><Icon size={14}/>{label}</button>)}</div>}
+  <div className="v3-role-fields">
+   {label&&<small>{fa(count)} موضوع {role==='director'||role==='senior_research'?'تحت نظارت':'اجرایی'}</small>}
+   <select aria-label="دسته اصلی" value={category} onChange={e=>onCategory(e.target.value)}><option value="">همه دسته‌ها</option>{categories.map(c=><option key={c.id} value={c.id}>{c.title}</option>)}</select>
+   <select aria-label="موضوع مسئولیت" disabled={!selected} value={topic} onChange={e=>onTopic(e.target.value)}><option value="">همه موضوع‌ها</option>{topics.map(t=><option key={t.title} value={t.title}>{t.title}</option>)}</select>
+  </div>
+  <div className="v3-role-fields">
+   <label className="v3-role-search"><Search size={14}/><input aria-label="جستجوی تیکت‌ها" placeholder="نام محقق، فاکتور، سفارش، موبایل یا ایمیل" value={query} onChange={e=>onQuery(e.target.value)}/></label>
+   <select aria-label="منبع تیکت" value={source} onChange={e=>onSource(e.target.value)}>{ticketSourceOptions.map(o=><option key={o.id} value={o.id}>{o.label}</option>)}</select>
+  </div>
+  {expanded&&label&&<div className="v3-role-compact-description"><select aria-label="انتخاب موضوع از شرح کامل مسئولیت" value={selected&&topic?JSON.stringify([selected.id,topic]):''} onChange={e=>{
+   if(!e.target.value){onCategory('');return;}
+   const [id,title]=JSON.parse(e.target.value) as [string,string];
+   onCategory(id);onTopic(title);
+  }}><option value="">انتخاب از تمام موضوع‌های این مسئولیت</option>{categories.map(c=><optgroup key={c.id} label={c.title}>{responsibilityTopics(role,c).map(t=><option key={t.title} value={JSON.stringify([c.id,t.title])}>{t.title}</option>)}</optgroup>)}</select></div>}
  </section>;
 }

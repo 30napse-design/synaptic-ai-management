@@ -21,8 +21,20 @@ const oldLabelCases=Object.entries({orders:'service_orders',invoices:'service_or
 export const filterCategorySQL="(CASE WHEN "+catLabel+" IN ("+known+") THEN "+catLabel+" "+legacyCases+" "+oldLabelCases+" WHEN category='system' AND subtype IN ('نیازمند بررسی','گزارش روزانه ایمیل‌ها') THEN NULL "+broadCases+" ELSE NULL END)";
 export const filterGroupSQL="(CASE "+filterCategorySQL+" "+unifiedIntakeCategories.map(c=>"WHEN "+quote(c.id)+" THEN "+quote(c.group)).join(' ')+" ELSE NULL END)";
 const explicitRole=label('role');
-const exactCases=unifiedIntakeCategories.flatMap(c=>c.topics.filter(t=>!/^سایر/.test(t.title)).map(t=>"WHEN "+filterCategorySQL+"="+quote(c.id)+" AND "+label('topic')+"="+quote(t.title)+" THEN "+quote(t.role))).join(' ');
-// Only a stored explicit role or an exact approved topic establishes a role.
-// A broad legacy category does not imply a particular employee or role.
-export const filterRoleSQL="(CASE WHEN "+explicitRole+" IS NOT NULL THEN "+explicitRole+" "+exactCases+" ELSE NULL END)";
-export const filterTopicSQL=label('topic');
+const legacyTopic:Record<string,Record<string,string>>={
+ customers:{'ثبت سفارش':'درخواست خدمات پژوهشی','تحویل نمونه':'تحویل نمونه یا مواد پروژه'},
+ billing:{'واریزی‌های مشتریان':'پرداخت‌ها و واریزی‌ها','صورتحساب و مانده پرداخت':'اعلام مانده حساب','مغایرت پرداخت و پیگیری مانده':'مغایرت پرداخت‌ها'},
+ results:{'نتایج ارسال‌شده':'نحوه ارسال نتایج'},
+ projects:{'اجرای پروژه و پیگیری آزمایشگاه‌ها':'پیگیری پیشرفت پروژه'},
+ internal:{'استخدام و همکاری علمی':'استخدام و همکاری','امور داخلی و مدیریت':'ارتباط با مدیریت'},
+ system:{'مشکلات سایت و فرم سفارش':'مشکلات فرم سامانه','امنیت حساب و دسترسی سامانه':'مشکل حساب کاربری'},
+};
+const mappedTopics=Object.entries(legacyTopic).flatMap(([cat,items])=>Object.entries(items).map(([sub,topic])=>"WHEN category="+quote(cat)+" AND subtype="+quote(sub)+" THEN "+quote(topic))).join(' ');
+const rawTopic=label('topic');
+export const filterTopicSQL="COALESCE("+rawTopic+",(CASE "+mappedTopics+" ELSE NULLIF(subtype,'') END))";
+const exactCases=unifiedIntakeCategories.flatMap(c=>c.topics.map(t=>{
+ const topic=/^سایر/.test(t.title)?rawTopic:filterTopicSQL;
+ return "WHEN "+filterCategorySQL+"="+quote(c.id)+" AND "+topic+"="+quote(t.title)+" THEN "+quote(t.role);
+})).join(' ');
+// Topic and safe historical subtype mappings are for display only.
+export const filterRoleSQL="(CASE WHEN "+explicitRole+" IS NOT NULL THEN "+explicitRole+" "+exactCases+" WHEN "+filterCategorySQL+"='consult_before' AND subtype='مشاوره پیش از سفارش' THEN 'technical_project' ELSE NULL END)";

@@ -19,3 +19,16 @@
 .sw-entry-links{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 14px}
 .sw-entry-links a{display:inline-flex;align-items:center;gap:5px;padding:7px 10px;border:1px solid #c9e0ea;border-radius:8px;background:#f0f8fc;color:#15465c;font-weight:650;text-decoration:none}
 .sw-entry-links a[aria-current=page]{background:#135d70;color:white;border-color:#135d70}
+
+.sw-root{max-width:940px;margin-block:9px;font-size:13px}
+.sw-header{padding:10px}.sw-header h1{font-size:19px;margin-bottom:3px}
+.sw-body{padding:10px}.sw-progress{margin-bottom:10px}
+.sw-group{padding:8px}.sw-group>p{margin-bottom:6px;font-size:11px}
+.sw-category-grid{gap:4px}.sw-category-grid .sw-choice{min-height:45px;padding:4px 6px;gap:4px}
+.sw-category-grid .sw-choice small{font-size:10px;line-height:1.35}
+.sw-category-icon{width:24px;height:24px}.sw-category-icon svg{width:15px;height:15px}
+.sw-start{display:block}.sw-next-steps{margin-top:6px;padding:5px 8px;font-size:11px}
+.sw-next-steps h2{font-size:11px;margin:0 0 2px}
+.sw-next-steps ol{display:flex;flex-wrap:wrap;gap:2px 20px;line-height:1.5}
+.sw-next-steps li+li{margin-top:0}
+.sw-entry-links{gap:4px;margin-bottom:7px}.sw-entry-links a{padding:3px 6px;font-size:11px}

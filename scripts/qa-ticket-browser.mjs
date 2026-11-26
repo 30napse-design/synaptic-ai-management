@@ -40,9 +40,9 @@ try{
   await waitRequest(p=>p.get('pageSize')==='5'&&p.get('sortOrder')==='asc');
   await page.locator('.ops-item-row').first().waitFor();
   assert.equal(await page.locator('.ticket-dashboard-card').count(),6);
-  assert.equal(await page.locator('.v3-source-tabs button').count(),8);
+  assert.equal(await page.getByLabel('منبع تیکت').locator('option').count(),8);
   await page.screenshot({path:output+'/tkt-'+packageNo+'-desk-'+width+'.png',fullPage:true});
-  await page.locator('.v3-source-tabs button').filter({hasText:'Gmail'}).click();
+  await page.getByLabel('منبع تیکت').selectOption('gmail');
   await waitRequest(p=>p.get('ticketSource')==='gmail');
   await page.locator('.ticket-card-waiting').click();
   await waitRequest(p=>p.get('status')==='waiting');
