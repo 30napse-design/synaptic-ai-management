@@ -214,7 +214,7 @@
       "url": "https://docs.google.com/spreadsheets/d/1V9vW9AXPwym_aCAGF2d0ck0hEho2uQsW/edit",
       "mimeType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     },
-    "range": "'تماس ورودی'!A1:J1000",
+    "range": "'تماس ورودی'!A1:J",
     "date_mode": "existing incomingDateMarker/incomingISO; never infer a year/month from a bare day number",
     "email_log": {
       "sheet": "گردش ایمیل‌ها",
