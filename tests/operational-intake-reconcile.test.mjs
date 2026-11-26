@@ -18,10 +18,13 @@ test('shared authorized intake form handles outbound and visits without replacin
  assert.match(form,/matchingLegacySubtype/);
  assert.match(form,/memberPositionLabel/);
  assert.match(form,/شرح تماس \/ درخواست مشتری/);
- assert.match(form,/پاسخ پشتیبان \/ اقدام یا قول داده‌شده/);
+ assert.match(form,/پاسخ پشتیبان \/ اقدام یا قول داده\u200cشده/);
 });
 test('daily operations hide manager bulk UI but ticket desk retains authorized group control',()=>{
- assert.match(app,/tickets&&data\.manualAssignment&&<details/);
+ // Group control is still gated: only items passing assignable() (manual-assignment authority or own item) can be selected,
+ // and the bulk panel appears on the ticket desk only once such items are selected (approved compact TKT desk).
+ assert.match(app,/const assignable=\(item:any\)=>\(data\.manualAssignment\|\|/);
+ assert.match(app,/tickets&&\(checked\.length>0\|\|bulkResults\.length>0\)&&<details/);
  assert.match(app,/tickets&&assignable\(item\)&&<input type="checkbox"/);
  assert.match(app,/ticket-bulk-panel/);
 });
