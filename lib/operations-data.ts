@@ -14,7 +14,7 @@ import {intakeMembers} from './intake-server';
 import {ticketSQL,isTicket} from './intake-policy';
 import {siteTicketCategories,directTicketCategories,getTicketCategories} from './ticket-support-taxonomy';
 import {legacyCategoryForSite} from './operations-intake-ui';
-import {intakeCategory,unifiedIntakeCategories,intakeResponsibleRoles} from './unified-intake-taxonomy';
+import {intakeCategory,unifiedIntakeCategories,intakeResponsibleRoles,seniorResearchMayReview} from './unified-intake-taxonomy';
 export async function readOperationsData(u:any,p:URLSearchParams){
  const routingReady=await dispatchReady();const {sql:permitted,args:scopeArgs}=operationsScope(u,routingReady);
  // Legacy Hostinger databases may not yet have routing columns. Optional counters must never break page reads.
@@ -63,7 +63,7 @@ export async function readOperationsData(u:any,p:URLSearchParams){
  const unifiedGroup=(p.get('unifiedGroup')||'').slice(0,30),unifiedCategory=(p.get('unifiedCategory')||'').slice(0,80),unifiedTopic=(p.get('unifiedTopic')||'').slice(0,160);
  const unifiedRole=(p.get('unifiedRole')||'').slice(0,80);
  const roleFacetSeed=where,roleFacetSeedArgs=[...args];
- if(unifiedRole){if(unifiedRole==='unclassified')where+=' AND '+filterRoleSQL+' IS NULL';else if(intakeResponsibleRoles.some(r=>r.id===unifiedRole)){where+=' AND '+filterRoleSQL+'=?';args.push(unifiedRole)}else where+=' AND 1=0'}
+ if(unifiedRole){if(view==='tickets'&&unifiedRole==='director'){/* Management view is the existing authorized scope, not a new permission. */}else if(view==='tickets'&&unifiedRole==='senior_research'){const ids=unifiedIntakeCategories.filter(c=>seniorResearchMayReview(c.id)).map(c=>c.id);where+=' AND '+filterCategorySQL+' IN ('+ids.map(()=>'?').join(',')+')';args.push(...ids)}else if(unifiedRole==='unclassified')where+=' AND '+filterRoleSQL+' IS NULL';else if(intakeResponsibleRoles.some(r=>r.id===unifiedRole)){where+=' AND '+filterRoleSQL+'=?';args.push(unifiedRole)}else where+=' AND 1=0'}
  const roleFacetPrefix=where,roleFacetPrefixArgs=[...args];
 
  if(view!=='tickets'&&p.get('opsGroup')){
@@ -129,6 +129,9 @@ export async function readOperationsData(u:any,p:URLSearchParams){
   const rows=(await db().prepare("SELECT "+filterRoleSQL+" AS id,COUNT(*) AS n FROM ops_items WHERE "+roleWhere+" GROUP BY 1").bind(...roleArgs).all()).results as any[];
   roleCounts=Object.fromEntries(intakeResponsibleRoles.map(r=>[r.id,Number(rows.find(x=>x.id===r.id)?.n||0)]));
   roleCounts.all=rows.reduce((n,x)=>n+Number(x.n||0),0);
+  roleCounts.director=roleCounts.all;
+  const ids=unifiedIntakeCategories.filter(c=>seniorResearchMayReview(c.id)).map(c=>c.id);
+  const senior=await db().prepare('SELECT COUNT(*) AS n FROM ops_items WHERE '+roleWhere+' AND '+filterCategorySQL+' IN ('+ids.map(()=>'?').join(',')+')').bind(...roleArgs,...ids).first<any>();roleCounts.senior_research=Number(senior?.n||0);
  }catch(e:any){console.error('operations role summary unavailable',e?.code||'unknown')}}
  let coverage:any=null;try{coverage=await db().prepare("SELECT MAX("+originalDay+") AS lastCallDate,MAX(source_at) AS lastSourceAt,COUNT(*) AS count FROM ops_items WHERE "+permitted+" AND source_type='incoming' AND source_key LIKE 'calls:incoming:%'").bind(...scopeArgs).first()}catch(e:any){console.error('operations coverage unavailable',e?.code||e?.message||'unknown')}
  return {coverage,roleCounts,unifiedCounts,financialDataUnavailable,manualAssignment:canManualAssignOperations(u),user:u,items:rr[0].results.filter((r:any)=>canSeeOps(u,r)).map(map),total,offset,nextOffset:offset+initialPageSize<total?offset+initialPageSize:null,counts,followups:rr[3]?.results?.[0]||{},ticketSummary:view==='tickets'?{all:Number((rr[5]?.results?.[0] as any)?.all_count||0),today:Number((rr[5]?.results?.[0] as any)?.today_count||0),new:Number((rr[5]?.results?.[0] as any)?.new_count||0),waiting:Number((rr[5]?.results?.[0] as any)?.waiting_count||0),overdue:Number((rr[5]?.results?.[0] as any)?.overdue_count||0),unassigned:Number((rr[5]?.results?.[0] as any)?.unassigned_count||0)}:null,categories:operationCategories.map(c=>({...c,allowed:u.manager||c.items.some(subtype=>canUseOpsCategory(u,{category:c.id,subtype,access_scope:requestedAccessScope(u,{category:c.id,subtype},'')})),items:c.items.filter(subtype=>u.manager||canUseOpsCategory(u,{category:c.id,subtype,access_scope:requestedAccessScope(u,{category:c.id,subtype},'')}))})),selected:allowedItem?map(allowedItem):null,events:allowedItem&&!mayReadRequestSource(u,allowedItem)?events.map((e:any)=>({...e,body:'{}'})):events,members:await intakeMembers(),sync:u.manager?rr[4]?.results||[]:[]};
