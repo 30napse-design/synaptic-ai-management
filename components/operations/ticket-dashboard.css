@@ -238,3 +238,11 @@
 .ticket-v3 .v3-role-utility .v3-role-search{flex:0 1 280px}
 .ticket-v3 .v3-date-tools{justify-content:center}
 @container(max-width:600px){.ticket-v3 .v3-five-filters{grid-template-columns:repeat(auto-fit,minmax(105px,1fr))}}
+.ticket-v3 .v3-responsibility .v3-role-header{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr) minmax(0,2fr);gap:5px}
+.ticket-v3 .v3-role-header .v3-role-search{min-height:26px;padding:2px 4px}
+.ticket-v3 .v3-role-header .v3-role-description{justify-self:end}
+.ticket-v3 .v3-role-utility:empty{display:none}
+.ticket-v3 .v3-list-heading{min-height:0;gap:4px;margin:0;padding:0}
+.ticket-v3 .v3-list-heading label{display:flex;align-items:center;gap:4px;margin:0;font-size:10px;white-space:nowrap}
+.ticket-v3 .v3-list-heading select{width:52px;min-height:25px;padding:1px 4px;margin:0}
+@container(max-width:600px){.ticket-v3 .v3-responsibility .v3-role-header{grid-template-columns:1fr auto}.ticket-v3 .v3-role-header .v3-role-search{grid-column:1/-1;grid-row:2}}
