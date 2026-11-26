@@ -48,7 +48,8 @@ export function ResponsibilityArea({role,category,topic,group,query,source,statu
  const topics=selected?responsibilityTopics(label?role:'director',selected):[];
  const count=categories.reduce((n,c)=>n+responsibilityTopics(label?role:'director',c).length,0);
  return <section className="v3-responsibility" dir="rtl">
-  <header><h3><Layers size={15}/> {label?'حوزه مسئولیت '+label:role==='unclassified'?'نیازمند تعیین حوزه':'حوزه مسئولیت سازمانی'}</h3>
+  <header className="v3-role-header"><h3><Layers size={15}/> {label?'حوزه مسئولیت '+label:role==='unclassified'?'نیازمند تعیین حوزه':'حوزه مسئولیت سازمانی'}</h3>
+   <label className="v3-role-search"><Search size={14}/><input aria-label="جستجوی تیکت‌ها" placeholder="نام محقق، شماره فاکتور، موبایل، آدرس ایمیل" value={query} onChange={e=>onQuery(e.target.value)}/></label>
    {label&&<button type="button" className="v3-role-description" aria-expanded={expanded} onClick={()=>setExpanded(v=>!v)}><Info size={14}/>{expanded?'بستن شرح مسئولیت‌ها':'مشاهده شرح کامل مسئولیت‌ها'}</button>}
   </header>
   {role==='senior_research'&&<div className="v3-topics">{researchAreas.map(({id,label,Icon,categories:ids})=><button key={id} type="button" aria-pressed={ids.length===1?category===ids[0]:group==='consultation'&&!category} onClick={()=>onArea(ids,ids.length>1?'consultation':'')}><Icon size={14}/>{label}</button>)}</div>}
@@ -60,7 +61,7 @@ export function ResponsibilityArea({role,category,topic,group,query,source,statu
    <select aria-label="منبع تیکت" value={source} onChange={e=>onSource(e.target.value)}>{ticketSourceOptions.map(o=><option key={o.id} value={o.id}>{o.label}</option>)}</select>
   </div>
   <div className="v3-role-fields v3-role-utility">
-   <label className="v3-role-search"><Search size={14}/><input aria-label="جستجوی تیکت‌ها" placeholder="نام، فاکتور، موبایل یا ایمیل" value={query} onChange={e=>onQuery(e.target.value)}/></label>
+
    {label&&<small>{fa(count)} موضوع {role==='director'||role==='senior_research'?'تحت نظارت':'اجرایی'}</small>}
   </div>
   {expanded&&label&&<div className="v3-role-compact-description"><select aria-label="انتخاب موضوع از شرح کامل مسئولیت" value={selected&&topic?JSON.stringify([selected.id,topic]):''} onChange={e=>{

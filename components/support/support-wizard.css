@@ -38,3 +38,34 @@
 .sw-compose aside p{margin-bottom:0;font-size:11px}
 .sw-compose textarea{resize:vertical}
 @media(max-width:600px){.sw-compose{grid-template-columns:1fr}}
+.sw-research-layout{display:grid;gap:7px}
+.sw-research-layout[data-stage="1"]{grid-template-columns:minmax(150px,24%) minmax(0,1fr);grid-template-areas:"services consultation" "services information"}
+.sw-research-layout[data-stage="1"] .sw-groups{display:contents}
+.sw-research-layout .services{grid-area:services}
+.sw-research-layout .consultation{grid-area:consultation}
+.sw-research-layout .services .sw-category-grid{grid-template-columns:1fr}
+.sw-research-layout .consultation .sw-category-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+.sw-research-layout .consultation .sw-choice{grid-template-columns:minmax(0,1fr);text-align:start;align-content:start}
+.sw-research-layout .consultation .sw-choice>svg{display:none}
+.sw-research-layout .sw-choice strong,.sw-research-layout .sw-choice small{display:block}
+.sw-research-layout .sw-choice strong{font-size:11px}
+.sw-research-layout .sw-choice small{margin-top:2px}
+.sw-blue-information{background:#ecf6ff;border:1px solid #c9e0f3;border-radius:8px;padding:8px;min-width:0}
+.sw-research-layout[data-stage="1"] .sw-blue-information{grid-area:information}
+.sw-blue-information fieldset{border:0;padding:0;margin:0;min-width:0}
+.sw-blue-information legend{font-weight:700}
+.sw-blue-information fieldset:disabled{opacity:.76}
+.sw-blue-information fieldset>p{margin:3px 0 6px;font-size:11px}
+.sw-progress li{position:relative}
+.sw-progress li span{position:relative;z-index:1;width:21px;height:21px;font-size:10px}
+.sw-progress li:not(:last-child)::after{content:"";position:absolute;top:10px;right:50%;width:calc(100% + 5px);height:2px;background:#ccdcea}
+.sw-progress li[data-complete=true]::after,.sw-progress li[data-complete=true] span{background:#268375;color:white}
+.sw-progress li b{font-size:10px}
+@media(max-width:580px){
+ .sw-research-layout[data-stage="1"]{grid-template-columns:1fr;grid-template-areas:"services" "consultation" "information"}
+ .sw-research-layout .services .sw-category-grid,.sw-research-layout .consultation .sw-category-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+.sw-research-layout:not([data-stage="1"]){grid-template-columns:minmax(150px,27%) minmax(0,1fr);align-items:start}
+.sw-selected-topic{padding:8px;border-radius:8px;border:1px solid #d5e5ee;background:#f7fbfe}
+.sw-selected-topic h2,.sw-selected-topic p{margin:0 0 4px;font-size:11px}
+@media(max-width:580px){.sw-research-layout:not([data-stage="1"]){grid-template-columns:1fr}}

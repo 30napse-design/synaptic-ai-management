@@ -161,17 +161,26 @@ export function ResearcherSupportWizard({isInternalStaff=false,onCancel,onSaved,
     {[{id:'',Icon:ClipboardList},{id:'research_order',Icon:FlaskConical},{id:'collaboration',Icon:Handshake},{id:'quick_request',Icon:Zap},{id:'contact',Icon:Phone}].map(({id,Icon})=>id?<button key={id} type="button" disabled><Icon size={14}/>{ticketSourceOptions.find(x=>x.id===id)?.label}</button>:<a key={id} href="/support" aria-current="page"><Icon size={14}/>تیکت پشتیبانی</a>)}
    </nav>}
    {profile&&<p className="sw-unit">{profile.description}</p>}
-   <WizardProgress currentStep={step}/>
+   <WizardProgress currentStep={step} received={!!receipt}/>
    {error&&<p className="sw-error" role="alert">{error}</p>}
-   {step===1&&<div className="sw-start">
-    <Step1Category {...props}/>
-    <aside className="sw-next-steps" aria-label="راهنمای ارسال درخواست">
-     <h2>پس از انتخاب دسته</h2>
-     <ol><li>موضوع درخواست و واحد پاسخگو را ببینید.</li><li>اطلاعات تماس و شرح درخواست را بنویسید.</li><li>در صورت نیاز، فایل مرتبط را اضافه کنید.</li><li>درخواست را ثبت کنید و کد پیگیری را نگه دارید.</li></ol>
-    </aside>
-   </div>}
-   {step===2&&<Step2Topic {...props}/>}
-   {step===3&&<fieldset disabled={locked} style={{border:0,padding:0,margin:0,minWidth:0}}><div className="sw-compose"><aside><h2>موضوع درخواست</h2><strong>{data.topicTitle}</strong>{classification&&<p>واحد پاسخگو: {classification.label}</p>}</aside><Step3Details {...props} live={live}/></div></fieldset>}
+   <div className="sw-research-layout" data-stage={step}>
+    {step===1&&<Step1Category {...props}/>}
+    {step===2&&<div className="sw-topic-stage"><Step2Topic {...props}/></div>}
+    {step>=3&&<aside className="sw-selected-topic"><h2>موضوع درخواست</h2><strong>{data.topicTitle}</strong>{classification&&<p>{classification.label}</p>}</aside>}
+    <section className="sw-blue-information" aria-label="اطلاعات درخواست">
+     {step<3&&<fieldset disabled><legend>تکمیل اطلاعات</legend>
+      <p>این بخش در مرحلهٔ سوم فعال می‌شود.</p>
+      <div className="sw-fields">
+       <label>نام و نام خانوادگی<input placeholder="نام محقق"/></label>
+       <label>شماره موبایل<input placeholder="شماره تماس"/></label>
+       <label>ایمیل<input placeholder="آدرس ایمیل"/></label>
+       <label>شماره فاکتور یا سفارش<input placeholder="اختیاری"/></label>
+       <label className="sw-wide">شرح درخواست<textarea rows={2}/></label>
+      </div>
+     </fieldset>}
+     {step===3&&<fieldset disabled={locked}>
+      <Step3Details {...props} live={live}/>
+     </fieldset>}
    {step===4&&(receipt?<section className="sw-notice">
     <h2>درخواست با موفقیت ثبت شد</h2>
     <p>واحد پاسخگو {classification?.label}</p>
@@ -185,6 +194,8 @@ export function ResearcherSupportWizard({isInternalStaff=false,onCancel,onSaved,
    </section>:<section><h2>دریافت کد پیگیری</h2>
     <p className="sw-notice" role="status">فرم عمومی در حالت پیش‌نمایش است. اطلاعاتی به سرور ارسال نشده است.</p>
    </section>)}
+    </section>
+   </div>
    {publicLive&&step===3&&<SupportChallenge key={challengeVersion} siteKey={publicSiteKey} onToken={setTurnstileToken}/>}
    <nav className="sw-nav" aria-label="حرکت بین مراحل">
     {!receipt&&<button type="button" disabled={step===firstStep||locked} onClick={()=>{setError('');setStep(s=>Math.max(firstStep,s-1));}}><ChevronRight size={16}/> مرحله قبل</button>}
