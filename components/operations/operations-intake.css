@@ -218,3 +218,9 @@
 }
 .ops-module .ops-entry-backdrop .ops-intake-form .ops-intake-extra{margin:0;padding-block:5px}
 .ops-module .ops-entry-backdrop .ops-intake-form .modal-actions{padding-top:6px}
+@media(min-width:1001px){
+ .ops-module .ops-entry-backdrop .ops-intake-form .ops-responsibility{
+  grid-column:span 3;align-self:center;
+ }
+ .ops-module .ops-entry-backdrop .ops-intake-form .ops-intake-reference{grid-column:auto;width:auto}
+}
