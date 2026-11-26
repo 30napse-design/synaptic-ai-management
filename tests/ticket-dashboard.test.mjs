@@ -6,8 +6,8 @@ const app=readFileSync('app/operations/operations-app.tsx','utf8');
 const cards=readFileSync('components/operations/ticket-dashboard.tsx','utf8');
 const styles=readFileSync('components/operations/ticket-dashboard.css','utf8');
 
-test('Ticket desk loads 100 real recent rows, other operations retain page size 50',()=>{
- assert.match(source,/view==='tickets'\?100:50/);
+test('Ticket API retains legacy default and V3 requests bounded five or ten real rows',()=>{
+ assert.match(source,/view==='tickets'\?\(p\.get\('pageSize'\)==='10'\?10:p\.get\('pageSize'\)==='5'\?5:100\):50/);
  assert.match(source,/LIMIT '\+initialPageSize\+' OFFSET/);
  assert.match(source,/nextOffset:offset\+initialPageSize<total/);
  assert.match(source,/ORDER BY '\+orderSQL\+orderDirection/);
@@ -51,7 +51,7 @@ test('No artificial ticket population or migration is performed by the dashboard
  assert.match(source,/status!='closed' AND due=\?/);
  assert.match(source,/SUM\(CASE WHEN status='waiting'/);
  assert.match(source,/SUM\(CASE WHEN status='open'/);
- assert.match(app,/const pageSize=tickets\?100:50/);
+ assert.match(app,/const pageSize=tickets\?ticketPageSize:50/);
  assert.match(app,/offset-pageSize/);
  assert.match(app,/Math\.floor\(offset\/pageSize\)\+1/);
 });

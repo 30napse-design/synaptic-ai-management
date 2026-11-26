@@ -18,7 +18,7 @@ test('scoped counts and status filters never mutate original tickets',()=>{
  assert.match(query,/AS overdue_count/);
  assert.match(query,/AS unassigned_count/);
  assert.match(query,/status!='closed' AND due!='' AND due<\?/);
- assert.match(query,/view==='tickets'\?100:50/);
+ assert.match(query,/view==='tickets'\?\(p\.get\('pageSize'\)==='10'\?10:p\.get\('pageSize'\)==='5'\?5:100\):50/);
  assert.doesNotMatch(query,/INSERT INTO ops_items|DELETE FROM ops_items/);
 });
 test('staff desk omits noisy channel selector, retains categories, roles and history',()=>{
