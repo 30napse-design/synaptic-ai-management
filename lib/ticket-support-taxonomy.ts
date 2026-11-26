@@ -1,3 +1,4 @@
+import {intakeDefaultResponsibility} from './unified-intake-taxonomy.ts';
 /**
  * Approved user-facing ticket topic catalog.
  * This is presentation metadata: legacy ops_items subtype/category keys are NOT
@@ -23,4 +24,20 @@ export function getTicketCategories(source:TicketEntrySource){return source==='s
 export function hasTicketTopic(source:TicketEntrySource,categoryId:string,topic:string){
  const category=getTicketCategories(source).find(x=>x.id===categoryId);
  return !!category&&category.topics.some(x=>x===topic);
+}
+
+/** Read-only legacy compatibility, scoped by original source and category.
+ * Unknown or ambiguous records retain their original labels and require review.
+ * This does not assign employees, authorize access, or mutate stored records.
+ */
+const exactLegacyCategories:Partial<Record<TicketEntrySource,Record<string,string>>> = {
+ site:{orders:'service_orders',invoices:'service_orders',results:'service_results',internal:'service_admin',system:'service_it'},
+};
+export function resolveLegacyTicketTopic(source:TicketEntrySource,categoryId:string,topic:string){
+ const original={source,categoryId,topic};
+ if(!hasTicketTopic(source,categoryId,topic))return {status:'needs_review' as const,original,reason:'عنوان تاریخی معتبر یا شناخته‌شده نیست.'};
+ const target=source==='site'&&categoryId==='invoices'&&topic==='فاکتور رسمی'?'service_finance':exactLegacyCategories[source]?.[categoryId];
+ // Generic labels cannot establish an organizational responsibility.
+ const classification=target&&!/^سایر/.test(topic)?intakeDefaultResponsibility(target,topic):null;
+ return classification?{status:'resolved' as const,original,classification}:{status:'needs_review' as const,original,reason:'تطبیق دقیق و مصوب یافت نشد.'};
 }
