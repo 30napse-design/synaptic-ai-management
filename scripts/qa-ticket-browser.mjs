@@ -58,7 +58,7 @@ try{
   await page.locator('.v3-list-heading select').selectOption('10');
   await waitRequest(p=>p.get('pageSize')==='10');
   await page.getByRole('button',{name:'نمای پژوهشگر',exact:true}).click();
-  await page.getByRole('heading',{name:'چطور می‌توانیم کمکتان کنیم؟'}).waitFor();
+  await page.getByRole('heading',{name:'مرکز پشتیبانی پژوهشگر'}).waitFor();
   const previous=requests.length;
   await page.waitForTimeout(400);
   assert.equal(requests.length,previous);
@@ -72,7 +72,7 @@ try{
     await w.getByRole('button',{name:'ادامه و انتخاب موضوع'}).click();
     await w.locator('.sw-choice').first().click();
     await w.getByRole('button',{name:'ادامه و تکمیل اطلاعات درخواست'}).click();
-    await w.getByRole('button',{name:'بررسی و ثبت درخواست'}).click();
+    await w.getByRole('button',{name:'مشاهده مرحله دریافت کد پیگیری'}).click();
     await w.getByRole('alert').waitFor();
     await w.getByLabel('نام و نام خانوادگی').fill('آزمون پژوهشگر');
     await w.getByLabel('شماره موبایل').fill('۰۹۱۲۳۴۵۶۷۸۹');
@@ -80,11 +80,9 @@ try{
     await w.getByLabel('شرح درخواست').fill('اطلاعات آزمایشی');
     assert.equal(await w.getByLabel('موعد پیگیری (داخلی)').count(),0);
     await w.locator('input[type=file]').setInputFiles({name:'qa.pdf',mimeType:'application/pdf',buffer:Buffer.from('%PDF-test')});
-    await w.getByRole('button',{name:'بررسی و ثبت درخواست'}).click();
-    const submit=w.getByRole('button',{name:'تأیید و ثبت نهایی درخواست'});
-    assert.ok(await submit.isDisabled());
-    assert.match(await w.locator('.sw-review').innerText(),/qa@example.test/);
-    assert.match(await w.locator('.sw-review').innerText(),/qa.pdf/);
+    await w.getByRole('button',{name:'مشاهده مرحله دریافت کد پیگیری'}).click();
+    assert.match(await w.getByRole('status').innerText(),/اطلاعاتی به سرور ارسال نشده است/);
+    assert.equal(await w.getByRole('heading',{name:'درخواست با موفقیت ثبت شد'}).count(),0);
     await page.screenshot({path:output+'/tkt-03-review-'+width+'.png',fullPage:true});
     await w.getByRole('button',{name:'مرحله قبل'}).click();
     assert.equal(await w.getByLabel('شرح درخواست').inputValue(),'اطلاعات آزمایشی');

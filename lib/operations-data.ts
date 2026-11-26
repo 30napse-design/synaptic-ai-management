@@ -29,7 +29,11 @@ export async function readOperationsData(u:any,p:URLSearchParams){
   const ticketCategory=(p.get('ticketCategory')||'').trim().slice(0,80);
   const ticketTopic=(p.get('ticketTopic')||'').trim().slice(0,160);
   if(source==='legacy'){where+=" AND (source_type='gmail' OR channel IN ('gmail','whatsapp','telegram','bale','rubika','instagram','linkedin'))"}
-  else if(source==='site'||source==='direct'){where+=" AND json_extract(source_labels,'$.ticket_source')=?";args.push(source)}
+  else if(source==='site'||source==='direct'){
+   where+=" AND json_extract(source_labels,'$.ticket_source')=?";
+   args.push(source);
+   if(source==='site')where+=" AND COALESCE(json_extract(source_labels,'$.website_form'),'') NOT IN ('research_order','quick_request','collaboration','contact')";
+  }
   else if(source==='gmail'){where+=" AND (source_type='gmail' OR channel='gmail')"}
   else if(['research_order','quick_request','collaboration','contact'].includes(source)){
    // Explicit verified form metadata only; unknown historical forms stay in all sources.

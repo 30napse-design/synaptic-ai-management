@@ -1,5 +1,5 @@
 import {intakeDefaultResponsibility,intakeCategory} from '../unified-intake-taxonomy.ts';
-import {normalizeIranPhone,validOptionalEmail} from '../unified-intake-routing.ts';
+import {normalizeIranPhone,validOptionalEmail,validPersianContactName} from '../unified-intake-routing.ts';
 import {validDay} from '../operations-date-filter.ts';
 import type {SupportWizardData} from '../../types/support-wizard';
 const formats:Record<string,string[]>={pdf:['application/pdf'],doc:['application/msword'],docx:['application/vnd.openxmlformats-officedocument.wordprocessingml.document'],png:['image/png'],jpg:['image/jpeg'],jpeg:['image/jpeg']};
@@ -14,7 +14,7 @@ export function validateStep(step:number,d:SupportWizardData,internal=false):str
  if(step===1)return '';
  if(!intakeDefaultResponsibility(d.categoryId,d.topicTitle))return 'موضوع معتبر این دسته را انتخاب کنید.';
  if(step===2)return '';
- if(d.name.trim().length<2||d.name.trim().length>160||d.name.trim().split(/\s+/).length<2)return 'نام و نام خانوادگی را کامل وارد کنید.';
+ if(!validPersianContactName(d.name))return 'نام و نام خانوادگی را کامل وارد کنید.';
  if(!normalizeIranPhone(d.mobile))return 'شماره موبایل ایرانی معتبر وارد کنید.';
  if(!d.email.trim()||!validOptionalEmail(d.email.trim()))return 'ایمیل معتبر الزامی است.';
  if(!d.description.trim()||d.description.length>16000)return 'شرح درخواست را تا ۱۶۰۰۰ نویسه تکمیل کنید.';

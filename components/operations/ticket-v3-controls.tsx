@@ -1,7 +1,7 @@
 'use client';
 import {useState} from 'react';
-import {ChevronLeft,ChevronRight,ShieldCheck,CalendarDays} from 'lucide-react';
-import {intakeResponsibleRoles,unifiedIntakeCategories,seniorResearchMayReview} from '../../lib/unified-intake-taxonomy';
+import {ChevronLeft,ChevronRight,ShieldCheck,CalendarDays,FlaskConical,Settings,ChartNoAxesColumn,MessageCircle,Layers,Info} from 'lucide-react';
+import {intakeResponsibleRoles,responsibilityCategories,responsibilityTopics} from '../../lib/unified-intake-taxonomy';
 import {tehranDay} from '../../lib/operations-date-filter';
 import './ticket-dashboard.css';
 const fa=(n:number)=>n.toLocaleString('fa-IR');
@@ -25,12 +25,24 @@ export function RoleSidebar({selected,counts,onSelect}:{selected:string;counts:R
  const [expanded,setExpanded]=useState(false);
  return <aside className={'v3-role-sidebar'+(expanded?' expanded':'')} dir="rtl"><h2><ShieldCheck size={17}/>فیلتر تیکت‌ها براساس مسئولیت‌های سازمانی</h2><button type="button" className="v3-role-toggle" aria-expanded={expanded} onClick={()=>setExpanded(v=>!v)}>نمایش مسئولیت‌ها</button><div className="v3-role-options">{[{id:'',label:'همه مسئولیت‌ها'},...intakeResponsibleRoles].map(r=><button type="button" key={r.id} aria-pressed={selected===r.id} onClick={()=>onSelect(r.id)}><span>{r.label}</span><small>{counts?fa(counts[r.id||'all']??0):'—'}</small></button>)}</div></aside>
 }
-export function ResponsibilityArea({role,category,topic,onTopic}:{role:string;category:string;topic:string;onTopic:(category:string,topic:string)=>void}){
+const researchAreas=[
+ {id:'orders',label:'خدمات پژوهشی',Icon:FlaskConical,categories:['service_orders']},
+ {id:'projects',label:'اجرای پروژه',Icon:Settings,categories:['service_projects']},
+ {id:'results',label:'نتایج',Icon:ChartNoAxesColumn,categories:['service_results']},
+ {id:'consultation',label:'مشاوره تخصصی',Icon:MessageCircle,categories:['consult_before','consult_change','consult_execution','consult_results']},
+];
+
+export function ResponsibilityArea({role,category,topic,group,onTopic,onArea}:{role:string;category:string;topic:string;group:string;onTopic:(category:string,topic:string)=>void;onArea:(categories:string[],group:string)=>void}){
  const [expanded,setExpanded]=useState(false);
  const label=intakeResponsibleRoles.find(r=>r.id===role)?.label;
- if(!label)return null;
- const oversight=role==='director'||role==='senior_research';
- const categories=unifiedIntakeCategories.filter(c=>role==='director'||role==='senior_research'&&seniorResearchMayReview(c.id)||c.topics.some(t=>t.role===role));
- const topics=categories.flatMap(c=>c.topics.filter(t=>oversight||t.role===role).map(t=>({category:c.id,title:t.title})));
- return <section className="v3-responsibility" dir="rtl"><header><h3>حوزه مسئولیت {label}</h3><button type="button" aria-expanded={expanded} onClick={()=>setExpanded(v=>!v)}>{expanded?'بستن جزئیات':'مشاهده تمام موضوعات'}</button></header>{oversight&&<p>حوزه نظارت؛ مجوز دسترسی و ارجاع مستقل است.</p>}<div className="v3-topics">{(expanded?topics:topics.slice(0,5)).map(t=><button key={t.category+':'+t.title} type="button" aria-pressed={category===t.category&&topic===t.title} onClick={()=>onTopic(t.category,t.title)}>{t.title}</button>)}</div></section>
+ if(!label)return <section className="v3-responsibility" dir="rtl"><h3>حوزه مسئولیت سازمانی</h3><p>برای دیدن موضوعات و پیام‌های هر واحد، مسئولیت آن را از فهرست انتخاب کنید.</p></section>;
+ const categories=responsibilityCategories(role);
+ const areas=role==='senior_research'?researchAreas:categories.map(c=>({id:c.id,label:c.title,Icon:Layers,categories:[c.id]}));
+ const count=categories.reduce((n,c)=>n+responsibilityTopics(role,c).length,0);
+ return <section className="v3-responsibility" dir="rtl">
+  <header><h3><Layers size={20}/> حوزه مسئولیت {label}</h3><button type="button" className="v3-role-description" aria-expanded={expanded} aria-controls="v3-role-full-description" onClick={()=>setExpanded(v=>!v)}><Info size={16}/>{expanded?'بستن شرح مسئولیت‌ها':'مشاهده شرح کامل مسئولیت‌ها'}</button></header>
+  <p>{role==='senior_research'?'نظارت بر هفت دسته پژوهشی شامل سفارش، اجرای پروژه، نتایج و مشاوره':role==='director'?'نظارت عالی بر تمام دسته‌ها':'موضوعات اجرایی مرتبط با این مسئولیت'} · {fa(count)} موضوع</p>
+  <div className="v3-topics">{areas.map(({id,label,Icon,categories:ids})=><button key={id} type="button" aria-pressed={ids.length===1?category===ids[0]:group==='consultation'&&!category} onClick={()=>onArea(ids,ids.length>1?'consultation':'')}><Icon size={17}/>{label}</button>)}</div>
+  {expanded&&<div id="v3-role-full-description" className="v3-role-full-description">{categories.map(c=><section key={c.id}><h4>{c.title}</h4><ul>{responsibilityTopics(role,c).map(t=><li key={t.title}><button type="button" aria-pressed={category===c.id&&topic===t.title} onClick={()=>onTopic(c.id,t.title)}>{t.title}</button></li>)}</ul></section>)}</div>}
+ </section>;
 }

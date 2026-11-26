@@ -26,8 +26,9 @@ test('unapproved employee mappings never randomly fall back to owner',()=>{
  assert.ok(engine.includes('d.unifiedIntake&&rawP.missing'));
 });
 test('tickets and manually classified intake share original idempotent dispatch engine',()=>{
- assert.match(api,/dispatchCreate\(u,/);
- assert.match(api,/unifiedCategory:b\.category,unifiedTopic:b\.topic/);
+ assert.match(api,/submitSupportTicket\(u,b\)/);
+ assert.match(readFileSync('lib/ticket-support-submit.ts','utf8'),/dispatchCreate\(user,dispatchEntry/);
+ assert.match(readFileSync('lib/ticket-support-submit.ts','utf8'),/unifiedCategory:entry\.category,\s*unifiedTopic:entry\.topic/);
  assert.match(engine,/verifiedUnifiedClassification/);
  assert.match(engine,/source_labels=\?/);
  assert.match(engine,/INSERT OR IGNORE INTO staff_records/);
@@ -61,4 +62,13 @@ test('legacy tickets remain recognized; no existing database migration or destru
  assert.match(ticket,/Historical ticket_v:1 rows remain readable/);
  assert.match(db,/getTicketCategories/);
  assert.doesNotMatch(engine,/DROP TABLE|DELETE FROM ops_items/);
+});
+
+test('responsibility views match the approved nine-role allocation',async()=>{
+ const {intakeResponsibleRoles,responsibilityCategories,responsibilityTopics}=await import('../lib/unified-intake-taxonomy.ts');
+ const counts=Object.fromEntries(intakeResponsibleRoles.map(({id})=>[id,
+  responsibilityCategories(id).reduce((n,category)=>n+responsibilityTopics(id,category).length,0)
+ ]));
+ assert.deepEqual(counts,{director:63,senior_research:44,technical_project:20,scientific_project:13,
+  scientific_reception:11,finance_manager:3,accountant:4,administrative:9,it_specialist:3});
 });
