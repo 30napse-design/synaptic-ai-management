@@ -206,3 +206,15 @@
  position:fixed;inset:0;z-index:80;overflow:auto;margin:0;
  padding:clamp(12px,2vw,26px);border-radius:0;background:#f8fbfe;
 }
+
+.ops-module :is(.ops-entry-backdrop,.ops-message-backdrop) .modal-heading{
+ margin-block:0 9px;
+ padding-block-end:7px;
+ min-height:36px;
+}
+.ops-module .ops-entry-backdrop .ops-intake-form > .form-grid > label{
+ margin:0;
+ line-height:1.45;
+}
+.ops-module .ops-entry-backdrop .ops-intake-form .ops-intake-extra{margin:0;padding-block:5px}
+.ops-module .ops-entry-backdrop .ops-intake-form .modal-actions{padding-top:6px}
