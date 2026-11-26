@@ -180,3 +180,42 @@
 .ticket-v3 .v3-advanced-filters summary{padding:7px 3px;cursor:pointer;font-size:12px;white-space:nowrap}
 .ticket-v3 .v3-search-tools .ops-staff-filters:has(.v3-advanced-filters[open]){display:block}
 @container(max-width:460px){.ticket-v3 .v3-search-tools .ops-staff-search{grid-column:1/-1}}
+
+/* Keep the responsibility column in the overview; use its width for the inbox below. */
+.ticket-v3 .v3-workdesk{display:block}
+.ticket-v3 .v3-ticket-top{display:grid;grid-template-columns:minmax(158px,21%) minmax(0,1fr);align-items:start;gap:9px}
+.ticket-v3 .v3-ticket-top-main{display:grid;gap:8px;min-width:0}
+.ticket-v3 .v3-role-sidebar{padding:8px}
+.ticket-v3 .v3-role-sidebar h2{margin:0 0 6px}
+.ticket-v3 .v3-role-options{gap:3px}
+.ticket-v3 .v3-role-options button{min-height:28px;padding:3px 7px}
+.ticket-v3 .v3-overview{gap:8px;align-items:stretch}
+.ticket-v3 .v3-overview>.ticket-dashboard{display:grid;margin:0;padding:0;min-height:0;align-self:stretch}
+.ticket-v3 .v3-overview .ticket-dashboard-cards{grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:6px;align-items:stretch}
+.ticket-v3 .v3-overview .ticket-dashboard-card{min-height:56px;padding:5px 7px;gap:2px;justify-content:center}
+.ticket-v3 .v3-overview>.v3-calendar{display:flex;flex-direction:column;justify-content:space-between;margin:0}
+.ticket-v3 .v3-calendar-grid button{min-height:21px}
+.ticket-v3 .v3-responsibility{padding:8px 10px}
+.ticket-v3 .v3-topics{margin-top:6px}
+.ticket-v3 .v3-ticket-sources{margin:0;padding:5px 7px;gap:6px}
+.ticket-v3 .v3-source-tabs{gap:4px}
+.ticket-v3 .v3-source-tabs button{min-height:27px;padding:3px 7px;font-size:11px}
+.ticket-v3 .v3-list-heading{padding:0}
+.ticket-v3 .v3-main>.ops-pagination{margin-block:0}
+@container (max-width:575px){
+ .ticket-v3 .v3-ticket-top{grid-template-columns:minmax(0,1fr)}
+}
+@container (max-width:420px){
+ .ticket-v3 .v3-overview .ticket-dashboard-cards{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:auto}
+}
+.ticket-v3 .v3-calendar .v3-calendar-grid{grid-auto-rows:22px}
+.ticket-v3 .v3-calendar .v3-calendar-grid button{height:22px;min-height:0;font-size:11px;line-height:1}
+.ticket-v3 .v3-calendar header,.ticket-v3 .v3-calendar footer{flex-wrap:nowrap}
+.ticket-v3 .v3-calendar header button,.ticket-v3 .v3-calendar footer button{padding:2px 4px}
+@container (max-width:420px){
+ .ticket-v3 .v3-list-heading{overflow-wrap:anywhere}
+ .ticket-v3 .v3-source-tabs{min-width:0}
+ .ticket-v3 .v3-source-tabs button{white-space:normal;text-align:center}
+ .ticket-v3 .v3-topics button{min-width:0}
+}
+.ticket-v3 .v3-main>.ops-pagination{flex-wrap:wrap;gap:6px}
