@@ -7,6 +7,7 @@ const app=readFileSync('app/operations/operations-app.tsx','utf8');
 const query=readFileSync('lib/operations-data.ts','utf8');
 const link=readFileSync('lib/operation-work-link.ts','utf8');
 const assignment=readFileSync('lib/operations-manual-assignment.ts','utf8');
+const conversation=readFileSync('components/operations/operations-conversation.tsx','utf8');
 test('six distinct compact status controls use server-fed values',()=>{
  for(const id of ['all','new','today','waiting','overdue','unassigned'])assert.match(component,new RegExp("id:'"+id+"'"));
  assert.match(style,/repeat\(6,minmax\(0,1fr\)\)/);
@@ -32,9 +33,11 @@ test('staff desk omits noisy channel selector, retains categories, roles and his
  assert.match(readFileSync('components/operations/unified-intake-filters.tsx','utf8'),/intakeResponsibleRoles\.map/);
  assert.match(app,/ticket-bulk-panel/);
  assert.match(app,/ticket-detail-modal/);
- assert.match(app,/selected\.attachments/);
- assert.match(app,/selected\.sourceBody/);
- assert.match(app,/selected\.sourceUrl/);
+ // Unified full-screen conversation: the selected ticket's attachments, original text and source link render in OperationsConversation.
+ assert.match(app,/<OperationsConversation item=\{selected\}/);
+ assert.match(conversation,/item\.attachments/);
+ assert.match(conversation,/item\.sourceBody/);
+ assert.match(conversation,/item\.sourceUrl/);
 });
 test('manual assignment projects to stable one-to-one task id with access checks',()=>{
  assert.match(link,/const id='ops-work:'\+r.id/);
